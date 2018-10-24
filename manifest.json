@@ -1,0 +1,19 @@
+  {
+    "name": "Github Giphy",
+    "version": "1.0",
+    "description": "Easily add Gifs to your github comments!",
+    "content_scripts": [
+      {
+        "matches": [
+          "https://github.com/*"
+        ],
+        "css": [
+          "style.css"
+        ],
+        "js": [
+          "dist/index.js"
+        ]
+      }
+    ],
+    "manifest_version": 2
+  }

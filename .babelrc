@@ -1,0 +1,18 @@
+{
+  "plugins": [
+    [
+      "@babel/plugin-transform-react-jsx",
+      {
+        "pragma": "h",
+        "useBuiltIns": true
+      }
+    ],
+    "@babel/plugin-syntax-object-rest-spread",
+    [
+      "@babel/plugin-transform-runtime",
+      {
+        "regenerator": true
+      }
+    ]
+  ],
+}
