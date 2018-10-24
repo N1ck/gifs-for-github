@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/cosre": "^7.0.0-0",
+    "@babel/core": "^7.0.0-0",
     "@babel/runtime": "^7.1.2",
     "debounce-fn": "^1.0.0",
     "delegate": "^3.2.0",

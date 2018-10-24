@@ -8,9 +8,7 @@ const client = GphApiClient('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
 async function searchGifs (query) {
   const { data: results } = await client.search('gifs', { q: query })
-  return results.map(result => {
-    return `https://media.giphy.com/media/${result.images.media_id}/giphy.gif`
-  })
+  return results
 }
 
 function addButton () {
@@ -29,7 +27,7 @@ function addButton () {
 
           <details-menu
             class='select-menu-modal position-absolute right-0'
-            style={{ 'z-index': 99, width: '700px' }}
+            style={{ 'z-index': 99, width: '480px' }}
             role='menu'
           >
             <div class='select-menu-header d-flex'>
@@ -59,6 +57,7 @@ function addButton () {
 }
 
 async function showGiphyPopover (e) {
+  const MAX_GIF_WIDTH = 145
   const searchQuery = e.target.value
   const parent = e.target.closest('.ghg-has-giphy-field')
   const gifs = await searchGifs(searchQuery)
@@ -67,7 +66,9 @@ async function showGiphyPopover (e) {
   resultContainer.innerHTML = ''
 
   gifs.forEach(gif => {
-    resultContainer.append(<img src={gif} class='ghg-gif-selection' />)
+    const url = gif.images.fixed_height_downsampled.gif_url
+    const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
+    resultContainer.append(<img src={url} height={height} class='ghg-gif-selection' />)
   })
 }
 
