@@ -1,9 +1,8 @@
-#ghg-giphy-results {
-  height: 280px;
-  overflow-x: auto;
-  display: flex;
-  align-content: flex-start;
+.ghg-giphy-results {
+  margin: 10px;
+  overflow-y: auto;
 }
-#ghg-giphy-results img{
-  object-fit: contain;
+
+.ghg-giphy-results img {
+  cursor: pointer;
 }
