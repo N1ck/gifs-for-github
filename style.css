@@ -1,7 +1,17 @@
 .ghg-giphy-results {
   margin: 10px;
   overflow-y: auto;
+  max-height: 285px;
 }
+
+.ghg-giphy-results::-webkit-scrollbar {
+    display: none;
+}
+
+.ghg-giphy-results:empty {
+  display: none;
+}
+
 
 .ghg-giphy-results img {
   cursor: pointer;

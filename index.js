@@ -28,7 +28,7 @@ function addButton () {
             </summary>
             <details-menu
               class='select-menu-modal position-absolute right-0'
-              style={{ 'z-index': 99, width: '480px', height: '410px' }}
+              style={{ 'z-index': 99, width: '480px', 'max-height': '410px' }}
               role='menu'
             >
               <div class='select-menu-header d-flex'>
@@ -46,7 +46,7 @@ function addButton () {
                     />
                   </div>
                 </div>
-                <div class='ghg-giphy-results' style={{ height: '500px' }} />
+                <div class='ghg-giphy-results' />
               </tab-list>
             </details-menu>
           </details>
@@ -70,9 +70,7 @@ async function showGiphyPopover (e) {
   gifs.forEach(gif => {
     const url = gif.images.fixed_height_downsampled.url
     const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
-    const img = (
-      <div style={{ float: 'left', width: '145px' }}><img src={url} height={height} class='ghg-gif-selection' /></div>
-    )
+    const img = <div style={{ width: '145px' }}><img src={url} height={height} class='ghg-gif-selection' /></div>
     gifsToAdd.push(img)
     resultsContainer.append(img)
   })
