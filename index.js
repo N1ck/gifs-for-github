@@ -24,7 +24,7 @@ function addButton () {
         toolbarGroup.append(
           <details class='details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger'>
             <summary class='menu-target' aria-label='Insert a GIF' aria-haspopup='menu'>
-              {'Select a GIF'}
+              {'GIF'}
             </summary>
             <details-menu
               class='select-menu-modal position-absolute right-0'
@@ -89,15 +89,17 @@ async function showGiphyPopover (e) {
 }
 
 function selectGif (e) {
-  const gifUrl = e.target.src
   const form = e.target.closest('.ghg-has-giphy-field')
   const commentField = select('.js-comment-field', form)
-  const newLine = String.fromCharCode(13, 10)
-
   const trigger = select('.ghg-trigger', form)
+  const gifUrl = e.target.src
+
+  // Close the popover
   trigger.removeAttribute('open')
 
-  commentField.value += `${newLine}![](${gifUrl})`
+  // Focuses the textarea and inserts the text where the cursor was last
+  commentField.focus()
+  document.execCommand('insertText', false, `![](${gifUrl})`)
 }
 
 function listen () {
