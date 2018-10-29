@@ -27,7 +27,7 @@ function addButton () {
               {'GIF'}
             </summary>
             <details-menu
-              class='select-menu-modal position-absolute right-0'
+              class='select-menu-modal position-absolute right-0 ghg-modal'
               style={{ 'z-index': 99, width: '480px', 'max-height': '410px' }}
               role='menu'
             >
@@ -39,7 +39,7 @@ function addButton () {
                   <div class='select-menu-text-filter'>
                     <input
                       type='text'
-                      class='form-control ghg-search'
+                      class='form-control ghg-search-input'
                       placeholder='Search for a GIF…'
                       aria-label='Search for a GIF'
                       autofocus=''
@@ -54,6 +54,15 @@ function addButton () {
         form.classList.add('ghg-has-giphy-field')
       }
     })
+  }
+}
+
+function clearSearch () {
+  for (const ghgModal of select.all('.ghg-modal')) {
+    const resultContainer = select('.ghg-giphy-results', ghgModal)
+    const searchInput = select('.ghg-search-input', ghgModal)
+    searchInput.value = ''
+    resultContainer.innerHTML = ''
   }
 }
 
@@ -104,7 +113,7 @@ function selectGif (e) {
 
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field .ghg-search', 'keydown', debounce(showGiphyPopover, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(showGiphyPopover, { wait: 400 }))
 }
 
 // Ensure we only bind events to elements once
@@ -115,4 +124,8 @@ const listenOnce = onetime(listen)
 gitHubInjection(() => {
   addButton()
   listenOnce()
+  // Clears all gif search input fields and results.
+  // We have to do this because when navigating, github will refuse to
+  // load the giphy URLs as it violates their Content Security Policy.
+  clearSearch()
 })
