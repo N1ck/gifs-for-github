@@ -39,7 +39,7 @@ function addButton () {
                   <div class='select-menu-text-filter'>
                     <input
                       type='text'
-                      class='form-control'
+                      class='form-control ghg-search'
                       placeholder='Search for a GIF…'
                       aria-label='Search for a GIF'
                       autofocus=''
@@ -104,7 +104,7 @@ function selectGif (e) {
 
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field', 'keydown', debounce(showGiphyPopover, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search', 'keydown', debounce(showGiphyPopover, { wait: 400 }))
 }
 
 // Ensure we only bind events to elements once
