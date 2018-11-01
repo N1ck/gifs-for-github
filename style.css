@@ -1,16 +1,16 @@
 .ghg-giphy-results {
   margin: 10px;
   overflow-y: auto;
-  max-height: 285px;
+  height: 285px !important;
 }
 
 .ghg-giphy-results::-webkit-scrollbar {
     display: none;
 }
-
+/*
 .ghg-giphy-results:empty {
   display: none;
-}
+} */
 
 
 .ghg-giphy-results img {

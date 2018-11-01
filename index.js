@@ -1,4 +1,5 @@
 import GphApiClient from 'giphy-js-sdk-core'
+import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
@@ -9,9 +10,38 @@ import onetime from 'onetime'
 import select from 'select-dom'
 const client = GphApiClient('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function searchGifs (query) {
+async function searchGiphy (query) {
   const { data: results } = await client.search('gifs', { q: query })
   return results
+}
+
+async function getTrendingGiphy () {
+  const { data: results } = await client.trending('gifs')
+  return results
+}
+
+function watchPopovers () {
+  for (const trigger of select.all('.ghg-trigger')) {
+    observeEl(
+      trigger,
+      async () => {
+        if (trigger.hasAttribute('open')) {
+          const parent = trigger.closest('.ghg-has-giphy-field')
+          const resultsContainer = select('.ghg-giphy-results', parent)
+          const searchInput = select('.ghg-search-input', parent)
+
+          // If the popover is opened, and there is no search term,
+          // load popular gifs
+          if (searchInput.value === '') {
+            resultsContainer.append(<div>{LoadingIndicator}</div>)
+            const gifs = await getTrendingGiphy()
+            addResults(resultsContainer, gifs)
+          }
+        }
+      },
+      { attributes: true }
+    )
+  }
 }
 
 function addButton () {
@@ -46,7 +76,10 @@ function addButton () {
                     />
                   </div>
                 </div>
-                <div class='ghg-giphy-results' />
+                <div
+                  class='ghg-giphy-results'
+                  style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center' }}
+                />
               </tab-list>
             </details-menu>
           </details>
@@ -66,14 +99,30 @@ function clearSearch () {
   }
 }
 
-async function showGiphyPopover (e) {
-  const MAX_GIF_WIDTH = 145
+async function searchGifs (e) {
+  e.preventDefault()
   const searchQuery = e.target.value
   const parent = e.target.closest('.ghg-has-giphy-field')
-  const gifs = await searchGifs(searchQuery)
   const resultsContainer = select('.ghg-giphy-results', parent)
+  let gifs
 
+  if (searchQuery === '') {
+    gifs = await getTrendingGiphy()
+  } else {
+    gifs = await searchGiphy(searchQuery)
+  }
+
+  resultsContainer.append(<div>{LoadingIndicator}</div>)
+  addResults(resultsContainer, gifs)
+}
+
+function addResults (resultsContainer, gifs) {
+  const MAX_GIF_WIDTH = 145
   resultsContainer.innerHTML = ''
+
+  if (!gifs || !gifs.length) {
+    resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
+  }
 
   const gifsToAdd = []
   gifs.forEach(gif => {
@@ -111,9 +160,17 @@ function selectGif (e) {
   document.execCommand('insertText', false, `![](${gifUrl})`)
 }
 
+function preventFormSubmitOnEnter (e) {
+  if (e.keyCode == 13) {
+    e.preventDefault()
+    return false
+  }
+}
+
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(showGiphyPopover, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(searchGifs, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search-input', 'keypress', preventFormSubmitOnEnter)
 }
 
 // Ensure we only bind events to elements once
@@ -128,4 +185,5 @@ gitHubInjection(() => {
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
   clearSearch()
+  watchPopovers()
 })
