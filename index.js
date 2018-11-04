@@ -10,8 +10,8 @@ import onetime from 'onetime'
 import select from 'select-dom'
 const client = GphApiClient('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function searchGiphy (query) {
-  const { data: results } = await client.search('gifs', { q: query })
+async function searchGiphy (q, offset = 0) {
+  const { data: results } = await client.search('gifs', { q, offset, limit: 50 })
   return results
 }
 
@@ -29,6 +29,10 @@ function watchPopovers () {
           const parent = trigger.closest('.ghg-has-giphy-field')
           const resultsContainer = select('.ghg-giphy-results', parent)
           const searchInput = select('.ghg-search-input', parent)
+          const initInfiniteScroll = onetime(bindInfiniteScroll.bind(this, resultsContainer))
+
+          // Bind the scroll event to the results container
+          initInfiniteScroll()
 
           // If the popover is opened, and there is no search term,
           // load popular gifs
@@ -39,7 +43,7 @@ function watchPopovers () {
           }
         }
       },
-      { attributes: true }
+      { attributes: true } // observe attributes, we are interested in the 'open' attribute.
     )
   }
 }
@@ -104,7 +108,14 @@ async function searchGifs (e) {
   const searchQuery = e.target.value
   const parent = e.target.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
+  const numResults = 50
   let gifs
+
+  resultsContainer.dataset.searchQuery = searchQuery
+
+  resultsContainer.dataset.offset = resultsContainer.dataset.offset
+    ? resultsContainer.dataset.offset + numResults
+    : numResults
 
   if (searchQuery === '') {
     gifs = await getTrendingGiphy()
@@ -116,11 +127,18 @@ async function searchGifs (e) {
   addResults(resultsContainer, gifs)
 }
 
-function addResults (resultsContainer, gifs) {
-  const MAX_GIF_WIDTH = 145
-  resultsContainer.innerHTML = ''
+function appendResults (...args) {
+  addResults(...args, true)
+}
 
-  if (!gifs || !gifs.length) {
+function addResults (resultsContainer, gifs, append = false) {
+  const MAX_GIF_WIDTH = 145
+
+  if (!append) {
+    resultsContainer.innerHTML = ''
+  }
+
+  if (!gifs || (!gifs.length && !append)) {
     resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
   }
 
@@ -164,6 +182,30 @@ function preventFormSubmitOnEnter (e) {
   if (e.keyCode == 13) {
     e.preventDefault()
     return false
+  }
+}
+
+function bindInfiniteScroll (resultsContainer) {
+  resultsContainer.addEventListener('scroll', handleInfiniteScroll)
+}
+
+let searchTimer
+function handleInfiniteScroll (event) {
+  const resultsContainer = event.target
+  const currentScrollPosition = resultsContainer.scrollTop + 395
+  const INFINITE_SCROLL_PX_OFFSET = 100
+  // infinite scroll
+  console.log(currentScrollPosition)
+  if (currentScrollPosition + INFINITE_SCROLL_PX_OFFSET > parseInt(resultsContainer.style.height)) {
+    // start the infinite scroll after the last scroll event
+    clearTimeout(searchTimer)
+    searchTimer = setTimeout(async function (event) {
+      const offset = resultsContainer.dataset.offset ? parseInt(resultsContainer.dataset.offset) + 50 : 50
+      const searchQuery = resultsContainer.dataset.searchQuery
+      resultsContainer.dataset.offset = offset
+      const gifs = await searchGiphy(searchQuery, offset)
+      appendResults(resultsContainer, gifs)
+    }, 250)
   }
 }
 
