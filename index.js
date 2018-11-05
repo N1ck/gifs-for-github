@@ -15,8 +15,8 @@ async function searchGiphy (q, offset = 0) {
   return results
 }
 
-async function getTrendingGiphy () {
-  const { data: results } = await client.trending('gifs')
+async function getTrendingGiphy (offset = 0) {
+  const { data: results } = await client.trending('gifs', { offset })
   return results
 }
 
@@ -200,8 +200,16 @@ function handleInfiniteScroll (event) {
     searchTimer = setTimeout(async function (event) {
       const offset = resultsContainer.dataset.offset ? parseInt(resultsContainer.dataset.offset) + 50 : 50
       const searchQuery = resultsContainer.dataset.searchQuery
+      let gifs
+
       resultsContainer.dataset.offset = offset
-      const gifs = await searchGiphy(searchQuery, offset)
+
+      if (searchQuery) {
+        gifs = await searchGiphy(searchQuery, offset)
+      } else {
+        gifs = await getTrendingGiphy(offset)
+      }
+
       appendResults(resultsContainer, gifs)
     }, 250)
   }
