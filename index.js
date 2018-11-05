@@ -100,6 +100,8 @@ function clearSearch () {
     const searchInput = select('.ghg-search-input', ghgModal)
     searchInput.value = ''
     resultContainer.innerHTML = ''
+    resultContainer.dataset.offset = 0
+    resultContainer.dataset.searchQuery = ''
   }
 }
 
@@ -111,11 +113,8 @@ async function searchGifs (e) {
   const numResults = 50
   let gifs
 
+  resultsContainer.dataset.offset = 0
   resultsContainer.dataset.searchQuery = searchQuery
-
-  resultsContainer.dataset.offset = resultsContainer.dataset.offset
-    ? resultsContainer.dataset.offset + numResults
-    : numResults
 
   if (searchQuery === '') {
     gifs = await getTrendingGiphy()
@@ -194,8 +193,7 @@ function handleInfiniteScroll (event) {
   const resultsContainer = event.target
   const currentScrollPosition = resultsContainer.scrollTop + 395
   const INFINITE_SCROLL_PX_OFFSET = 100
-  // infinite scroll
-  console.log(currentScrollPosition)
+
   if (currentScrollPosition + INFINITE_SCROLL_PX_OFFSET > parseInt(resultsContainer.style.height)) {
     // start the infinite scroll after the last scroll event
     clearTimeout(searchTimer)
