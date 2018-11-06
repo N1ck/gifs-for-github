@@ -11,3 +11,8 @@
 .ghg-giphy-results img {
   cursor: pointer;
 }
+
+.ghg-gif-selection {
+  background: red;
+  width: 100%;
+}

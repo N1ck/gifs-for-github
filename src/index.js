@@ -1,6 +1,6 @@
 import Giphy from './giphy'
-import GiphyToolbarItem from '../components/giphy-toolbar-item'
-import LoadingIndicator from '../components/loading-indicator'
+import GiphyToolbarItem from './components/giphy-toolbar-item'
+import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
@@ -36,8 +36,11 @@ function watchGiphyModals () {
             // Fetch the trending gifs
             const gifs = await giphyClient.getTrending()
 
+            // Clear the loading indicator
+            resultsContainer.innerHTML = ''
+
             // Add the gifs to the results container
-            addResults(resultsContainer, gifs)
+            appendResults(resultsContainer, gifs)
           }
         }
       },
@@ -53,17 +56,25 @@ function addToolbarButton () {
   for (const toolbar of select.all('form:not(.ghg-has-giphy-field) markdown-toolbar')) {
     const form = toolbar.closest('form')
 
+    // Observe the toolbars without the giphy field, add
+    // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       const toolbarGroup = select('.toolbar-group:last-child', toolbar)
       if (toolbarGroup) {
-        toolbarGroup.append(GiphyToolbarItem)
+        // Append the Giphy button to the toolbar
+        // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
+        toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
       }
     })
   }
 }
 
-function clearSearch () {
+/**
+ * Resets GIPHY modals by clearing the search input field, any
+ * results, and all data attributes.
+ */
+function resetGiphyModals () {
   for (const ghgModal of select.all('.ghg-modal')) {
     const resultContainer = select('.ghg-giphy-results', ghgModal)
     const searchInput = select('.ghg-search-input', ghgModal)
@@ -73,26 +84,60 @@ function clearSearch () {
   }
 }
 
-async function searchGifs (e) {
-  e.preventDefault()
-  const searchQuery = e.target.value
-  const parent = e.target.closest('.ghg-has-giphy-field')
+/**
+ * Perform a search of the GIPHY API and append the results
+ * to the modal.
+ */
+async function performSearch (event) {
+  event.preventDefault()
+  const searchQuery = event.target.value
+  const parent = event.target.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
   let gifs
 
+  // Show a loading indicator
+  resultsContainer.append(<div>{LoadingIndicator}</div>)
+
+  // If there is no search query, get the trending gifs
   if (searchQuery === '') {
     gifs = await giphyClient.getTrending()
   } else {
     gifs = await giphyClient.search(searchQuery)
   }
 
-  resultsContainer.append(<div>{LoadingIndicator}</div>)
-  addResults(resultsContainer, gifs)
+  // Clear any previous results
+  resultsContainer.innerHTML = ''
+
+  // Add the GIFs to the results container
+  appendResults(resultsContainer, gifs)
 }
 
-function addResults (resultsContainer, gifs) {
+/**
+ * Returns a GIF in the format required to display in the modal search results.
+ */
+function getFormattedGif (gif) {
   const MAX_GIF_WIDTH = 145
-  resultsContainer.innerHTML = ''
+  const url = gif.images.fixed_height_downsampled.url
+  const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
+
+  // Generate a random pastel colour to use as an image placeholder
+  const Hsl = 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (85 + 10 * Math.random()) + '%)'
+
+  return (
+    <div
+      style={{
+        width: `${MAX_GIF_WIDTH}px`
+      }}
+    >
+      <img src={url} height={height} style={{ 'background-color': Hsl }} class='ghg-gif-selection' />
+    </div>
+  )
+}
+
+/**
+ * Appends a collection of GIFs to the provided result container.
+ */
+function appendResults (resultsContainer, gifs) {
   resultsContainer.dataset.hasResults = true
 
   if (!gifs || !gifs.length) {
@@ -100,10 +145,9 @@ function addResults (resultsContainer, gifs) {
   }
 
   const gifsToAdd = []
+
   gifs.forEach(gif => {
-    const url = gif.images.fixed_height_downsampled.url
-    const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
-    const img = <div style={{ width: '145px' }}><img src={url} height={height} class='ghg-gif-selection' /></div>
+    const img = getFormattedGif(gif)
     gifsToAdd.push(img)
     resultsContainer.append(img)
   })
@@ -121,13 +165,18 @@ function addResults (resultsContainer, gifs) {
   )
 }
 
+/**
+ * Invoked when a GIF from the result set has been clicked.
+ *
+ * Closes the GIPHY modal and inserts the selected GIF in the textarea.
+ */
 function selectGif (e) {
   const form = e.target.closest('.ghg-has-giphy-field')
   const commentField = select('.js-comment-field', form)
   const trigger = select('.ghg-trigger', form)
   const gifUrl = e.target.src
 
-  // Close the popover
+  // Close the modal
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
@@ -135,6 +184,10 @@ function selectGif (e) {
   document.execCommand('insertText', false, `![](${gifUrl})`)
 }
 
+/**
+ * Prevents the outer form from submitting when enter is pressed in the GIF search
+ * input.
+ */
 function preventFormSubmitOnEnter (e) {
   if (e.keyCode == 13) {
     e.preventDefault()
@@ -142,9 +195,12 @@ function preventFormSubmitOnEnter (e) {
   }
 }
 
+/**
+ * Defines the event listeners
+ */
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(searchGifs, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(performSearch, { wait: 400 }))
   delegate('.ghg-has-giphy-field .ghg-search-input', 'keypress', preventFormSubmitOnEnter)
 }
 
@@ -159,6 +215,6 @@ gitHubInjection(() => {
   // Clears all gif search input fields and results.
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
-  clearSearch()
+  resetGiphyModals()
   watchGiphyModals()
 })
