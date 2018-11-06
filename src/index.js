@@ -1,30 +1,27 @@
-import GphApiClient from 'giphy-js-sdk-core'
+import Giphy from './giphy'
+import GiphyToolbarItem from './components/giphy-toolbar-item'
 import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 import { h } from 'dom-chef'
-import observeEl from './simplified-element-observer'
+import observeEl from '../simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
-const client = GphApiClient('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function searchGiphy (q, offset = 0) {
-  const { data: results } = await client.search('gifs', { q, offset, limit: 50 })
-  return results
-}
+// Create a new Giphy Client
+const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function getTrendingGiphy (offset = 0) {
-  const { data: results } = await client.trending('gifs', { offset })
-  return results
-}
-
-function watchPopovers () {
+/**
+ * Responds to the GIPHY modal being opened or closed.
+ */
+function watchGiphyModals () {
   for (const trigger of select.all('.ghg-trigger')) {
     observeEl(
       trigger,
       async () => {
+        // The modal has been opened.
         if (trigger.hasAttribute('open')) {
           const parent = trigger.closest('.ghg-has-giphy-field')
           const resultsContainer = select('.ghg-giphy-results', parent)
@@ -34,67 +31,58 @@ function watchPopovers () {
           // Bind the scroll event to the results container
           initInfiniteScroll()
 
-          // If the popover is opened, and there is no search term,
-          // load popular gifs
-          if (searchInput.value === '') {
+          // If the modal has been opened and there is no search term,
+          // and no search results, load the trending gifs
+          if (searchInput.value === '' && resultsContainer.dataset.hasResults === 'false') {
+            // Set the loading state
             resultsContainer.append(<div>{LoadingIndicator}</div>)
-            const gifs = await getTrendingGiphy()
-            addResults(resultsContainer, gifs)
+
+            // Fetch the trending gifs
+            const gifs = await giphyClient.getTrending()
+
+            // Clear the loading indicator
+            resultsContainer.innerHTML = ''
+
+            // Add the gifs to the results container
+            if (gifs && gifs.length) {
+              appendResults(resultsContainer, gifs)
+            } else {
+              showNoResultsFound(resultsContainer)
+            }
           }
         }
       },
-      { attributes: true } // observe attributes, we are interested in the 'open' attribute.
+      { attributes: true } // observe attributes, we are interested in the 'open' attribute
     )
   }
 }
 
-function addButton () {
+/**
+ * Adds the GIF toolbar button to all WYSIWYG instances.
+ */
+function addToolbarButton () {
   for (const toolbar of select.all('form:not(.ghg-has-giphy-field) markdown-toolbar')) {
     const form = toolbar.closest('form')
 
+    // Observe the toolbars without the giphy field, add
+    // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       const toolbarGroup = select('.toolbar-group:last-child', toolbar)
       if (toolbarGroup) {
-        toolbarGroup.append(
-          <details class='details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger'>
-            <summary class='menu-target' aria-label='Insert a GIF' aria-haspopup='menu'>
-              {'GIF'}
-            </summary>
-            <details-menu
-              class='select-menu-modal position-absolute right-0 ghg-modal'
-              style={{ 'z-index': 99, width: '480px', 'max-height': '410px' }}
-              role='menu'
-            >
-              <div class='select-menu-header d-flex'>
-                <span class='select-menu-title flex-auto'>Select a GIF</span>
-              </div>
-              <tab-list>
-                <div class='select-menu-filters'>
-                  <div class='select-menu-text-filter'>
-                    <input
-                      type='text'
-                      class='form-control ghg-search-input'
-                      placeholder='Search for a GIF…'
-                      aria-label='Search for a GIF'
-                      autofocus=''
-                    />
-                  </div>
-                </div>
-                <div
-                  class='ghg-giphy-results'
-                  style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center' }}
-                />
-              </tab-list>
-            </details-menu>
-          </details>
-        )
+        // Append the Giphy button to the toolbar
+        // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
+        toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
       }
     })
   }
 }
 
-function clearSearch () {
+/**
+ * Resets GIPHY modals by clearing the search input field, any
+ * results, and all data attributes.
+ */
+function resetGiphyModals () {
   for (const ghgModal of select.all('.ghg-modal')) {
     const resultContainer = select('.ghg-giphy-results', ghgModal)
     const searchInput = select('.ghg-search-input', ghgModal)
@@ -102,50 +90,81 @@ function clearSearch () {
     resultContainer.innerHTML = ''
     resultContainer.dataset.offset = 0
     resultContainer.dataset.searchQuery = ''
+    resultContainer.dataset.hasResults = false
   }
 }
 
-async function searchGifs (e) {
-  e.preventDefault()
-  const searchQuery = e.target.value
-  const parent = e.target.closest('.ghg-has-giphy-field')
+/**
+ * Perform a search of the GIPHY API and append the results
+ * to the modal.
+ */
+async function performSearch (event) {
+  event.preventDefault()
+  const searchQuery = event.target.value
+  const parent = event.target.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
-  const numResults = 50
   let gifs
 
   resultsContainer.dataset.offset = 0
   resultsContainer.dataset.searchQuery = searchQuery
 
-  if (searchQuery === '') {
-    gifs = await getTrendingGiphy()
-  } else {
-    gifs = await searchGiphy(searchQuery)
-  }
-
+  // Show a loading indicator
   resultsContainer.append(<div>{LoadingIndicator}</div>)
-  addResults(resultsContainer, gifs)
+
+  // If there is no search query, get the trending gifs
+  if (searchQuery === '') {
+    gifs = await giphyClient.getTrending()
+  } else {
+    gifs = await giphyClient.search(searchQuery)
+  }
+
+  // Clear any previous results
+  resultsContainer.innerHTML = ''
+
+  // Add the GIFs to the results container
+  if (gifs && gifs.length) {
+    appendResults(resultsContainer, gifs)
+  } else {
+    showNoResultsFound(resultsContainer)
+  }
 }
 
-function appendResults (...args) {
-  addResults(...args, true)
-}
-
-function addResults (resultsContainer, gifs, append = false) {
+/**
+ * Returns a GIF in the format required to display in the modal search results.
+ */
+function getFormattedGif (gif) {
   const MAX_GIF_WIDTH = 145
+  const url = gif.images.fixed_height_downsampled.url
+  const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
 
-  if (!append) {
-    resultsContainer.innerHTML = ''
-  }
+  // Generate a random pastel colour to use as an image placeholder
+  const Hsl = 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (85 + 10 * Math.random()) + '%)'
 
-  if (!gifs || (!gifs.length && !append)) {
-    resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
-  }
+  return (
+    <div
+      style={{
+        width: `${MAX_GIF_WIDTH}px`
+      }}
+    >
+      <img src={url} height={height} style={{ 'background-color': Hsl }} class='ghg-gif-selection' />
+    </div>
+  )
+}
+
+function showNoResultsFound (resultsContainer) {
+  resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
+}
+
+/**
+ * Appends a collection of GIFs to the provided result container.
+ */
+function appendResults (resultsContainer, gifs) {
+  resultsContainer.dataset.hasResults = true
 
   const gifsToAdd = []
+
   gifs.forEach(gif => {
-    const url = gif.images.fixed_height_downsampled.url
-    const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
-    const img = <div style={{ width: '145px' }}><img src={url} height={height} class='ghg-gif-selection' /></div>
+    const img = getFormattedGif(gif)
     gifsToAdd.push(img)
     resultsContainer.append(img)
   })
@@ -163,13 +182,18 @@ function addResults (resultsContainer, gifs, append = false) {
   )
 }
 
+/**
+ * Invoked when a GIF from the result set has been clicked.
+ *
+ * Closes the GIPHY modal and inserts the selected GIF in the textarea.
+ */
 function selectGif (e) {
   const form = e.target.closest('.ghg-has-giphy-field')
   const commentField = select('.js-comment-field', form)
   const trigger = select('.ghg-trigger', form)
   const gifUrl = e.target.src
 
-  // Close the popover
+  // Close the modal
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
@@ -177,6 +201,10 @@ function selectGif (e) {
   document.execCommand('insertText', false, `![](${gifUrl})`)
 }
 
+/**
+ * Prevents the outer form from submitting when enter is pressed in the GIF search
+ * input.
+ */
 function preventFormSubmitOnEnter (e) {
   if (e.keyCode == 13) {
     e.preventDefault()
@@ -197,6 +225,7 @@ function handleInfiniteScroll (event) {
   if (currentScrollPosition + INFINITE_SCROLL_PX_OFFSET > parseInt(resultsContainer.style.height)) {
     // start the infinite scroll after the last scroll event
     clearTimeout(searchTimer)
+
     searchTimer = setTimeout(async function (event) {
       const offset = resultsContainer.dataset.offset ? parseInt(resultsContainer.dataset.offset) + 50 : 50
       const searchQuery = resultsContainer.dataset.searchQuery
@@ -205,9 +234,9 @@ function handleInfiniteScroll (event) {
       resultsContainer.dataset.offset = offset
 
       if (searchQuery) {
-        gifs = await searchGiphy(searchQuery, offset)
+        gifs = await giphyClient.search(searchQuery, offset)
       } else {
-        gifs = await getTrendingGiphy(offset)
+        gifs = await giphyClient.getTrending(offset)
       }
 
       appendResults(resultsContainer, gifs)
@@ -215,9 +244,12 @@ function handleInfiniteScroll (event) {
   }
 }
 
+/**
+ * Defines the event listeners
+ */
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(searchGifs, { wait: 400 }))
+  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(performSearch, { wait: 400 }))
   delegate('.ghg-has-giphy-field .ghg-search-input', 'keypress', preventFormSubmitOnEnter)
 }
 
@@ -227,11 +259,11 @@ const listenOnce = onetime(listen)
 // gitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {
-  addButton()
+  addToolbarButton()
   listenOnce()
   // Clears all gif search input fields and results.
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
-  clearSearch()
-  watchPopovers()
+  resetGiphyModals()
+  watchGiphyModals()
 })
