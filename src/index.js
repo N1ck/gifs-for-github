@@ -1,89 +1,62 @@
-import GphApiClient from 'giphy-js-sdk-core'
-import LoadingIndicator from './components/loading-indicator'
+import Giphy from './giphy'
+import GiphyToolbarItem from '../components/giphy-toolbar-item'
+import LoadingIndicator from '../components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 import { h } from 'dom-chef'
-import observeEl from './simplified-element-observer'
+import observeEl from '../simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
-const client = GphApiClient('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function searchGiphy (query) {
-  const { data: results } = await client.search('gifs', { q: query })
-  return results
-}
+// Create a new Giphy Client
+const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
-async function getTrendingGiphy () {
-  const { data: results } = await client.trending('gifs')
-  return results
-}
-
-function watchPopovers () {
+/**
+ * Responds to the GIPHY modal being opened or closed.
+ */
+function watchGiphyModals () {
   for (const trigger of select.all('.ghg-trigger')) {
     observeEl(
       trigger,
       async () => {
+        // The modal has been opened.
         if (trigger.hasAttribute('open')) {
           const parent = trigger.closest('.ghg-has-giphy-field')
           const resultsContainer = select('.ghg-giphy-results', parent)
           const searchInput = select('.ghg-search-input', parent)
 
-          // If the popover is opened, and there is no search term,
-          // load popular gifs
-          if (searchInput.value === '') {
+          // If the modal has been opened and there is no search term,
+          // and no search results, load the trending gifs
+          if (searchInput.value === '' && resultsContainer.dataset.hasResults === 'false') {
+            // Set the loading state
             resultsContainer.append(<div>{LoadingIndicator}</div>)
-            const gifs = await getTrendingGiphy()
+
+            // Fetch the trending gifs
+            const gifs = await giphyClient.getTrending()
+
+            // Add the gifs to the results container
             addResults(resultsContainer, gifs)
           }
         }
       },
-      { attributes: true }
+      { attributes: true } // observe attributes, we are interested in the 'open' attribute
     )
   }
 }
 
-function addButton () {
+/**
+ * Adds the GIF toolbar button to all WYSIWYG instances.
+ */
+function addToolbarButton () {
   for (const toolbar of select.all('form:not(.ghg-has-giphy-field) markdown-toolbar')) {
     const form = toolbar.closest('form')
 
     observeEl(toolbar, () => {
       const toolbarGroup = select('.toolbar-group:last-child', toolbar)
       if (toolbarGroup) {
-        toolbarGroup.append(
-          <details class='details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger'>
-            <summary class='menu-target' aria-label='Insert a GIF' aria-haspopup='menu'>
-              {'GIF'}
-            </summary>
-            <details-menu
-              class='select-menu-modal position-absolute right-0 ghg-modal'
-              style={{ 'z-index': 99, width: '480px', 'max-height': '410px' }}
-              role='menu'
-            >
-              <div class='select-menu-header d-flex'>
-                <span class='select-menu-title flex-auto'>Select a GIF</span>
-              </div>
-              <tab-list>
-                <div class='select-menu-filters'>
-                  <div class='select-menu-text-filter'>
-                    <input
-                      type='text'
-                      class='form-control ghg-search-input'
-                      placeholder='Search for a GIF…'
-                      aria-label='Search for a GIF'
-                      autofocus=''
-                    />
-                  </div>
-                </div>
-                <div
-                  class='ghg-giphy-results'
-                  style={{ display: 'flex', 'align-items': 'center', 'justify-content': 'center' }}
-                />
-              </tab-list>
-            </details-menu>
-          </details>
-        )
+        toolbarGroup.append(GiphyToolbarItem)
         form.classList.add('ghg-has-giphy-field')
       }
     })
@@ -96,6 +69,7 @@ function clearSearch () {
     const searchInput = select('.ghg-search-input', ghgModal)
     searchInput.value = ''
     resultContainer.innerHTML = ''
+    resultContainer.dataset.hasResults = false
   }
 }
 
@@ -107,9 +81,9 @@ async function searchGifs (e) {
   let gifs
 
   if (searchQuery === '') {
-    gifs = await getTrendingGiphy()
+    gifs = await giphyClient.getTrending()
   } else {
-    gifs = await searchGiphy(searchQuery)
+    gifs = await giphyClient.search(searchQuery)
   }
 
   resultsContainer.append(<div>{LoadingIndicator}</div>)
@@ -119,6 +93,7 @@ async function searchGifs (e) {
 function addResults (resultsContainer, gifs) {
   const MAX_GIF_WIDTH = 145
   resultsContainer.innerHTML = ''
+  resultsContainer.dataset.hasResults = true
 
   if (!gifs || !gifs.length) {
     resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
@@ -179,11 +154,11 @@ const listenOnce = onetime(listen)
 // gitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {
-  addButton()
+  addToolbarButton()
   listenOnce()
   // Clears all gif search input fields and results.
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
   clearSearch()
-  watchPopovers()
+  watchGiphyModals()
 })
