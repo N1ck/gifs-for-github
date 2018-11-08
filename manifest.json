@@ -8,12 +8,15 @@
           "https://github.com/*"
         ],
         "css": [
-          "style.css"
+          "dist/style.css"
         ],
         "js": [
           "dist/index.js"
         ]
       }
+    ],
+    "web_accessible_resources": [
+      "src/images/*.png"
     ],
     "manifest_version": 2
   }
