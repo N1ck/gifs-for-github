@@ -6,7 +6,7 @@ import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 import { h } from 'dom-chef'
-import observeEl from '../simplified-element-observer'
+import observeEl from './lib/simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
 
