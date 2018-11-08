@@ -8,13 +8,13 @@ export default class Giphy {
     this.client = GphApiClient(apiToken)
   }
 
-  async search (query) {
-    const { data: results } = await this.client.search('gifs', { q: query })
+  async search (q, offset = 0) {
+    const { data: results } = await this.client.search('gifs', { q, offset, limit: 50 })
     return results
   }
 
-  async getTrending () {
-    const { data: results } = await this.client.trending('gifs')
+  async getTrending (offset = 0) {
+    const { data: results } = await this.client.trending('gifs', { offset, limit: 50 })
     return results
   }
 }

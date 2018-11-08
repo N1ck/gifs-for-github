@@ -26,6 +26,10 @@ function watchGiphyModals () {
           const parent = trigger.closest('.ghg-has-giphy-field')
           const resultsContainer = select('.ghg-giphy-results', parent)
           const searchInput = select('.ghg-search-input', parent)
+          const initInfiniteScroll = onetime(bindInfiniteScroll.bind(this, resultsContainer))
+
+          // Bind the scroll event to the results container
+          initInfiniteScroll()
 
           // If the modal has been opened and there is no search term,
           // and no search results, load the trending gifs
@@ -40,7 +44,11 @@ function watchGiphyModals () {
             resultsContainer.innerHTML = ''
 
             // Add the gifs to the results container
-            appendResults(resultsContainer, gifs)
+            if (gifs && gifs.length) {
+              appendResults(resultsContainer, gifs)
+            } else {
+              showNoResultsFound(resultsContainer)
+            }
           }
         }
       },
@@ -80,6 +88,8 @@ function resetGiphyModals () {
     const searchInput = select('.ghg-search-input', ghgModal)
     searchInput.value = ''
     resultContainer.innerHTML = ''
+    resultContainer.dataset.offset = 0
+    resultContainer.dataset.searchQuery = ''
     resultContainer.dataset.hasResults = false
   }
 }
@@ -95,6 +105,9 @@ async function performSearch (event) {
   const resultsContainer = select('.ghg-giphy-results', parent)
   let gifs
 
+  resultsContainer.dataset.offset = 0
+  resultsContainer.dataset.searchQuery = searchQuery
+
   // Show a loading indicator
   resultsContainer.append(<div>{LoadingIndicator}</div>)
 
@@ -109,7 +122,11 @@ async function performSearch (event) {
   resultsContainer.innerHTML = ''
 
   // Add the GIFs to the results container
-  appendResults(resultsContainer, gifs)
+  if (gifs && gifs.length) {
+    appendResults(resultsContainer, gifs)
+  } else {
+    showNoResultsFound(resultsContainer)
+  }
 }
 
 /**
@@ -134,15 +151,15 @@ function getFormattedGif (gif) {
   )
 }
 
+function showNoResultsFound (resultsContainer) {
+  resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
+}
+
 /**
  * Appends a collection of GIFs to the provided result container.
  */
 function appendResults (resultsContainer, gifs) {
   resultsContainer.dataset.hasResults = true
-
-  if (!gifs || !gifs.length) {
-    resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
-  }
 
   const gifsToAdd = []
 
@@ -192,6 +209,38 @@ function preventFormSubmitOnEnter (e) {
   if (e.keyCode == 13) {
     e.preventDefault()
     return false
+  }
+}
+
+function bindInfiniteScroll (resultsContainer) {
+  resultsContainer.addEventListener('scroll', handleInfiniteScroll)
+}
+
+let searchTimer
+function handleInfiniteScroll (event) {
+  const resultsContainer = event.target
+  const currentScrollPosition = resultsContainer.scrollTop + 395
+  const INFINITE_SCROLL_PX_OFFSET = 100
+
+  if (currentScrollPosition + INFINITE_SCROLL_PX_OFFSET > parseInt(resultsContainer.style.height)) {
+    // start the infinite scroll after the last scroll event
+    clearTimeout(searchTimer)
+
+    searchTimer = setTimeout(async function (event) {
+      const offset = resultsContainer.dataset.offset ? parseInt(resultsContainer.dataset.offset) + 50 : 50
+      const searchQuery = resultsContainer.dataset.searchQuery
+      let gifs
+
+      resultsContainer.dataset.offset = offset
+
+      if (searchQuery) {
+        gifs = await giphyClient.search(searchQuery, offset)
+      } else {
+        gifs = await giphyClient.getTrending(offset)
+      }
+
+      appendResults(resultsContainer, gifs)
+    }, 250)
   }
 }
 
