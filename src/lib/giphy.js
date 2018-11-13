@@ -10,6 +10,7 @@ export default class Giphy {
 
   async search (q, offset = 0) {
     const { data: results } = await this.client.search('gifs', { q, offset, limit: 50 })
+    console.log('whats happenin m8', results)
     return results
   }
 

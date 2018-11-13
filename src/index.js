@@ -1,4 +1,4 @@
-import Giphy from './giphy'
+import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
 import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
@@ -115,6 +115,7 @@ async function performSearch (event) {
   if (searchQuery === '') {
     gifs = await giphyClient.getTrending()
   } else {
+    console.log('hittin this search boi')
     gifs = await giphyClient.search(searchQuery)
   }
 
