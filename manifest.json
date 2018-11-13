@@ -1,11 +1,21 @@
   {
+    "manifest_version": 2,
     "name": "Github Giphy",
     "version": "1.0",
     "description": "Easily add Gifs to your github comments!",
+    "browser_action": {
+      "default_icon": "src/images/icon128.png"
+    },
+    "icons": {
+      "16": "src/images/icon16.png",
+      "48": "src/images/icon48.png",
+      "128": "src/images/icon128.png"
+    },
     "content_scripts": [
       {
         "matches": [
-          "https://github.com/*"
+          "https://github.com/*",
+          "https://gist.github.com/*"
         ],
         "css": [
           "dist/style.css"
@@ -17,6 +27,5 @@
     ],
     "web_accessible_resources": [
       "src/images/*.png"
-    ],
-    "manifest_version": 2
+    ]
   }
