@@ -1,8 +1,8 @@
   {
     "manifest_version": 2,
-    "name": "Github Giphy",
+    "name": "GIFs for Github",
     "version": "1.0",
-    "description": "Easily add Gifs to your github comments!",
+    "description": "Easily search GIPHY to add a GIF into any Github comment box.",
     "browser_action": {
       "default_icon": "src/images/icon128.png"
     },
