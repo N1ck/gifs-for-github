@@ -115,7 +115,6 @@ async function performSearch (event) {
   if (searchQuery === '') {
     gifs = await giphyClient.getTrending()
   } else {
-    console.log('hittin this search boi')
     gifs = await giphyClient.search(searchQuery)
   }
 
