@@ -147,7 +147,25 @@ async function performSearch (event) {
  */
 function getFormattedGif (gif) {
   const MAX_GIF_WIDTH = 145
-  const url = gif.images.fixed_height_downsampled.url
+
+  // Github has a 10MB image upload limit,
+  // however, when embedding an image URL
+  // in a Github comment box, Github will proxy
+  // the image and if the image is above 5MB it fails.
+  const GITHUB_MAX_SIZE = 5 * 1024 * 1024
+  let fullSizeUrl
+  let downsampledUrl = gif.images.fixed_width_downsampled.url
+
+  if (gif.images.original.size < GITHUB_MAX_SIZE) {
+    fullSizeUrl = gif.images.original.url
+  } else if (gif.images.downsized_medium.size < GITHUB_MAX_SIZE) {
+    fullSizeUrl = gif.images.downsized_medium.url
+  } else if (gif.images.fixed_width.size < GITHUB_MAX_SIZE) {
+    fullSizeUrl = gif.images.fixed_width.url
+  } else {
+    fullSizeUrl = downsampledUrl
+  }
+
   const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
 
   // Generate a random pastel colour to use as an image placeholder
@@ -159,7 +177,13 @@ function getFormattedGif (gif) {
         width: `${MAX_GIF_WIDTH}px`
       }}
     >
-      <img src={url} height={height} style={{ 'background-color': Hsl }} class='ghg-gif-selection' />
+      <img
+        src={downsampledUrl}
+        height={height}
+        style={{ 'background-color': Hsl }}
+        data-full-size-url={fullSizeUrl}
+        class='ghg-gif-selection'
+      />
     </div>
   )
 }
@@ -204,7 +228,7 @@ function selectGif (e) {
   const form = e.target.closest('.ghg-has-giphy-field')
   const commentField = select('.js-comment-field', form)
   const trigger = select('.ghg-trigger', form)
-  const gifUrl = e.target.src
+  const gifUrl = e.target.dataset.fullSizeUrl
 
   // Close the modal
   trigger.removeAttribute('open')
