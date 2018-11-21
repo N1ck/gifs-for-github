@@ -49,6 +49,19 @@ function watchGiphyModals () {
             } else {
               showNoResultsFound(resultsContainer)
             }
+          } else {
+            // Otherwise ensure masonry has been called.
+            const masonry = new Masonry(
+              resultsContainer,
+              {
+                itemSelector: '.ghg-giphy-results div',
+                columnWidth: 145,
+                gutter: 10,
+                transitionDuration: '0.2s'
+                // fitWidth: true
+              },
+              2000
+            )
           }
         }
       },
