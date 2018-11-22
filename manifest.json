@@ -6,6 +6,9 @@
     "browser_action": {
       "default_icon": "src/images/icon128.png"
     },
+    "permissions": [
+      "https://api.giphy.com/*"
+    ],
     "icons": {
       "16": "src/images/icon16.png",
       "48": "src/images/icon48.png",
