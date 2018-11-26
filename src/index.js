@@ -219,6 +219,18 @@ function appendResults (resultsContainer, gifs) {
   )
 }
 
+function insertText (textarea, content) {
+  const selectionEnd = textarea.selectionEnd
+  const startText = textarea.value.substring(0, selectionEnd)
+  const endText = textarea.value.substring(selectionEnd)
+  const value = textarea.value === '' || startText.match(/\n$/) ? '' : '\n'
+
+  textarea.value = startText + value + content + endText
+  textarea.selectionStart = selectionEnd + content.length
+  textarea.selectionEnd = selectionEnd + content.length
+  textarea.focus()
+}
+
 /**
  * Invoked when a GIF from the result set has been clicked.
  *
@@ -229,13 +241,14 @@ function selectGif (e) {
   const commentField = select('.js-comment-field', form)
   const trigger = select('.ghg-trigger', form)
   const gifUrl = e.target.dataset.fullSizeUrl
+  const textArea = select('.js-comment-field', form)
 
   // Close the modal
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
-  commentField.focus()
-  document.execCommand('insertText', false, `![](${gifUrl})`)
+
+  insertText(textArea, `![](${gifUrl})`)
 }
 
 /**
