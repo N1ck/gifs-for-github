@@ -82,13 +82,27 @@ function addToolbarButton () {
     observeEl(toolbar, () => {
       const toolbarGroup = select('.toolbar-group:last-child', toolbar)
       if (toolbarGroup) {
+        console.log('The toolbar is visible, add the GIF button')
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
         toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
+      } else {
+        console.log('The toolbar is not visible, do nothing')
       }
     })
   }
+}
+
+/**
+ * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
+ */
+function observeDiscussion () {
+  const discussionTimeline = select('.js-discussion')
+
+  observeEl(discussionTimeline, () => {
+    addToolbarButton()
+  })
 }
 
 /**
@@ -166,7 +180,7 @@ function getFormattedGif (gif) {
     fullSizeUrl = downsampledUrl
   }
 
-  const height = Math.floor(gif.images.fixed_width.height * MAX_GIF_WIDTH / gif.images.fixed_width.width)
+  const height = Math.floor((gif.images.fixed_width.height * MAX_GIF_WIDTH) / gif.images.fixed_width.width)
 
   // Generate a random pastel colour to use as an image placeholder
   const Hsl = 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (85 + 10 * Math.random()) + '%)'
@@ -311,6 +325,7 @@ const listenOnce = onetime(listen)
 gitHubInjection(() => {
   addToolbarButton()
   listenOnce()
+  observeDiscussion()
   // Clears all gif search input fields and results.
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
