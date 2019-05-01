@@ -80,7 +80,7 @@ function addToolbarButton () {
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
-      const toolbarGroup = select('.toolbar-group:last-child', toolbar)
+      const toolbarGroup = select('.toolbar-commenting .d-inline-block:last-child', toolbar);
       if (toolbarGroup) {
         console.log('The toolbar is visible, add the GIF button')
         // Append the Giphy button to the toolbar
