@@ -80,15 +80,15 @@ function addToolbarButton () {
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
-      const toolbarGroup = select('.toolbar-commenting .d-inline-block:last-child', toolbar);
+      let toolbarGroup = select.all('.toolbar-commenting .d-inline-block:last-child', toolbar)
+      toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
+
       if (toolbarGroup) {
-        console.log('The toolbar is visible, add the GIF button')
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
         toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
       } else {
-        console.log('The toolbar is not visible, do nothing')
       }
     })
   }
