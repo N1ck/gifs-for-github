@@ -17,6 +17,7 @@
     "dom-chef": "^3.3.0",
     "giphy-js-sdk-core": "^1.0.5",
     "github-injection": "^1.0.1",
+    "insert-text-textarea": "^1.0.3",
     "masonry-layout": "^4.2.2",
     "onetime": "^2.0.1",
     "select-dom": "^4.1.3"

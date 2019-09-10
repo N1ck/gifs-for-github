@@ -1,5 +1,6 @@
 import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
+import insertTextArea from 'insert-text-textarea'
 import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
@@ -16,56 +17,48 @@ const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
-function watchGiphyModals () {
-  for (const trigger of select.all('.ghg-trigger')) {
-    observeEl(
-      trigger,
-      async () => {
-        // The modal has been opened.
-        if (trigger.hasAttribute('open')) {
-          const parent = trigger.closest('.ghg-has-giphy-field')
-          const resultsContainer = select('.ghg-giphy-results', parent)
-          const searchInput = select('.ghg-search-input', parent)
-          const initInfiniteScroll = onetime(bindInfiniteScroll.bind(this, resultsContainer))
+async function watchGiphyModals (element) {
+  console.log('whats happening here my dudes')
+  const parent = element.closest('.ghg-has-giphy-field')
+  const resultsContainer = select('.ghg-giphy-results', parent)
+  const searchInput = select('.ghg-search-input', parent)
+  const initInfiniteScroll = onetime(bindInfiniteScroll.bind(this, resultsContainer))
 
-          // Bind the scroll event to the results container
-          initInfiniteScroll()
+  // Bind the scroll event to the results container
+  initInfiniteScroll()
 
-          // If the modal has been opened and there is no search term,
-          // and no search results, load the trending gifs
-          if (searchInput.value === '' && resultsContainer.dataset.hasResults === 'false') {
-            // Set the loading state
-            resultsContainer.append(<div>{LoadingIndicator}</div>)
+  // If the modal has been opened and there is no search term,
+  // and no search results, load the trending gifs
+  if (searchInput.value === '' && resultsContainer.dataset.hasResults === 'false') {
+    // Set the loading state
+    resultsContainer.append(<div>{LoadingIndicator}</div>)
 
-            // Fetch the trending gifs
-            const gifs = await giphyClient.getTrending()
+    // Fetch the trending gifs
+    const gifs = await giphyClient.getTrending()
 
-            // Clear the loading indicator
-            resultsContainer.innerHTML = ''
+    // Clear the loading indicator
+    resultsContainer.innerHTML = ''
 
-            // Add the gifs to the results container
-            if (gifs && gifs.length) {
-              appendResults(resultsContainer, gifs)
-            } else {
-              showNoResultsFound(resultsContainer)
-            }
-          } else {
-            // Otherwise ensure masonry has been called.
-            const masonry = new Masonry(
-              resultsContainer,
-              {
-                itemSelector: '.ghg-giphy-results div',
-                columnWidth: 145,
-                gutter: 10,
-                transitionDuration: '0.2s'
-                // fitWidth: true
-              },
-              2000
-            )
-          }
-        }
-      },
-      { attributes: true } // observe attributes, we are interested in the 'open' attribute
+    // Add the gifs to the results container
+    if (gifs && gifs.length) {
+      appendResults(resultsContainer, gifs)
+    } else {
+      showNoResultsFound(resultsContainer)
+    }
+  } else {
+    setTimeout(
+      new Masonry(
+        resultsContainer,
+        {
+          itemSelector: '.ghg-giphy-results div',
+          columnWidth: 145,
+          gutter: 10,
+          transitionDuration: '0.2s'
+          // fitWidth: true
+        },
+        2000
+      ),
+      10
     )
   }
 }
@@ -220,6 +213,7 @@ function appendResults (resultsContainer, gifs) {
     resultsContainer.append(img)
   })
 
+  console.log('added the shit, mason it out boi')
   const masonry = new Masonry(
     resultsContainer,
     {
@@ -239,7 +233,9 @@ function insertText (textarea, content) {
   const endText = textarea.value.substring(selectionEnd)
   const value = textarea.value === '' || startText.match(/\n$/) ? '' : '\n'
 
-  textarea.value = startText + value + content + endText
+  // textarea.value = startText + value + content + endText
+  insertTextArea(textarea, content)
+
   textarea.selectionStart = selectionEnd + content.length
   textarea.selectionEnd = selectionEnd + content.length
   textarea.focus()
@@ -315,6 +311,13 @@ function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
   delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(performSearch, { wait: 400 }))
   delegate('.ghg-has-giphy-field .ghg-search-input', 'keypress', preventFormSubmitOnEnter)
+
+  // The `open` attribute is added after this handler is run,
+  // so the selector is inverted
+  delegate('.ghg-trigger:not([open]) > summary', 'click', event => {
+    // What comes after <summary> is the dropdown
+    watchGiphyModals(event.delegateTarget)
+  })
 }
 
 // Ensure we only bind events to elements once
@@ -330,5 +333,4 @@ gitHubInjection(() => {
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
   resetGiphyModals()
-  watchGiphyModals()
 })
