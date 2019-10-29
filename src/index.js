@@ -161,7 +161,7 @@ function getFormattedGif (gif) {
   // the image and if the image is above 5MB it fails.
   const GITHUB_MAX_SIZE = 5 * 1024 * 1024
   let fullSizeUrl
-  let downsampledUrl = gif.images.fixed_width_downsampled.url
+  const downsampledUrl = gif.images.fixed_width_downsampled.url
 
   if (gif.images.original.size < GITHUB_MAX_SIZE) {
     fullSizeUrl = gif.images.original.url
