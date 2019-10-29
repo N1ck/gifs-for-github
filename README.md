@@ -4,8 +4,6 @@ A Browser extension that makes it easy search GIPHY to add a GIF into any GitHub
 
 ## Install
 
----
-
 - [**Chrome** extension][link-cws]
 - [**Firefox** add-on][link-amo]
 
