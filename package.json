@@ -6,7 +6,7 @@
   "scripts": {
     "watch": "parcel src/index.js src/style.css",
     "lint": "./node_modules/.bin/eslint --fix --ignore-path .gitignore .",
-    "build-dist": "rm -rf dist/* && parcel build src/index.js src/style.css --no-source-maps"
+    "build-dist": "rm -rf dist/* && parcel build src/index.js src/style.css --no-source-maps && cp src/manifest.json dist && mkdir dist/images && cp src/images/*.png dist/images/"
   },
   "author": "",
   "license": "ISC",
