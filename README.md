@@ -1,6 +1,6 @@
-# <img src="src/images/icon48.png" width="45" align="left"> GIFs for Github
+# <img src="src/images/icon48.png" width="45" align="left"> GIFs for GitHub
 
-A Browser extension that makes it easy search GIPHY to add a GIF into any Github comment box.
+A Browser extension that makes it easy search GIPHY to add a GIF into any GitHub comment box.
 
 ## Install
 
