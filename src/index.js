@@ -6,6 +6,7 @@ import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
+// eslint-disable-next-line no-unused-vars
 import { h } from 'dom-chef'
 import observeEl from './lib/simplified-element-observer'
 import onetime from 'onetime'
@@ -213,8 +214,8 @@ function appendResults (resultsContainer, gifs) {
     resultsContainer.append(img)
   })
 
-  console.log('added the shit, mason it out boi')
-  const masonry = new Masonry(
+  // eslint-disable-next-line no-new
+  new Masonry(
     resultsContainer,
     {
       itemSelector: '.ghg-giphy-results div',
@@ -229,11 +230,7 @@ function appendResults (resultsContainer, gifs) {
 
 function insertText (textarea, content) {
   const selectionEnd = textarea.selectionEnd
-  const startText = textarea.value.substring(0, selectionEnd)
-  const endText = textarea.value.substring(selectionEnd)
-  const value = textarea.value === '' || startText.match(/\n$/) ? '' : '\n'
 
-  // textarea.value = startText + value + content + endText
   insertTextArea(textarea, content)
 
   textarea.selectionStart = selectionEnd + content.length
@@ -248,7 +245,6 @@ function insertText (textarea, content) {
  */
 function selectGif (e) {
   const form = e.target.closest('.ghg-has-giphy-field')
-  const commentField = select('.js-comment-field', form)
   const trigger = select('.ghg-trigger', form)
   const gifUrl = e.target.dataset.fullSizeUrl
   const textArea = select('.js-comment-field', form)
@@ -266,7 +262,7 @@ function selectGif (e) {
  * input.
  */
 function preventFormSubmitOnEnter (e) {
-  if (e.keyCode == 13) {
+  if (e.keyCode === 13) {
     e.preventDefault()
     return false
   }
