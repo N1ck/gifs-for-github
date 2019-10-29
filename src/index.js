@@ -228,6 +228,9 @@ function appendResults (resultsContainer, gifs) {
   )
 }
 
+/**
+ * Insert text in the targeted textarea and focus the content
+ */
 function insertText (textarea, content) {
   const selectionEnd = textarea.selectionEnd
 
@@ -253,7 +256,6 @@ function selectGif (e) {
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
-
   insertText(textArea, `![](${gifUrl})`)
 }
 
@@ -272,8 +274,8 @@ function bindInfiniteScroll (resultsContainer) {
   resultsContainer.addEventListener('scroll', handleInfiniteScroll)
 }
 
-let searchTimer
 function handleInfiniteScroll (event) {
+  let searchTimer
   const resultsContainer = event.target
   const currentScrollPosition = resultsContainer.scrollTop + 395
   const INFINITE_SCROLL_PX_OFFSET = 100
