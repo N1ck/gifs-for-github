@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import { h } from 'dom-chef'
+import React from 'dom-chef'
 
 export default (
   <details class='details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger'>

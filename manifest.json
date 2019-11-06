@@ -4,15 +4,15 @@
     "version": "1.2.2",
     "description": "Easily search GIPHY to add a GIF into any Github comment box.",
     "browser_action": {
-      "default_icon": "src/images/icon128.png"
+      "default_icon": "images/icon128.png"
     },
     "permissions": [
       "https://api.giphy.com/*"
     ],
     "icons": {
-      "16": "src/images/icon16.png",
-      "48": "src/images/icon48.png",
-      "128": "src/images/icon128.png"
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
     },
     "content_scripts": [
       {
@@ -21,14 +21,14 @@
           "https://gist.github.com/*"
         ],
         "css": [
-          "dist/style.css"
+          "main.css"
         ],
         "js": [
-          "dist/index.js"
+          "main.js"
         ]
       }
     ],
     "web_accessible_resources": [
-      "src/images/*.png"
+      "images/*.png"
     ]
   }

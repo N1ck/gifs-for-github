@@ -1,3 +1,4 @@
+import './style.css'
 import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
 import insertTextArea from 'insert-text-textarea'
@@ -7,7 +8,7 @@ import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 // eslint-disable-next-line no-unused-vars
-import { h } from 'dom-chef'
+import React from 'dom-chef'
 import observeEl from './lib/simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
