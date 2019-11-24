@@ -1,9 +1,17 @@
 {
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "corejs": "3.0.0",
+        "useBuiltIns": "entry"
+      }
+    ]
+  ],
   "plugins": [
     [
       "@babel/plugin-transform-react-jsx",
       {
-        "pragma": "h",
         "useBuiltIns": true
       }
     ],
@@ -14,5 +22,5 @@
         "regenerator": true
       }
     ]
-  ],
+  ]
 }
