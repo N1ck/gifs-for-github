@@ -20,18 +20,22 @@ const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
  * Responds to the GIPHY modal being opened or closed.
  */
 async function watchGiphyModals (element) {
-  console.log('whats happening here my dudes')
   const parent = element.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
   const searchInput = select('.ghg-search-input', parent)
-  const initInfiniteScroll = onetime(bindInfiniteScroll.bind(this, resultsContainer))
+  const initInfiniteScroll = onetime(
+    bindInfiniteScroll.bind(this, resultsContainer)
+  )
 
   // Bind the scroll event to the results container
   initInfiniteScroll()
 
   // If the modal has been opened and there is no search term,
   // and no search results, load the trending gifs
-  if (searchInput.value === '' && resultsContainer.dataset.hasResults === 'false') {
+  if (
+    searchInput.value === '' &&
+    resultsContainer.dataset.hasResults === 'false'
+  ) {
     // Set the loading state
     resultsContainer.append(<div>{LoadingIndicator}</div>)
 
@@ -69,13 +73,18 @@ async function watchGiphyModals (element) {
  * Adds the GIF toolbar button to all WYSIWYG instances.
  */
 function addToolbarButton () {
-  for (const toolbar of select.all('form:not(.ghg-has-giphy-field) markdown-toolbar')) {
+  for (const toolbar of select.all(
+    'form:not(.ghg-has-giphy-field) markdown-toolbar'
+  )) {
     const form = toolbar.closest('form')
 
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
-      let toolbarGroup = select.all('.toolbar-commenting .d-inline-block:last-child', toolbar)
+      let toolbarGroup = select.all(
+        '.toolbar-commenting .d-inline-block, .toolbar-commenting .d-md-inline-block',
+        toolbar
+      )
       toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
 
       if (toolbarGroup) {
@@ -175,10 +184,20 @@ function getFormattedGif (gif) {
     fullSizeUrl = downsampledUrl
   }
 
-  const height = Math.floor((gif.images.fixed_width.height * MAX_GIF_WIDTH) / gif.images.fixed_width.width)
+  const height = Math.floor(
+    (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
+      gif.images.fixed_width.width
+  )
 
   // Generate a random pastel colour to use as an image placeholder
-  const Hsl = 'hsl(' + 360 * Math.random() + ',' + (25 + 70 * Math.random()) + '%,' + (85 + 10 * Math.random()) + '%)'
+  const Hsl =
+    'hsl(' +
+    360 * Math.random() +
+    ',' +
+    (25 + 70 * Math.random()) +
+    '%,' +
+    (85 + 10 * Math.random()) +
+    '%)'
 
   return (
     <div
@@ -198,7 +217,9 @@ function getFormattedGif (gif) {
 }
 
 function showNoResultsFound (resultsContainer) {
-  resultsContainer.append(<div class='ghg-no-results-found'>No GIFs found.</div>)
+  resultsContainer.append(
+    <div class='ghg-no-results-found'>No GIFs found.</div>
+  )
 }
 
 /**
@@ -281,12 +302,17 @@ function handleInfiniteScroll (event) {
   const currentScrollPosition = resultsContainer.scrollTop + 395
   const INFINITE_SCROLL_PX_OFFSET = 100
 
-  if (currentScrollPosition + INFINITE_SCROLL_PX_OFFSET > parseInt(resultsContainer.style.height)) {
+  if (
+    currentScrollPosition + INFINITE_SCROLL_PX_OFFSET >
+    parseInt(resultsContainer.style.height)
+  ) {
     // start the infinite scroll after the last scroll event
     clearTimeout(searchTimer)
 
     searchTimer = setTimeout(async function (event) {
-      const offset = resultsContainer.dataset.offset ? parseInt(resultsContainer.dataset.offset) + 50 : 50
+      const offset = resultsContainer.dataset.offset
+        ? parseInt(resultsContainer.dataset.offset) + 50
+        : 50
       const searchQuery = resultsContainer.dataset.searchQuery
       let gifs
 
@@ -308,8 +334,16 @@ function handleInfiniteScroll (event) {
  */
 function listen () {
   delegate('.ghg-gif-selection', 'click', selectGif)
-  delegate('.ghg-has-giphy-field .ghg-search-input', 'keydown', debounce(performSearch, { wait: 400 }))
-  delegate('.ghg-has-giphy-field .ghg-search-input', 'keypress', preventFormSubmitOnEnter)
+  delegate(
+    '.ghg-has-giphy-field .ghg-search-input',
+    'keydown',
+    debounce(performSearch, { wait: 400 })
+  )
+  delegate(
+    '.ghg-has-giphy-field .ghg-search-input',
+    'keypress',
+    preventFormSubmitOnEnter
+  )
 
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
