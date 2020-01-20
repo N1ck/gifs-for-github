@@ -1,0 +1,17 @@
+name: Pull Requests Must Have GIF
+
+on: 
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Gif Guardian
+      uses: jamsinclair/gif-guardian-action@v0.1.1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        label: "🙅‍♀️ No Gif"
