@@ -2,7 +2,7 @@
 
 A Browser extension that makes it easy to search GIPHY and add a GIF into any GitHub comment box.
 
-<img src="demo.jpg" width="640" alt="Example image">
+<img src="demo.jpg" alt="Example image">
 
 ## Install
 
