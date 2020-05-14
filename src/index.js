@@ -254,12 +254,9 @@ function appendResults (resultsContainer, gifs) {
  * Insert text in the targeted textarea and focus the content
  */
 function insertText (textarea, content) {
-  const selectionEnd = textarea.selectionEnd
 
   insert(textarea, content)
 
-  textarea.selectionStart = selectionEnd + content.length
-  textarea.selectionEnd = selectionEnd + content.length
   textarea.focus()
 }
 
