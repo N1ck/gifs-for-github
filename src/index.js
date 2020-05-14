@@ -254,10 +254,9 @@ function appendResults (resultsContainer, gifs) {
  * Insert text in the targeted textarea and focus the content
  */
 function insertText (textarea, content) {
+  textarea.focus()
 
   insert(textarea, content)
-
-  textarea.focus()
 }
 
 /**
