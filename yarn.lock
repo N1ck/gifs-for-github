@@ -2960,11 +2960,6 @@ inquirer@^7.0.0:
     strip-ansi "^5.1.0"
     through "^2.3.6"
 
-insert-text-textarea@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/insert-text-textarea/-/insert-text-textarea-1.0.3.tgz#1822c2b5ef24843ec5fbf29ee131e65ebaf2e60e"
-  integrity sha512-30a8kmIbCkrtkw4FU3649c8MFou6gLWlp5E2JbflA7JpXhM6/NM3uUmQ7CnmPUsMfotf2weprQzu76M8aykgzw==
-
 interpret@1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/interpret/-/interpret-1.2.0.tgz#d5061a6224be58e8083985f5014d844359576296"
@@ -5247,6 +5242,11 @@ terser@^4.1.2:
     commander "^2.20.0"
     source-map "~0.6.1"
     source-map-support "~0.5.12"
+
+text-field-edit@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/text-field-edit/-/text-field-edit-3.0.1.tgz#5345d240e96cc26e45a77deace13c53e286967fe"
+  integrity sha512-Z/PUlQPryn/6YtQnyt8ekeaSp1NdVxn5PnNZF+vhuahJzINBVT8OA3ZjVpcMaj2BoG2y0ENYPctYN6ZzPnpL/A==
 
 text-table@^0.2.0:
   version "0.2.0"
