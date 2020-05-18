@@ -1,7 +1,7 @@
 import './style.css'
 import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
-import insertTextArea from 'insert-text-textarea'
+import {insert} from 'text-field-edit'
 import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
@@ -254,13 +254,9 @@ function appendResults (resultsContainer, gifs) {
  * Insert text in the targeted textarea and focus the content
  */
 function insertText (textarea, content) {
-  const selectionEnd = textarea.selectionEnd
-
-  insertTextArea(textarea, content)
-
-  textarea.selectionStart = selectionEnd + content.length
-  textarea.selectionEnd = selectionEnd + content.length
   textarea.focus()
+
+  insert(textarea, content)
 }
 
 /**
