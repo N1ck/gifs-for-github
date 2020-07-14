@@ -3,7 +3,10 @@ import CopyPlugin from 'copy-webpack-plugin'
 import * as path from 'path'
 
 module.exports = {
-  entry: './src/index.js',
+  entry: {
+    main: './src/index.js',
+    background: './src/background.js'
+  },
   output: {
     path: path.join(__dirname, '/dist'),
     filename: '[name].js'
