@@ -166,9 +166,9 @@ async function performSearch (event) {
 function getFormattedGif (gif) {
   const MAX_GIF_WIDTH = 145
 
-  // Github has a 10MB image upload limit,
+  // GitHub has a 10MB image upload limit,
   // however, when embedding an image URL
-  // in a Github comment box, Github will proxy
+  // in a GitHub comment box, GitHub will proxy
   // the image and if the image is above 5MB it fails.
   const GITHUB_MAX_SIZE = 5 * 1024 * 1024
   let fullSizeUrl
