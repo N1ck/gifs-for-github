@@ -1,7 +1,7 @@
 import './style.css'
 import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
-import {insert} from 'text-field-edit'
+import { insert } from 'text-field-edit'
 import LoadingIndicator from './components/loading-indicator'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
@@ -77,6 +77,11 @@ function addToolbarButton () {
     'form:not(.ghg-has-giphy-field) markdown-toolbar'
   )) {
     const form = toolbar.closest('form')
+    const reviewChangesModal = toolbar.closest('#review-changes-modal .SelectMenu-modal')
+
+    if (reviewChangesModal !== null) {
+      reviewChangesModal.classList.add('ghg-in-review-changes-modal')
+    }
 
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
