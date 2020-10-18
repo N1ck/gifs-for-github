@@ -12,10 +12,10 @@
   "dependencies": {
     "@babel/core": "^7.7.0",
     "@babel/runtime": "^7.1.2",
+    "@giphy/js-fetch-api": "^1.7.0",
     "debounce-fn": "^1.0.0",
     "delegate": "^3.2.0",
     "dom-chef": "^3.3.0",
-    "giphy-js-sdk-core": "^1.0.5",
     "github-injection": "^1.0.1",
     "masonry-layout": "^4.2.2",
     "onetime": "^2.0.1",

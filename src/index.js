@@ -1,5 +1,4 @@
 import './style.css'
-import Giphy from './lib/giphy'
 import GiphyToolbarItem from './components/giphy-toolbar-item'
 import { insert } from 'text-field-edit'
 import LoadingIndicator from './components/loading-indicator'
@@ -12,9 +11,10 @@ import React from 'dom-chef'
 import observeEl from './lib/simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
+import { GiphyFetch } from '@giphy/js-fetch-api'
 
 // Create a new Giphy Client
-const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+const giphyClient = new GiphyFetch('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
 
 /**
  * Responds to the GIPHY modal being opened or closed.
@@ -40,7 +40,7 @@ async function watchGiphyModals (element) {
     resultsContainer.append(<div>{LoadingIndicator}</div>)
 
     // Fetch the trending gifs
-    const gifs = await giphyClient.getTrending()
+    const { data: gifs } = await giphyClient.trending({ limit: 50 })
 
     // Clear the loading indicator
     resultsContainer.innerHTML = ''
@@ -149,9 +149,9 @@ async function performSearch (event) {
 
   // If there is no search query, get the trending gifs
   if (searchQuery === '') {
-    gifs = await giphyClient.getTrending()
+    ({ data: gifs } = await giphyClient.trending({ limit: 50 }))
   } else {
-    gifs = await giphyClient.search(searchQuery)
+    ({ data: gifs } = await giphyClient.search(searchQuery, { limit: 50 }))
   }
 
   // Clear any previous results
@@ -191,7 +191,7 @@ function getFormattedGif (gif) {
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-      gif.images.fixed_width.width
+    gif.images.fixed_width.width
   )
 
   // Generate a random pastel colour to use as an image placeholder
@@ -320,9 +320,9 @@ function handleInfiniteScroll (event) {
       resultsContainer.dataset.offset = offset
 
       if (searchQuery) {
-        gifs = await giphyClient.search(searchQuery, offset)
+        ({ data: gifs } = await giphyClient.search(searchQuery, { offset, limit: 50 }))
       } else {
-        gifs = await giphyClient.getTrending(offset)
+        ({ data: gifs } = await giphyClient.trending({ offset, limit: 50 }))
       }
 
       appendResults(resultsContainer, gifs)
