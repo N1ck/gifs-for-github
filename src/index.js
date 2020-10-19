@@ -53,7 +53,7 @@ async function watchGiphyModals (element) {
     }
   } else {
     setTimeout(
-      new Masonry(
+      () => new Masonry(
         resultsContainer,
         {
           itemSelector: '.ghg-giphy-results div',
