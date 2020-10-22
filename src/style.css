@@ -5,7 +5,7 @@
 }
 
 .ghg-giphy-results::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
 .ghg-giphy-results img {
@@ -17,12 +17,21 @@
 }
 
 .ghg-powered-by-giphy {
-  background: url('chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png');
+  background: url("chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png");
   background-size: auto 16px;
   background-repeat: no-repeat;
   width: 144.45px;
 }
 
 .ghg-in-review-changes-modal {
+  /* Fixes the GIF button dropping to a new line in the review modal */
   width: 678px !important;
+  /* Fixes the GIF dropdown being hidden by the review modal's overflow */
+  overflow: unset !important;
+}
+
+/* Fixes the GIF dropdown being hidden by the review modal's overflow */
+.ghg-in-review-changes-list {
+  contain: unset !important;
+  overflow: unset !important;
 }
