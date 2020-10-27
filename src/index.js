@@ -78,9 +78,14 @@ function addToolbarButton () {
   )) {
     const form = toolbar.closest('form')
     const reviewChangesModal = toolbar.closest('#review-changes-modal .SelectMenu-modal')
+    const reviewChangesList = toolbar.closest('#review-changes-modal .SelectMenu-list')
 
     if (reviewChangesModal !== null) {
       reviewChangesModal.classList.add('ghg-in-review-changes-modal')
+    }
+
+    if (reviewChangesList !== null) {
+      reviewChangesList.classList.add('ghg-in-review-changes-list')
     }
 
     // Observe the toolbars without the giphy field, add
