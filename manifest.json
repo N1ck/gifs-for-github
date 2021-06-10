@@ -1,8 +1,8 @@
   {
     "manifest_version": 2,
-    "name": "GIFs for GitHub",
-    "version": "1.2.11",
-    "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
+    "name": "GIFs for TalkCoffeeTo.me",
+    "version": "1.0.0",
+    "description": "Easily search GIPHY to add a GIF into any TalkCoffeeToMe comment box.",
     "browser_action": {
       "default_icon": "images/icon128.png"
     },
@@ -28,8 +28,7 @@
     "content_scripts": [
       {
         "matches": [
-          "https://github.com/*",
-          "https://gist.github.com/*"
+          "https://talkcoffeeto.me/*"
         ],
         "css": [
           "main.css"

@@ -73,34 +73,24 @@ async function watchGiphyModals (element) {
  * Adds the GIF toolbar button to all WYSIWYG instances.
  */
 function addToolbarButton () {
-  for (const toolbar of select.all(
-    'form:not(.ghg-has-giphy-field) markdown-toolbar'
+  for (const form of select.all(
+    'form[phx-submit="save_topic"]:not(.ghg-has-giphy-field)'
   )) {
-    const form = toolbar.closest('form')
-    const reviewChangesModal = toolbar.closest('#review-changes-modal .SelectMenu-modal')
-    const reviewChangesList = toolbar.closest('#review-changes-modal .SelectMenu-list')
-
-    if (reviewChangesModal !== null) {
-      reviewChangesModal.classList.add('ghg-in-review-changes-modal')
-    }
-
-    if (reviewChangesList !== null) {
-      reviewChangesList.classList.add('ghg-in-review-changes-list')
-    }
+    // const form = toolbar.closest('form')
 
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
-    observeEl(toolbar, () => {
-      let toolbarGroup = select.all(
-        '.toolbar-commenting .d-inline-block, .toolbar-commenting .d-md-inline-block',
-        toolbar
+    observeEl(form, () => {
+      console.log('observe form')
+      const toolbarGroup = select(
+        '[data-target="markdownHelp"]',
+        form
       )
-      toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
-
       if (toolbarGroup) {
+        console.log('add toolbar item')
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
-        toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
+        toolbarGroup.after(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
       } else {
       }
@@ -111,11 +101,14 @@ function addToolbarButton () {
 /**
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
-function observeDiscussion () {
-  const discussionTimeline = select('.js-discussion')
+function observeBoard () {
+  const board = select('#board')
 
-  observeEl(discussionTimeline, () => {
-    addToolbarButton()
+  observeEl(board, () => {
+    console.log('board observed')
+    setTimeout(() => {
+      addToolbarButton()
+    }, 1000)
   })
 }
 
@@ -174,6 +167,7 @@ async function performSearch (event) {
  * Returns a GIF in the format required to display in the modal search results.
  */
 function getFormattedGif (gif) {
+  console.log(gif)
   const MAX_GIF_WIDTH = 145
 
   // GitHub has a 10MB image upload limit,
@@ -193,6 +187,8 @@ function getFormattedGif (gif) {
   } else {
     fullSizeUrl = downsampledUrl
   }
+
+  fullSizeUrl = fullSizeUrl.replace(/media(\d+)\.giphy/, 'media.giphy')
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
@@ -278,7 +274,7 @@ function selectGif (e) {
   const form = e.target.closest('.ghg-has-giphy-field')
   const trigger = select('.ghg-trigger', form)
   const gifUrl = e.target.dataset.fullSizeUrl
-  const textArea = select('.js-comment-field', form)
+  const textArea = select('[name="topic[text]"]', form)
 
   // Close the modal
   trigger.removeAttribute('open')
@@ -364,10 +360,10 @@ const listenOnce = onetime(listen)
 
 // gitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
-gitHubInjection(() => {
+window.addEventListener('phx:page-loading-stop', () => {
   addToolbarButton()
   listenOnce()
-  observeDiscussion()
+  observeBoard()
   // Clears all gif search input fields and results.
   // We have to do this because when navigating, github will refuse to
   // load the giphy URLs as it violates their Content Security Policy.
