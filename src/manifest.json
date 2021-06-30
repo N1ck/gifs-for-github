@@ -1,45 +1,45 @@
-	{
-		"manifest_version": 2,
-		"name": "GIFs for GitHub",
-		"version": "1.2.11",
-		"description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
-		"browser_action": {
-			"default_icon": "images/icon128.png"
-		},
-		"permissions": [
-			"contextMenus",
-			"activeTab",
-			"https://api.giphy.com/*"
-		],
-		"optional_permissions": [
-			"http://*/*",
-			"https://*/*"
-		],
-		"icons": {
-			"16": "images/icon16.png",
-			"48": "images/icon48.png",
-			"128": "images/icon128.png"
-		},
-		"background": {
-			"scripts": [
-				"background.js"
-			]
-		},
-		"content_scripts": [
-			{
-				"matches": [
-					"https://github.com/*",
-					"https://gist.github.com/*"
-				],
-				"css": [
-					"main.css"
-				],
-				"js": [
-					"main.js"
-				]
-			}
-		],
-		"web_accessible_resources": [
-			"images/*.png"
-		]
-	}
+  {
+    "manifest_version": 2,
+    "name": "GIFs for GitHub",
+    "version": "1.2.11",
+    "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
+    "browser_action": {
+      "default_icon": "images/icon128.png"
+    },
+    "permissions": [
+      "contextMenus",
+      "activeTab",
+      "https://api.giphy.com/*"
+    ],
+    "optional_permissions": [
+      "http://*/*",
+      "https://*/*"
+    ],
+    "icons": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    },
+    "background": {
+      "scripts": [
+        "background.js"
+      ]
+    },
+    "content_scripts": [
+      {
+        "matches": [
+          "https://github.com/*",
+          "https://gist.github.com/*"
+        ],
+        "css": [
+          "main.css"
+        ],
+        "js": [
+          "main.js"
+        ]
+      }
+    ],
+    "web_accessible_resources": [
+      "images/*.png"
+    ]
+  }
