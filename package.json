@@ -17,6 +17,8 @@
     "last 1 Firefox version"
   ],
   "xo": {
+    "semicolon": false,
+    "space": true,
     "envs": [
       "browser"
     ],
