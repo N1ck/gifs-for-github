@@ -1,26 +1,10 @@
 {
-  "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "corejs": "3.0.0",
-        "useBuiltIns": "entry"
-      }
-    ]
-  ],
-  "plugins": [
-    [
-      "@babel/plugin-transform-react-jsx",
-      {
-        "useBuiltIns": true
-      }
-    ],
-    "@babel/plugin-syntax-object-rest-spread",
-    [
-      "@babel/plugin-transform-runtime",
-      {
-        "regenerator": true
-      }
-    ]
-  ]
+	"plugins": [
+		[
+			"@babel/plugin-transform-react-jsx",
+			{
+				"useBuiltIns": true
+			}
+		]
+	]
 }
