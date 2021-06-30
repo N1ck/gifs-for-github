@@ -1,16 +1,18 @@
 // https://github.com/sindresorhus/refined-github/blob/master/source/libs/simplified-element-observer.js
-export default function (el, listener, options = { childList: true }) {
-  if (typeof el === 'string') {
-    el = document.querySelector(el)
+export default function observe(element, listener, options) {
+  options = {...options, childList: true}
+
+  if (typeof element === 'string') {
+    element = document.querySelector(element)
   }
 
-  if (!el) {
+  if (!element) {
     return
   }
 
   // Run on updates
   const observer = new MutationObserver(listener)
-  observer.observe(el, options)
+  observer.observe(element, options)
 
   // Run the first time
   listener.call(observer, [])
