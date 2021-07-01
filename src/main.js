@@ -1,4 +1,4 @@
-import './main.css'
+import './style.css'
 import {insert} from 'text-field-edit'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
