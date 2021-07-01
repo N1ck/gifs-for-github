@@ -1,25 +1,24 @@
 import './style.css'
-import Giphy from './lib/giphy'
-import GiphyToolbarItem from './components/giphy-toolbar-item'
-import { insert } from 'text-field-edit'
-import LoadingIndicator from './components/loading-indicator'
+import {insert} from 'text-field-edit'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 // eslint-disable-next-line no-unused-vars
 import React from 'dom-chef'
-import observeEl from './lib/simplified-element-observer'
 import onetime from 'onetime'
 import select from 'select-dom'
+import observeEl from './lib/simplified-element-observer.js'
+import LoadingIndicator from './components/loading-indicator.js'
+import GiphyToolbarItem from './components/giphy-toolbar-item.js'
+import Giphy from './lib/giphy.js'
 
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
-
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
-async function watchGiphyModals (element) {
+async function watchGiphyModals(element) {
   const parent = element.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
   const searchInput = select('.ghg-search-input', parent)
@@ -46,24 +45,25 @@ async function watchGiphyModals (element) {
     resultsContainer.innerHTML = ''
 
     // Add the gifs to the results container
-    if (gifs && gifs.length) {
+    if (gifs && gifs.length > 0) {
       appendResults(resultsContainer, gifs)
     } else {
       showNoResultsFound(resultsContainer)
     }
   } else {
     setTimeout(
-      () => new Masonry(
-        resultsContainer,
-        {
-          itemSelector: '.ghg-giphy-results div',
-          columnWidth: 145,
-          gutter: 10,
-          transitionDuration: '0.2s'
-          // fitWidth: true
-        },
-        2000
-      ),
+      () =>
+        new Masonry(
+          resultsContainer,
+          {
+            itemSelector: '.ghg-giphy-results div',
+            columnWidth: 145,
+            gutter: 10,
+            transitionDuration: '0.2s'
+            // FitWidth: true
+          },
+          2000
+        ),
       10
     )
   }
@@ -72,13 +72,17 @@ async function watchGiphyModals (element) {
 /**
  * Adds the GIF toolbar button to all WYSIWYG instances.
  */
-function addToolbarButton () {
+function addToolbarButton() {
   for (const toolbar of select.all(
     'form:not(.ghg-has-giphy-field) markdown-toolbar'
   )) {
     const form = toolbar.closest('form')
-    const reviewChangesModal = toolbar.closest('#review-changes-modal .SelectMenu-modal')
-    const reviewChangesList = toolbar.closest('#review-changes-modal .SelectMenu-list')
+    const reviewChangesModal = toolbar.closest(
+      '#review-changes-modal .SelectMenu-modal'
+    )
+    const reviewChangesList = toolbar.closest(
+      '#review-changes-modal .SelectMenu-list'
+    )
 
     if (reviewChangesModal !== null) {
       reviewChangesModal.classList.add('ghg-in-review-changes-modal')
@@ -102,7 +106,6 @@ function addToolbarButton () {
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
         toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
         form.classList.add('ghg-has-giphy-field')
-      } else {
       }
     })
   }
@@ -111,7 +114,7 @@ function addToolbarButton () {
 /**
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
-function observeDiscussion () {
+function observeDiscussion() {
   const discussionTimeline = select('.js-discussion')
 
   observeEl(discussionTimeline, () => {
@@ -123,7 +126,7 @@ function observeDiscussion () {
  * Resets GIPHY modals by clearing the search input field, any
  * results, and all data attributes.
  */
-function resetGiphyModals () {
+function resetGiphyModals() {
   for (const ghgModal of select.all('.ghg-modal')) {
     const resultContainer = select('.ghg-giphy-results', ghgModal)
     const searchInput = select('.ghg-search-input', ghgModal)
@@ -139,12 +142,11 @@ function resetGiphyModals () {
  * Perform a search of the GIPHY API and append the results
  * to the modal.
  */
-async function performSearch (event) {
+async function performSearch(event) {
   event.preventDefault()
   const searchQuery = event.target.value
   const parent = event.target.closest('.ghg-has-giphy-field')
   const resultsContainer = select('.ghg-giphy-results', parent)
-  let gifs
 
   resultsContainer.dataset.offset = 0
   resultsContainer.dataset.searchQuery = searchQuery
@@ -153,17 +155,15 @@ async function performSearch (event) {
   resultsContainer.append(<div>{LoadingIndicator}</div>)
 
   // If there is no search query, get the trending gifs
-  if (searchQuery === '') {
-    gifs = await giphyClient.getTrending()
-  } else {
-    gifs = await giphyClient.search(searchQuery)
-  }
+  const gifs = await (searchQuery === ''
+    ? giphyClient.getTrending()
+    : giphyClient.search(searchQuery))
 
   // Clear any previous results
   resultsContainer.innerHTML = ''
 
   // Add the GIFs to the results container
-  if (gifs && gifs.length) {
+  if (gifs && gifs.length > 0) {
     appendResults(resultsContainer, gifs)
   } else {
     showNoResultsFound(resultsContainer)
@@ -173,7 +173,7 @@ async function performSearch (event) {
 /**
  * Returns a GIF in the format required to display in the modal search results.
  */
-function getFormattedGif (gif) {
+function getFormattedGif(gif) {
   const MAX_GIF_WIDTH = 145
 
   // GitHub has a 10MB image upload limit,
@@ -200,51 +200,43 @@ function getFormattedGif (gif) {
   )
 
   // Generate a random pastel colour to use as an image placeholder
-  const Hsl =
-    'hsl(' +
-    360 * Math.random() +
-    ',' +
-    (25 + 70 * Math.random()) +
-    '%,' +
-    (85 + 10 * Math.random()) +
-    '%)'
+
+  const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
+    85 + 10 * Math.random()
+  }%)`
 
   return (
-    <div
-      style={{
-        width: `${MAX_GIF_WIDTH}px`
-      }}
-    >
+    <div style={{width: `${MAX_GIF_WIDTH}px`}}>
       <img
         src={downsampledUrl}
         height={height}
-        style={{ 'background-color': Hsl }}
+        style={{'background-color': hsl}}
         data-full-size-url={fullSizeUrl}
-        class='ghg-gif-selection'
+        class="ghg-gif-selection"
       />
     </div>
   )
 }
 
-function showNoResultsFound (resultsContainer) {
+function showNoResultsFound(resultsContainer) {
   resultsContainer.append(
-    <div class='ghg-no-results-found'>No GIFs found.</div>
+    <div class="ghg-no-results-found">No GIFs found.</div>
   )
 }
 
 /**
  * Appends a collection of GIFs to the provided result container.
  */
-function appendResults (resultsContainer, gifs) {
+function appendResults(resultsContainer, gifs) {
   resultsContainer.dataset.hasResults = true
 
   const gifsToAdd = []
 
-  gifs.forEach(gif => {
+  for (const gif of gifs) {
     const img = getFormattedGif(gif)
     gifsToAdd.push(img)
     resultsContainer.append(img)
-  })
+  }
 
   // eslint-disable-next-line no-new
   new Masonry(
@@ -254,7 +246,7 @@ function appendResults (resultsContainer, gifs) {
       columnWidth: 145,
       gutter: 10,
       transitionDuration: '0.2s'
-      // fitWidth: true
+      // FitWidth: true
     },
     2000
   )
@@ -263,7 +255,7 @@ function appendResults (resultsContainer, gifs) {
 /**
  * Insert text in the targeted textarea and focus the content
  */
-function insertText (textarea, content) {
+function insertText(textarea, content) {
   textarea.focus()
 
   insert(textarea, content)
@@ -274,10 +266,10 @@ function insertText (textarea, content) {
  *
  * Closes the GIPHY modal and inserts the selected GIF in the textarea.
  */
-function selectGif (e) {
-  const form = e.target.closest('.ghg-has-giphy-field')
+function selectGif(event) {
+  const form = event.target.closest('.ghg-has-giphy-field')
   const trigger = select('.ghg-trigger', form)
-  const gifUrl = e.target.dataset.fullSizeUrl
+  const gifUrl = event.target.dataset.fullSizeUrl
   const textArea = select('.js-comment-field', form)
 
   // Close the modal
@@ -291,18 +283,18 @@ function selectGif (e) {
  * Prevents the outer form from submitting when enter is pressed in the GIF search
  * input.
  */
-function preventFormSubmitOnEnter (e) {
-  if (e.keyCode === 13) {
-    e.preventDefault()
+function preventFormSubmitOnEnter(event) {
+  if (event.keyCode === 13) {
+    event.preventDefault()
     return false
   }
 }
 
-function bindInfiniteScroll (resultsContainer) {
+function bindInfiniteScroll(resultsContainer) {
   resultsContainer.addEventListener('scroll', handleInfiniteScroll)
 }
 
-function handleInfiniteScroll (event) {
+function handleInfiniteScroll(event) {
   let searchTimer
   const resultsContainer = event.target
   const currentScrollPosition = resultsContainer.scrollTop + 395
@@ -310,25 +302,22 @@ function handleInfiniteScroll (event) {
 
   if (
     currentScrollPosition + INFINITE_SCROLL_PX_OFFSET >
-    parseInt(resultsContainer.style.height)
+    Number.parseInt(resultsContainer.style.height, 10)
   ) {
-    // start the infinite scroll after the last scroll event
+    // Start the infinite scroll after the last scroll event
     clearTimeout(searchTimer)
 
-    searchTimer = setTimeout(async function (event) {
+    searchTimer = setTimeout(async () => {
       const offset = resultsContainer.dataset.offset
-        ? parseInt(resultsContainer.dataset.offset) + 50
+        ? Number.parseInt(resultsContainer.dataset.offset, 10) + 50
         : 50
       const searchQuery = resultsContainer.dataset.searchQuery
-      let gifs
 
       resultsContainer.dataset.offset = offset
 
-      if (searchQuery) {
-        gifs = await giphyClient.search(searchQuery, offset)
-      } else {
-        gifs = await giphyClient.getTrending(offset)
-      }
+      const gifs = await (searchQuery
+        ? giphyClient.search(searchQuery, offset)
+        : giphyClient.getTrending(offset))
 
       appendResults(resultsContainer, gifs)
     }, 250)
@@ -338,12 +327,12 @@ function handleInfiniteScroll (event) {
 /**
  * Defines the event listeners
  */
-function listen () {
+function listen() {
   delegate('.ghg-gif-selection', 'click', selectGif)
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keydown',
-    debounce(performSearch, { wait: 400 })
+    debounce(performSearch, {wait: 400})
   )
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
@@ -353,7 +342,7 @@ function listen () {
 
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
-  delegate('.ghg-trigger:not([open]) > summary', 'click', event => {
+  delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })
@@ -362,7 +351,7 @@ function listen () {
 // Ensure we only bind events to elements once
 const listenOnce = onetime(listen)
 
-// gitHubInjection fires when there's a pjax:end event
+// GitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {
   addToolbarButton()

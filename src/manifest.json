@@ -32,7 +32,7 @@
           "https://gist.github.com/*"
         ],
         "css": [
-          "main.css"
+          "style.css"
         ],
         "js": [
           "main.js"

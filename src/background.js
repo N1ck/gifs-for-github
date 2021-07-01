@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unassigned-import
 import 'webext-dynamic-content-scripts'
 import addDomainPermissionToggle from 'webext-domain-permission-toggle'
 
