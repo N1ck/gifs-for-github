@@ -37,7 +37,7 @@ jobs:
       matrix:
         command:
           - firefox
-          - chrome
+          # - chrome
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
