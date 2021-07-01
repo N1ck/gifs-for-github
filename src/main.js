@@ -33,7 +33,7 @@ async function watchGiphyModals(element) {
   // and no search results, load the trending gifs
   if (
     searchInput.value === '' &&
-		resultsContainer.dataset.hasResults === 'false'
+    resultsContainer.dataset.hasResults === 'false'
   ) {
     // Set the loading state
     resultsContainer.append(<div>{LoadingIndicator}</div>)
@@ -52,17 +52,18 @@ async function watchGiphyModals(element) {
     }
   } else {
     setTimeout(
-      () => new Masonry(
-        resultsContainer,
-        {
-          itemSelector: '.ghg-giphy-results div',
-          columnWidth: 145,
-          gutter: 10,
-          transitionDuration: '0.2s'
-          // FitWidth: true
-        },
-        2000
-      ),
+      () =>
+        new Masonry(
+          resultsContainer,
+          {
+            itemSelector: '.ghg-giphy-results div',
+            columnWidth: 145,
+            gutter: 10,
+            transitionDuration: '0.2s'
+            // FitWidth: true
+          },
+          2000
+        ),
       10
     )
   }
@@ -76,8 +77,12 @@ function addToolbarButton() {
     'form:not(.ghg-has-giphy-field) markdown-toolbar'
   )) {
     const form = toolbar.closest('form')
-    const reviewChangesModal = toolbar.closest('#review-changes-modal .SelectMenu-modal')
-    const reviewChangesList = toolbar.closest('#review-changes-modal .SelectMenu-list')
+    const reviewChangesModal = toolbar.closest(
+      '#review-changes-modal .SelectMenu-modal'
+    )
+    const reviewChangesList = toolbar.closest(
+      '#review-changes-modal .SelectMenu-list'
+    )
 
     if (reviewChangesModal !== null) {
       reviewChangesModal.classList.add('ghg-in-review-changes-modal')
@@ -150,7 +155,9 @@ async function performSearch(event) {
   resultsContainer.append(<div>{LoadingIndicator}</div>)
 
   // If there is no search query, get the trending gifs
-  const gifs = await (searchQuery === '' ? giphyClient.getTrending() : giphyClient.search(searchQuery))
+  const gifs = await (searchQuery === ''
+    ? giphyClient.getTrending()
+    : giphyClient.search(searchQuery))
 
   // Clear any previous results
   resultsContainer.innerHTML = ''
@@ -189,17 +196,17 @@ function getFormattedGif(gif) {
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-		gif.images.fixed_width.width
+      gif.images.fixed_width.width
   )
 
   // Generate a random pastel colour to use as an image placeholder
 
-  const hsl = `hsl(${(360 * Math.random())}, ${(25 + (70 * Math.random()))}%,${(85 + (10 * Math.random()))}%)`
+  const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
+    85 + 10 * Math.random()
+  }%)`
 
   return (
-    <div
-      style={{width: `${MAX_GIF_WIDTH}px`}}
-    >
+    <div style={{width: `${MAX_GIF_WIDTH}px`}}>
       <img
         src={downsampledUrl}
         height={height}
@@ -295,20 +302,22 @@ function handleInfiniteScroll(event) {
 
   if (
     currentScrollPosition + INFINITE_SCROLL_PX_OFFSET >
-		Number.parseInt(resultsContainer.style.height, 10)
+    Number.parseInt(resultsContainer.style.height, 10)
   ) {
     // Start the infinite scroll after the last scroll event
     clearTimeout(searchTimer)
 
     searchTimer = setTimeout(async () => {
-      const offset = resultsContainer.dataset.offset ?
-        Number.parseInt(resultsContainer.dataset.offset, 10) + 50 :
-        50
+      const offset = resultsContainer.dataset.offset
+        ? Number.parseInt(resultsContainer.dataset.offset, 10) + 50
+        : 50
       const searchQuery = resultsContainer.dataset.searchQuery
 
       resultsContainer.dataset.offset = offset
 
-      const gifs = await (searchQuery ? giphyClient.search(searchQuery, offset) : giphyClient.getTrending(offset))
+      const gifs = await (searchQuery
+        ? giphyClient.search(searchQuery, offset)
+        : giphyClient.getTrending(offset))
 
       appendResults(resultsContainer, gifs)
     }, 250)
@@ -333,7 +342,7 @@ function listen() {
 
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
-  delegate('.ghg-trigger:not([open]) > summary', 'click', event => {
+  delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })

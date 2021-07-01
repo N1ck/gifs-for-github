@@ -29,7 +29,11 @@ export default (
         </div>
         <div
           class="ghg-giphy-results"
-          style={{display: 'flex', 'align-items': 'center', 'justify-content': 'center'}}
+          style={{
+            display: 'flex',
+            'align-items': 'center',
+            'justify-content': 'center'
+          }}
         />
       </tab-list>
     </details-menu>

@@ -10,7 +10,13 @@ export default (
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
   >
-    <g id="giphyIcon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+    <g
+      id="giphyIcon"
+      stroke="none"
+      stroke-width="1"
+      fill="none"
+      fill-rule="evenodd"
+    >
       <rect id="Rectangle" fill="#9933FF" x="10" y="5" width="2" height="9" />
       <rect id="Rectangle" fill="#FFF35C" x="0" y="0" width="7" height="2" />
       <rect id="Rectangle" fill="#02FF99" x="0" y="2" width="2" height="12" />
