@@ -6,6 +6,11 @@
     "browser_action": {
       "default_icon": "images/icon128.png"
     },
+    "applications": {
+      "gecko": {
+        "id": "{443bc2e2-8fa9-44ec-828a-fd84c0664f8d}"
+      }
+    },
     "permissions": [
       "contextMenus",
       "activeTab",
