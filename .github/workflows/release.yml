@@ -43,7 +43,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: install
         run: yarn install --frozen-lockfile
-      - run: yarn run build --if-present
+      - run: yarn run build
       - name: Update extension’s meta
         run: >-
           npx dot-json@1 $DIRECTORY/manifest.json version ${{
