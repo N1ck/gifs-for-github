@@ -32,7 +32,10 @@
     }
   },
   "stylelint": {
-    "extends": "stylelint-config-xo"
+    "extends": "stylelint-config-xo",
+    "rules": {
+      "indentation": 2
+    }
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^1.7.0",
