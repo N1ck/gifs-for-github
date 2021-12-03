@@ -276,7 +276,7 @@ function selectGif(event) {
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
-  insertText(textArea, `![](${gifUrl})`)
+  insertText(textArea, `<img src="${gifUrl}"/>`)
 }
 
 /**
