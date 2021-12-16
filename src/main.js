@@ -96,7 +96,7 @@ function addToolbarButton() {
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       let toolbarGroup = select.all(
-        '.toolbar-commenting .d-inline-block, .toolbar-commenting .d-md-inline-block',
+        '.toolbar-commenting > :not([class*="--hidden"])',
         toolbar
       )
       toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
