@@ -84,6 +84,8 @@ function addToolbarButton() {
       '#review-changes-modal .SelectMenu-list'
     )
 
+    // Add a specific class if the form is in the review changes modal, or if it is in the review changes list
+    // Otherwise the GIF selection popover will not be visible.
     if (reviewChangesModal !== null) {
       reviewChangesModal.classList.add('ghg-in-review-changes-modal')
     }
@@ -96,7 +98,7 @@ function addToolbarButton() {
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       let toolbarGroup = select.all(
-        '.toolbar-commenting > :not([class*="--hidden"])',
+        '.toolbar-commenting > :not([class*="--hidden"]):not(button)',
         toolbar
       )
       toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
