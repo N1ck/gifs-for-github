@@ -24,6 +24,10 @@
   width: 144.45px;
 }
 
+[data-color-mode="dark"][data-dark-theme*="dark"] .ghg-powered-by-giphy {
+  filter: invert(100%);
+}
+
 .ghg-in-review-changes-modal {
   /* Fixes the GIF button dropping to a new line in the review modal */
   width: 678px !important;
