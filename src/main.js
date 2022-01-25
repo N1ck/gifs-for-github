@@ -13,7 +13,10 @@ import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
 import Giphy from './lib/giphy.js'
 
-import { onDiffFileLoad, onCommentEdit } from './lib/github-events/on-fragment-load'
+import {
+  onDiffFileLoad,
+  onCommentEdit
+} from './lib/github-events/on-fragment-load.js'
 
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
