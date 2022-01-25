@@ -45,6 +45,7 @@
     "dom-chef": "^3.3.0",
     "github-injection": "^1.0.1",
     "masonry-layout": "^4.2.2",
+    "mem": "^8.1.1",
     "onetime": "^2.0.1",
     "select-dom": "^7.1.1",
     "text-field-edit": "^3.0.1",
