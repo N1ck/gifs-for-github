@@ -2,8 +2,12 @@
 import React from 'dom-chef'
 
 export default (
-  <details class="details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger">
-    <summary class="menu-target" aria-label="Insert a GIF" aria-haspopup="menu">
+  <details class="details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger btn-octicon">
+    <summary
+      class="menu-target p-2 p-md-1 mx-1"
+      aria-label="Insert a GIF"
+      aria-haspopup="menu"
+    >
       {'GIF'}
     </summary>
     <details-menu
