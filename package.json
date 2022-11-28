@@ -40,10 +40,11 @@
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^1.7.0",
+    "code-tag": "^1.1.0",
     "debounce-fn": "^1.0.0",
     "delegate": "^3.2.0",
     "dom-chef": "^3.3.0",
-    "github-injection": "^1.0.1",
+    "github-injection": "^1.1.0",
     "masonry-layout": "^4.2.2",
     "mem": "^8.1.1",
     "onetime": "^2.0.1",

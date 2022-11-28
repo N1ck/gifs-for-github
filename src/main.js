@@ -13,10 +13,7 @@ import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
 import Giphy from './lib/giphy.js'
 
-import {
-  onDiffFileLoad,
-  onCommentEdit
-} from './lib/github-events/on-fragment-load.js'
+import observe from './lib/selector-observer.js'
 
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
@@ -36,6 +33,7 @@ async function watchGiphyModals(element) {
 
   // If the modal has been opened and there is no search term,
   // and no search results, load the trending gifs
+  console.log(resultsContainer.dataset.hasResults, searchInput.value)
   if (
     searchInput.value === '' &&
     resultsContainer.dataset.hasResults === 'false'
@@ -65,7 +63,6 @@ async function watchGiphyModals(element) {
             columnWidth: 145,
             gutter: 10,
             transitionDuration: '0.2s'
-            // FitWidth: true
           },
           2000
         ),
@@ -82,6 +79,7 @@ function addToolbarButton() {
     'form:not(.ghg-has-giphy-field) markdown-toolbar'
   )) {
     const form = toolbar.closest('form')
+
     const reviewChangesModal = toolbar.closest(
       '#review-changes-modal .SelectMenu-modal'
     )
@@ -111,8 +109,16 @@ function addToolbarButton() {
       if (toolbarGroup) {
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
-        toolbarGroup.append(GiphyToolbarItem.cloneNode(true))
+        const clonedNode = GiphyToolbarItem.cloneNode(true)
+        toolbarGroup.append(clonedNode)
+        select('.ghg-giphy-results', clonedNode)
+
         form.classList.add('ghg-has-giphy-field')
+
+        // Clears the gif search input field and results.
+        // We have to do this because when navigating, github will refuse to
+        // load the giphy URLs as it violates their Content Security Policy.
+        resetGiphyModals()
       }
     })
   }
@@ -122,11 +128,7 @@ function addToolbarButton() {
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
 function observeDiscussion() {
-  const discussionTimeline = select('.js-discussion')
-
-  observeEl(discussionTimeline, () => {
-    addToolbarButton()
-  })
+  observe('md-task-list', () => addToolbarButton())
 }
 
 /**
@@ -137,6 +139,7 @@ function resetGiphyModals() {
   for (const ghgModal of select.all('.ghg-modal')) {
     const resultContainer = select('.ghg-giphy-results', ghgModal)
     const searchInput = select('.ghg-search-input', ghgModal)
+    console.log({resultContainer})
     searchInput.value = ''
     resultContainer.innerHTML = ''
     resultContainer.dataset.offset = 0
@@ -207,7 +210,6 @@ function getFormattedGif(gif) {
   )
 
   // Generate a random pastel colour to use as an image placeholder
-
   const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
     85 + 10 * Math.random()
   }%)`
@@ -245,18 +247,19 @@ function appendResults(resultsContainer, gifs) {
     resultsContainer.append(img)
   }
 
-  // eslint-disable-next-line no-new
-  new Masonry(
-    resultsContainer,
-    {
-      itemSelector: '.ghg-giphy-results div',
-      columnWidth: 145,
-      gutter: 10,
-      transitionDuration: '0.2s'
-      // FitWidth: true
-    },
-    2000
-  )
+  setTimeout(() => {
+    // eslint-disable-next-line no-new
+    new Masonry(
+      resultsContainer,
+      {
+        itemSelector: '.ghg-giphy-results div',
+        columnWidth: 145,
+        gutter: 10,
+        transitionDuration: '0.2s'
+      },
+      10
+    )
+  })
 }
 
 /**
@@ -350,6 +353,7 @@ function listen() {
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
   delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
+    console.log('clicked?', event.delegateTarget)
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })
@@ -361,14 +365,6 @@ const listenOnce = onetime(listen)
 // GitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {
-  addToolbarButton()
   listenOnce()
   observeDiscussion()
-  onDiffFileLoad(addToolbarButton)
-  onCommentEdit(addToolbarButton)
-
-  // Clears all gif search input fields and results.
-  // We have to do this because when navigating, github will refuse to
-  // load the giphy URLs as it violates their Content Security Policy.
-  resetGiphyModals()
 })
