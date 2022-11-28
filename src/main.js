@@ -33,7 +33,6 @@ async function watchGiphyModals(element) {
 
   // If the modal has been opened and there is no search term,
   // and no search results, load the trending gifs
-  console.log(resultsContainer.dataset.hasResults, searchInput.value)
   if (
     searchInput.value === '' &&
     resultsContainer.dataset.hasResults === 'false'
@@ -139,7 +138,6 @@ function resetGiphyModals() {
   for (const ghgModal of select.all('.ghg-modal')) {
     const resultContainer = select('.ghg-giphy-results', ghgModal)
     const searchInput = select('.ghg-search-input', ghgModal)
-    console.log({resultContainer})
     searchInput.value = ''
     resultContainer.innerHTML = ''
     resultContainer.dataset.offset = 0
@@ -353,7 +351,6 @@ function listen() {
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
   delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
-    console.log('clicked?', event.delegateTarget)
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })
