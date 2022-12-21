@@ -12,8 +12,12 @@ import observeEl from './lib/simplified-element-observer.js'
 import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
 import Giphy from './lib/giphy.js'
+import Tenor from './lib/tenor.js'
 
 import observe from './lib/selector-observer.js'
+
+// Tenor
+const tenorClient = new Tenor('AIzaSyDPNP-ivCtCACDvIV-M0i86TgKbZv5a-0Q')
 
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
@@ -41,7 +45,7 @@ async function watchGiphyModals(element) {
     resultsContainer.append(<div>{LoadingIndicator}</div>)
 
     // Fetch the trending gifs
-    const gifs = await giphyClient.getTrending()
+    const gifs = await tenorClient.getTrending()
 
     // Clear the loading indicator
     resultsContainer.innerHTML = ''
@@ -164,8 +168,8 @@ async function performSearch(event) {
 
   // If there is no search query, get the trending gifs
   const gifs = await (searchQuery === ''
-    ? giphyClient.getTrending()
-    : giphyClient.search(searchQuery))
+    ? tenorClient.getTrending()
+    : tenorClient.search(searchQuery))
 
   // Clear any previous results
   resultsContainer.innerHTML = ''
@@ -324,8 +328,8 @@ function handleInfiniteScroll(event) {
       resultsContainer.dataset.offset = offset
 
       const gifs = await (searchQuery
-        ? giphyClient.search(searchQuery, offset)
-        : giphyClient.getTrending(offset))
+        ? tenorClient.search(searchQuery, offset)
+        : tenorClient.getTrending(offset))
 
       appendResults(resultsContainer, gifs)
     }, 250)
