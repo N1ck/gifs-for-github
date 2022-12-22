@@ -17,7 +17,10 @@ export default (
     >
       <div class="select-menu-header d-flex">
         <span class="select-menu-title flex-auto">Select a GIF</span>
-        <span class="ghg-powered-by-giphy" />
+        <select class="ghg-provider-selector">
+          <option value="tenor">Tenor</option>
+          <option value="giphy">Giphy</option>
+        </select>
       </div>
       <tab-list>
         <div class="select-menu-filters">

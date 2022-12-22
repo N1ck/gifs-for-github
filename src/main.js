@@ -16,11 +16,13 @@ import Tenor from './lib/tenor.js'
 
 import observe from './lib/selector-observer.js'
 
-// Tenor
-const tenorClient = new Tenor('AIzaSyDPNP-ivCtCACDvIV-M0i86TgKbZv5a-0Q')
+const providers = {
+  tenor: new Tenor('AIzaSyDPNP-ivCtCACDvIV-M0i86TgKbZv5a-0Q'),
+  giphy: new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+};
 
-// Create a new Giphy Client
-const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+let provider = providers.tenor;
+
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
@@ -45,7 +47,7 @@ async function watchGiphyModals(element) {
     resultsContainer.append(<div>{LoadingIndicator}</div>)
 
     // Fetch the trending gifs
-    const gifs = await tenorClient.getTrending()
+    const gifs = await provider.getTrending()
 
     // Clear the loading indicator
     resultsContainer.innerHTML = ''
@@ -168,8 +170,8 @@ async function performSearch(event) {
 
   // If there is no search query, get the trending gifs
   const gifs = await (searchQuery === ''
-    ? tenorClient.getTrending()
-    : tenorClient.search(searchQuery))
+    ? provider.getTrending()
+    : provider.search(searchQuery))
 
   // Clear any previous results
   resultsContainer.innerHTML = ''
@@ -328,12 +330,19 @@ function handleInfiniteScroll(event) {
       resultsContainer.dataset.offset = offset
 
       const gifs = await (searchQuery
-        ? tenorClient.search(searchQuery, offset)
-        : tenorClient.getTrending(offset))
+        ? provider.search(searchQuery, offset)
+        : provider.getTrending(offset))
 
       appendResults(resultsContainer, gifs)
     }, 250)
   }
+}
+
+/**
+* Updates the GIF provider
+*/
+function changeProvider(e) {
+  provider = providers[e.target.value]
 }
 
 /**
@@ -358,6 +367,7 @@ function listen() {
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })
+  delegate('.ghg-provider-selector', 'change', changeProvider)
 }
 
 // Ensure we only bind events to elements once
