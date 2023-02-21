@@ -11,8 +11,8 @@ import select from 'select-dom'
 import observeEl from './lib/simplified-element-observer.js'
 import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
-import Giphy from './lib/giphy.js'
-import Tenor from './lib/tenor.js'
+import Giphy from './lib/providers/giphy.js'
+import Tenor from './lib/providers/tenor.js'
 
 import observe from './lib/selector-observer.js'
 
