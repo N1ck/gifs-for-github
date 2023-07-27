@@ -15,13 +15,13 @@ jobs:
       version: ${{ steps.daily-version.outputs.version }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 20
       - name: install
         run: yarn install --frozen-lockfile
       - run: yarn test
-      - uses: fregante/daily-version-action@v1
+      - uses: fregante/daily-version-action@v2
         name: Create tag if necessary
         id: daily-version
       - uses: notlmn/release-with-changelog@v3
@@ -40,7 +40,7 @@ jobs:
           - chrome
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: install
         run: yarn install --frozen-lockfile
       - run: yarn run build
