@@ -109,6 +109,16 @@ function addToolbarButton() {
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
         const clonedNode = GiphyToolbarItem.cloneNode(true)
+
+        // Hack to allow space to work in the input field.
+        // It was affected by this PR, which also broke space in the "Saved replies" menu item
+        // https://github.com/github/markdown-toolbar-element/pull/72
+        clonedNode.addEventListener('keydown', function (e) {
+          if(e.code === 'Space'){
+              e.stopPropagation();
+          }
+        }, {capture: true});
+
         toolbarGroup.append(clonedNode)
         select('.ghg-giphy-results', clonedNode)
 
