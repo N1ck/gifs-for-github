@@ -307,7 +307,6 @@ function selectGif(event) {
   )
 }
 
-
 /**
  * Prevents the outer form from submitting when enter is pressed in the GIF search
  * input.
