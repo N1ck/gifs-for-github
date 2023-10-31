@@ -100,10 +100,9 @@ function addToolbarButton() {
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       let toolbarGroup = select.all(
-        '.toolbar-commenting > :not([class*="--hidden"]):not(button)',
+      const toolbarGroup = select('.ActionBar-item-container', toolbar)
         toolbar
       )
-      toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
 
       if (toolbarGroup) {
         // Append the Giphy button to the toolbar
@@ -141,7 +140,7 @@ function addToolbarButton() {
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
 function observeDiscussion() {
-  observe('md-task-list', () => addToolbarButton())
+  observe('markdown-toolbar', () => addToolbarButton())
 }
 
 /**
