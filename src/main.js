@@ -100,7 +100,7 @@ function addToolbarButton() {
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
       let toolbarGroup = select.all(
-        '.toolbar-commenting > :not([class*="--hidden"]):not(button)',
+        '.ActionBar-item-container > :not([class*="--hidden"]):not(button)',
         toolbar
       )
       toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
@@ -141,7 +141,7 @@ function addToolbarButton() {
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
 function observeDiscussion() {
-  observe('md-task-list', () => addToolbarButton())
+  observe('markdown-toolbar', () => addToolbarButton())
 }
 
 /**
