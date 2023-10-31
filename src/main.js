@@ -99,11 +99,7 @@ function addToolbarButton() {
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
-      let toolbarGroup = select.all(
-        '.ActionBar-item-container > :not([class*="--hidden"]):not(button)',
-        toolbar
-      )
-      toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
+      const toolbarGroup = select('.ActionBar-item-container', toolbar)
 
       if (toolbarGroup) {
         // Append the Giphy button to the toolbar
