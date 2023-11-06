@@ -99,7 +99,18 @@ function addToolbarButton() {
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
-      const toolbarGroup = select('.ActionBar-item-container', toolbar)
+      let toolbarGroup = select('.ActionBar-item-container', toolbar)
+
+      // GitHub released a new comment box with the above selector,
+      // however, some fields still use the previous experience.
+      // The below is here to support this.
+      if (!toolbarGroup) {
+        toolbarGroup = select.all(
+          '.toolbar-commenting > :not([class*="--hidden"]):not(button):not(.ml-auto)',
+          toolbar
+        )
+        toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
+      }
 
       if (toolbarGroup) {
         // Append the Giphy button to the toolbar
