@@ -38,3 +38,8 @@
   contain: unset !important;
   overflow: unset !important;
 }
+
+  /* Fixes the GIF dropdown being hidden by the review modal's overflow */
+.ActionBar-item-container {
+  overflow: visible !important;
+}
