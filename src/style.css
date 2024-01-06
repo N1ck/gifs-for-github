@@ -39,7 +39,8 @@
   overflow: unset !important;
 }
 
-  /* Fixes the GIF dropdown being hidden by the review modal's overflow */
+/* Fixes the GIF dropdown being hidden by the review modal's overflow */
+/* stylelint-disable-next-line selector-class-pattern */
 .ActionBar-item-container {
   overflow: visible !important;
 }
