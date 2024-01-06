@@ -79,9 +79,7 @@ function addToolbarButton() {
   )) {
     const form = toolbar.closest('form')
 
-    const reviewChangesModal = toolbar.closest(
-      '#review-changes-modal .SelectMenu-modal'
-    )
+    const reviewChangesModal = toolbar.closest('#review-changes-modal')
     const reviewChangesList = toolbar.closest(
       '#review-changes-modal .SelectMenu-list'
     )
@@ -90,6 +88,19 @@ function addToolbarButton() {
     // Otherwise the GIF selection popover will not be visible.
     if (reviewChangesModal !== null) {
       reviewChangesModal.classList.add('ghg-in-review-changes-modal')
+
+      // The Review changes modal sets an inline width of min(640px, 100vw - 2rem);
+      // our button takes up another 32px so we need to adjust the inline style to account for that, otherwise it's hidden.
+      const currentWidth = reviewChangesModal.style.width
+      if (currentWidth.includes('px')) {
+        // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
+        const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10)
+        const modifiedWidth = currentWidth.replace(
+          widthValue + 'px',
+          `${widthValue + 32}px`
+        )
+        reviewChangesModal.style.width = modifiedWidth
+      }
     }
 
     if (reviewChangesList !== null) {

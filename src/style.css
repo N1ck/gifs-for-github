@@ -29,8 +29,6 @@
 }
 
 .ghg-in-review-changes-modal {
-  /* Fixes the GIF button dropping to a new line in the review modal */
-  width: 678px !important;
   /* Fixes the GIF dropdown being hidden by the review modal's overflow */
   overflow: unset !important;
 }
