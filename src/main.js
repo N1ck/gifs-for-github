@@ -84,29 +84,6 @@ function addToolbarButton() {
       '#review-changes-modal .SelectMenu-list'
     )
 
-    // Add a specific class if the form is in the review changes modal, or if it is in the review changes list
-    // Otherwise the GIF selection popover will not be visible.
-    if (reviewChangesModal !== null) {
-      reviewChangesModal.classList.add('ghg-in-review-changes-modal')
-
-      // The Review changes modal sets an inline width of min(640px, 100vw - 2rem);
-      // our button takes up another 32px so we need to adjust the inline style to account for that, otherwise it's hidden.
-      const currentWidth = reviewChangesModal.style.width
-      if (currentWidth.includes('px')) {
-        // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
-        const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10)
-        const modifiedWidth = currentWidth.replace(
-          widthValue + 'px',
-          `${widthValue + 32}px`
-        )
-        reviewChangesModal.style.width = modifiedWidth
-      }
-    }
-
-    if (reviewChangesList !== null) {
-      reviewChangesList.classList.add('ghg-in-review-changes-list')
-    }
-
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
     observeEl(toolbar, () => {
@@ -152,6 +129,35 @@ function addToolbarButton() {
         resetGiphyModals()
       }
     })
+
+    // Add a specific class if the form is in the review changes modal, or if it is in the review changes list
+    // Otherwise the GIF selection popover will not be visible.
+    if (reviewChangesModal !== null) {
+      reviewChangesModal.classList.add('ghg-in-review-changes-modal')
+
+      // The Review changes modal sets an inline width of min(640px, 100vw - 2rem);
+      // our button takes up another 32px so we need to adjust the inline style to account for that, otherwise it's hidden.
+      const currentWidth = reviewChangesModal.style.width
+
+      const trigger = select('.ghg-trigger', form)
+      // Calculate the width of the GIF button, so that we can adjust the toolbar min size to accommodate for it.
+      // Also add 8 px buffer
+      const triggerWidth = (trigger?.offsetWidth ?? 32) + 8
+
+      if (currentWidth.includes('px')) {
+        // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
+        const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10)
+        const modifiedWidth = currentWidth.replace(
+          widthValue + 'px',
+          `${widthValue + triggerWidth}px`
+        )
+        reviewChangesModal.style.width = modifiedWidth
+      }
+    }
+
+    if (reviewChangesList !== null) {
+      reviewChangesList.classList.add('ghg-in-review-changes-list')
+    }
   }
 }
 
