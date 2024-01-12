@@ -142,7 +142,7 @@ function addToolbarButton() {
       const trigger = select('.ghg-trigger', form)
       // Calculate the width of the GIF button, so that we can adjust the toolbar min size to accommodate for it.
       // Also add 8 px buffer
-      const triggerWidth = (trigger?.offsetWidth ?? 32) + 8
+      const triggerWidth = (trigger?.offsetWidth || 32) + 8
 
       if (currentWidth.includes('px')) {
         // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
