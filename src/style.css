@@ -33,6 +33,11 @@
   overflow: unset !important;
 }
 
+/* Prevent the scrollbar from appearing and breaking the layout */
+.ghg-in-review-changes-modal .Overlay-body {
+  overflow-y: visible !important;
+}
+
 /* Fixes the GIF dropdown being hidden by the review modal's overflow */
 .ghg-in-review-changes-list {
   contain: unset !important;
