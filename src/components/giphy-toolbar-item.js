@@ -2,7 +2,7 @@
 import React from 'dom-chef'
 
 export default (
-  <details class="details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger">
+  <details class="ActionBar-item details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger">
     <summary
       class="menu-target Button Button--iconOnly Button--invisible Button--medium"
       aria-label="Insert a GIF"
