@@ -317,12 +317,18 @@ function selectGif(event) {
   const trigger = select('.ghg-trigger', form)
   const gifUrl = event.target.dataset.fullSizeUrl
   const textArea = select('.js-comment-field', form)
+  const searchQuery = select('.ghg-giphy-results').attributes['data-search-query'].value
 
   // Close the modal
   trigger.removeAttribute('open')
 
   // Focuses the textarea and inserts the text where the cursor was last
-  insertText(textArea, `<img src="${gifUrl}"/>`)
+  insertText(textArea, 
+    `<details open>\n` +
+    `  <summary><i>${searchQuery}<i/></summary>\n` +
+    `  <img src="${gifUrl}"/>\n` +
+    `</details>`
+  )
 }
 
 /**
