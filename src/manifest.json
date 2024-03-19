@@ -14,7 +14,8 @@
     "permissions": [
       "contextMenus",
       "activeTab",
-      "https://api.giphy.com/*"
+      "https://api.giphy.com/*",
+      "https://tenor.googleapis.com/*"
     ],
     "optional_permissions": [
       "http://*/*",

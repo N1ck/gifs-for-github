@@ -11,12 +11,18 @@ import select from 'select-dom'
 import observeEl from './lib/simplified-element-observer.js'
 import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
-import Giphy from './lib/giphy.js'
+import Giphy from './lib/providers/giphy.js'
+import Tenor from './lib/providers/tenor.js'
 
 import observe from './lib/selector-observer.js'
 
-// Create a new Giphy Client
-const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+const providers = {
+  tenor: new Tenor('AIzaSyDPNP-ivCtCACDvIV-M0i86TgKbZv5a-0Q'),
+  giphy: new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+};
+
+let provider = providers.tenor;
+
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
@@ -41,7 +47,7 @@ async function watchGiphyModals(element) {
     resultsContainer.append(<div>{LoadingIndicator}</div>)
 
     // Fetch the trending gifs
-    const gifs = await giphyClient.getTrending()
+    const gifs = await provider.getTrending()
 
     // Clear the loading indicator
     resultsContainer.innerHTML = ''
@@ -202,8 +208,8 @@ async function performSearch(event) {
 
   // If there is no search query, get the trending gifs
   const gifs = await (searchQuery === ''
-    ? giphyClient.getTrending()
-    : giphyClient.search(searchQuery))
+    ? provider.getTrending()
+    : provider.search(searchQuery))
 
   // Clear any previous results
   resultsContainer.innerHTML = ''
@@ -362,12 +368,19 @@ function handleInfiniteScroll(event) {
       resultsContainer.dataset.offset = offset
 
       const gifs = await (searchQuery
-        ? giphyClient.search(searchQuery, offset)
-        : giphyClient.getTrending(offset))
+        ? provider.search(searchQuery, offset)
+        : provider.getTrending(offset))
 
       appendResults(resultsContainer, gifs)
     }, 250)
   }
+}
+
+/**
+* Updates the GIF provider
+*/
+function changeProvider(e) {
+  provider = providers[e.target.value]
 }
 
 /**
@@ -392,6 +405,7 @@ function listen() {
     // What comes after <summary> is the dropdown
     watchGiphyModals(event.delegateTarget)
   })
+  delegate('.ghg-provider-selector', 'change', changeProvider)
 }
 
 // Ensure we only bind events to elements once
