@@ -1,50 +1,59 @@
-  {
-    "manifest_version": 2,
-    "name": "GIFs for GitHub",
-    "version": "1.2.11",
-    "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
-    "browser_action": {
-      "default_icon": "images/icon128.png"
-    },
-    "applications": {
-      "gecko": {
-        "id": "{443bc2e2-8fa9-44ec-828a-fd84c0664f8d}"
-      }
-    },
-    "permissions": [
-      "contextMenus",
-      "activeTab",
-      "https://api.giphy.com/*"
-    ],
-    "optional_permissions": [
-      "http://*/*",
-      "https://*/*"
-    ],
-    "icons": {
-      "16": "images/icon16.png",
-      "48": "images/icon48.png",
-      "128": "images/icon128.png"
-    },
-    "background": {
-      "scripts": [
-        "background.js"
+{
+  "manifest_version": 3,
+  "name": "GIFs for GitHub",
+  "version": "1.2.11",
+  "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
+  "action": {
+    "default_icon": "images/icon128.png"
+  },
+  "applications": {
+    "gecko": {
+      "id": "{443bc2e2-8fa9-44ec-828a-fd84c0664f8d}"
+    }
+  },
+  "permissions": [
+    "contextMenus",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://api.giphy.com/*"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
+  ],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://github.com/*",
+        "https://gist.github.com/*"
+      ],
+      "css": [
+        "style.css"
+      ],
+      "js": [
+        "main.js"
       ]
-    },
-    "content_scripts": [
-      {
-        "matches": [
-          "https://github.com/*",
-          "https://gist.github.com/*"
-        ],
-        "css": [
-          "style.css"
-        ],
-        "js": [
-          "main.js"
-        ]
-      }
-    ],
-    "web_accessible_resources": [
-      "images/*.png"
-    ]
-  }
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "images/*.png"
+      ],
+      "matches": [
+        "https://github.com/*",
+        "https://gist.github.com/*"
+      ]
+    }
+  ]
+}
