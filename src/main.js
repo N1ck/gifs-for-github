@@ -118,7 +118,7 @@ function addToolbarButton() {
           {capture: true}
         )
 
-        toolbarGroup.append(clonedNode)
+        toolbarGroup.prepend(clonedNode)
         select('.ghg-giphy-results', clonedNode)
 
         form.classList.add('ghg-has-giphy-field')
