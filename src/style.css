@@ -1,51 +1,51 @@
 /* stylelint-disable declaration-no-important */
 .ghg-giphy-results {
-  margin: 10px;
-  overflow-y: auto;
-  height: 285px !important;
+	margin: 10px;
+	overflow-y: auto;
+	height: 285px !important;
 }
 
 .ghg-giphy-results::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 .ghg-giphy-results img {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .ghg-gif-selection {
-  width: 100%;
+	width: 100%;
 }
 
 .ghg-powered-by-giphy {
-  background: url("chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png");
-  background-size: auto 16px;
-  background-repeat: no-repeat;
-  width: 144.45px;
+	background: url('chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png');
+	background-size: auto 16px;
+	background-repeat: no-repeat;
+	width: 144.45px;
 }
 
-[data-color-mode="dark"][data-dark-theme*="dark"] .ghg-powered-by-giphy {
-  filter: invert(100%);
+[data-color-mode='dark'][data-dark-theme*='dark'] .ghg-powered-by-giphy {
+	filter: invert(100%);
 }
 
 .ghg-in-review-changes-modal {
-  /* Fixes the GIF dropdown being hidden by the review modal's overflow */
-  overflow: unset !important;
+	/* Fixes the GIF dropdown being hidden by the review modal's overflow */
+	overflow: unset !important;
 }
 
 /* Prevent the scrollbar from appearing and breaking the layout */
 .ghg-in-review-changes-modal .Overlay-body {
-  overflow-y: visible !important;
+	overflow-y: visible !important;
 }
 
 /* Fixes the GIF dropdown being hidden by the review modal's overflow */
 .ghg-in-review-changes-list {
-  contain: unset !important;
-  overflow: unset !important;
+	contain: unset !important;
+	overflow: unset !important;
 }
 
 /* Fixes the GIF dropdown being hidden by the review modal's overflow */
 /* stylelint-disable-next-line selector-class-pattern */
 .ActionBar-item-container {
-  overflow: visible !important;
+	overflow: visible !important;
 }

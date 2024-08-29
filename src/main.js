@@ -1,18 +1,17 @@
-import './style.css'
 import {insert} from 'text-field-edit'
 import Masonry from 'masonry-layout'
 import debounce from 'debounce-fn'
-import delegate from 'delegate'
+import delegate from 'delegate-it'
 import gitHubInjection from 'github-injection'
 // eslint-disable-next-line no-unused-vars
 import React from 'dom-chef'
 import onetime from 'onetime'
 import select from 'select-dom'
+import './style.css'
 import observeEl from './lib/simplified-element-observer.js'
 import LoadingIndicator from './components/loading-indicator.js'
 import GiphyToolbarItem from './components/giphy-toolbar-item.js'
 import Giphy from './lib/giphy.js'
-
 import observe from './lib/selector-observer.js'
 
 // Create a new Giphy Client
@@ -25,7 +24,7 @@ async function watchGiphyModals(element) {
   const resultsContainer = select('.ghg-giphy-results', parent)
   const searchInput = select('.ghg-search-input', parent)
   const initInfiniteScroll = onetime(
-    bindInfiniteScroll.bind(this, resultsContainer)
+    bindInfiniteScroll.bind(this, resultsContainer),
   )
 
   // Bind the scroll event to the results container
@@ -61,11 +60,11 @@ async function watchGiphyModals(element) {
             itemSelector: '.ghg-giphy-results div',
             columnWidth: 145,
             gutter: 10,
-            transitionDuration: '0.2s'
+            transitionDuration: '0.2s',
           },
-          2000
+          2000,
         ),
-      10
+      10,
     )
   }
 }
@@ -75,13 +74,13 @@ async function watchGiphyModals(element) {
  */
 function addToolbarButton() {
   for (const toolbar of select.all(
-    'form:not(.ghg-has-giphy-field) markdown-toolbar'
+    'form:not(.ghg-has-giphy-field) markdown-toolbar',
   )) {
     const form = toolbar.closest('form')
 
     const reviewChangesModal = toolbar.closest('#review-changes-modal')
     const reviewChangesList = toolbar.closest(
-      '#review-changes-modal .SelectMenu-list'
+      '#review-changes-modal .SelectMenu-list',
     )
 
     // Observe the toolbars without the giphy field, add
@@ -95,9 +94,9 @@ function addToolbarButton() {
       if (!toolbarGroup) {
         toolbarGroup = select.all(
           '.toolbar-commenting > :not([class*="--hidden"]):not(button):not(.ml-auto)',
-          toolbar
+          toolbar,
         )
-        toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
+        toolbarGroup = toolbarGroup.at(-1)
       }
 
       if (toolbarGroup) {
@@ -115,7 +114,7 @@ function addToolbarButton() {
               event.stopPropagation()
             }
           },
-          {capture: true}
+          {capture: true},
         )
 
         toolbarGroup.append(clonedNode)
@@ -149,7 +148,7 @@ function addToolbarButton() {
         const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10)
         const modifiedWidth = currentWidth.replace(
           widthValue + 'px',
-          `${widthValue + triggerWidth}px`
+          `${widthValue + triggerWidth}px`,
         )
         reviewChangesModal.style.width = modifiedWidth
       }
@@ -165,7 +164,7 @@ function addToolbarButton() {
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
 function observeDiscussion() {
-  observe('markdown-toolbar', () => addToolbarButton())
+  observe('.CommentBox-toolbar', () => addToolbarButton())
 }
 
 /**
@@ -242,7 +241,7 @@ function getFormattedGif(gif) {
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-      gif.images.fixed_width.width
+      gif.images.fixed_width.width,
   )
 
   // Generate a random pastel colour to use as an image placeholder
@@ -265,7 +264,7 @@ function getFormattedGif(gif) {
 
 function showNoResultsFound(resultsContainer) {
   resultsContainer.append(
-    <div class="ghg-no-results-found">No GIFs found.</div>
+    <div class="ghg-no-results-found">No GIFs found.</div>,
   )
 }
 
@@ -291,9 +290,9 @@ function appendResults(resultsContainer, gifs) {
         itemSelector: '.ghg-giphy-results div',
         columnWidth: 145,
         gutter: 10,
-        transitionDuration: '0.2s'
+        transitionDuration: '0.2s',
       },
-      10
+      10,
     )
   })
 }
@@ -378,12 +377,12 @@ function listen() {
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keydown',
-    debounce(performSearch, {wait: 400})
+    debounce(performSearch, {wait: 400}),
   )
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keypress',
-    preventFormSubmitOnEnter
+    preventFormSubmitOnEnter,
   )
 
   // The `open` attribute is added after this handler is run,
@@ -396,7 +395,6 @@ function listen() {
 
 // Ensure we only bind events to elements once
 const listenOnce = onetime(listen)
-
 // GitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {

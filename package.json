@@ -4,7 +4,7 @@
   "description": "",
   "private": true,
   "scripts": {
-    "build": "parcel build src/manifest.json --no-content-hash --no-source-maps --dist-dir distribution --no-cache --detailed-report 0",
+    "build": "parcel build src/manifest.json --dist-dir distribution --no-cache --no-source-maps",
     "lint": "run-p lint:*",
     "lint-fix": "run-p 'lint:* -- --fix'",
     "lint:css": "stylelint src/**/*.css",
@@ -40,41 +40,42 @@
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^1.7.0",
+    "abort-utils": "^1.2.0",
     "code-tag": "^1.1.0",
     "debounce-fn": "^1.0.0",
-    "delegate": "^3.2.0",
+    "delay": "^6.0.0",
+    "delegate-it": "6.2.0",
     "dom-chef": "^3.3.0",
+    "dom-loaded": "^3.1.0",
     "github-injection": "^1.1.0",
     "masonry-layout": "^4.2.2",
     "mem": "^8.1.1",
     "onetime": "^2.0.1",
     "select-dom": "^7.1.1",
     "text-field-edit": "^3.0.1",
-    "webext-domain-permission-toggle": "^1.0.1",
-    "webext-dynamic-content-scripts": "^6.0.4",
-    "webextension-polyfill": "^0.7.0"
+    "webext-domain-permission-toggle": "^4.0.1",
+    "webext-dynamic-content-scripts": "^10.0.0",
+    "webextension-polyfill": "0.12.0"
   },
   "devDependencies": {
-    "@babel/plugin-transform-react-jsx": "^7.0.0",
-    "@parcel/config-webextension": "^2.0.0-nightly.2220",
-    "@parcel/optimizer-cssnano": "^2.0.0-nightly.599",
-    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.599",
-    "@parcel/packager-css": "^2.0.0-nightly.599",
-    "@parcel/packager-html": "^2.0.0-nightly.599",
-    "@parcel/transformer-css": "^2.0.0-nightly.599",
-    "@parcel/transformer-html": "^2.0.0-nightly.598",
-    "@parcel/transformer-postcss": "^2.0.0-nightly.599",
-    "@parcel/transformer-posthtml": "^2.0.0-nightly.598",
-    "@parcel/transformer-webextension": "^2.0.0-nightly.2220",
+    "@babel/core": "7.12.0",
+    "@babel/plugin-transform-react-jsx": "7.25.2",
+    "@parcel/config-webextension": "2.12.1-canary.3330",
+    "eslint-config-xo-react": "^0.27.0",
+    "eslint-plugin-react": "^7.35.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
     "npm-run-all": "^4.1.5",
-    "parcel": "^2.0.0-nightly.596",
+    "parcel": "2.0.0-canary.1705",
     "stylelint": "^13.10.0",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-xo-space": "^0.15.1",
-    "xo": "^0.39.1"
+    "xo": "^0.59.3"
   },
   "webExt": {
     "sourceDir": "distribution"
+  },
+  "@parcel/resolver-default": {
+    "packageExports": true
   },
   "targets": {
     "webext-dev": {
