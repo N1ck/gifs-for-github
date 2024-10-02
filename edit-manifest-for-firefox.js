@@ -19,5 +19,6 @@ const newManifest = {
   }
 }
 delete newManifest.background.service_worker;
+delete newManifest.background.type;
 
 fs.writeFileSync(manifestPath, JSON.stringify(newManifest, null, 2));
