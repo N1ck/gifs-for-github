@@ -5,7 +5,9 @@
   "version": "1.2.11",
   "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
   "action": {
-    "default_icon": "images/icon128.png"
+    "default_icon": {
+      "128": "images/icon128.png"
+    }
   },
   "applications": {
     "gecko": {
