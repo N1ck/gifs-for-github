@@ -9,7 +9,7 @@
       "128": "images/icon128.png"
     }
   },
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
       "id": "{443bc2e2-8fa9-44ec-828a-fd84c0664f8d}"
     }
