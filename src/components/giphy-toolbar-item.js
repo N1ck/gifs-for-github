@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
-import React from 'dom-chef'
+import { h } from 'dom-chef';
+import loadingIndicator from './loading-indicator';
 
 export default (
   <details class="ActionBar-item details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger">
@@ -30,15 +31,15 @@ export default (
               autofocus=""
             />
           </div>
+          <div
+            class="ghg-giphy-results"
+            style={{
+              display: 'flex',
+              'align-items': 'center',
+              'justify-content': 'center'
+            }}
+          />
         </div>
-        <div
-          class="ghg-giphy-results"
-          style={{
-            display: 'flex',
-            'align-items': 'center',
-            'justify-content': 'center'
-          }}
-        />
       </tab-list>
     </details-menu>
   </details>

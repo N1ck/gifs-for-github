@@ -16,7 +16,8 @@
   },
   "permissions": [
     "contextMenus",
-    "activeTab"
+    "activeTab",
+    "<all_urls>"
   ],
   "host_permissions": [
     "https://api.giphy.com/*"

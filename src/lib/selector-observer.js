@@ -1,6 +1,6 @@
 // Lovingly copied from https://github.com/refined-github/refined-github/blob/main/source/helpers/selector-observer.tsx
 // eslint-disable-next-line no-unused-vars
-import React from 'dom-chef'
+import { h } from 'dom-chef'
 import {css} from 'code-tag'
 import onetime from 'onetime'
 
@@ -15,7 +15,7 @@ const getListener = (seenMark, selector, callback) =>
       return
     }
 
-    // Removes this specific selector’s animation once it was seen
+    // Removes this specific selector's animation once it was seen
     target.classList.add(seenMark)
 
     callback(target)

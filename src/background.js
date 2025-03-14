@@ -1,6 +1,4 @@
-// eslint-disable-next-line import/no-unassigned-import
-import 'webext-dynamic-content-scripts'
-import addDomainPermissionToggle from 'webext-domain-permission-toggle'
+import 'webext-dynamic-content-scripts';
+import addPermissionToggle from 'webext-permission-toggle';
 
-// Allow the extension to be run on custom domains e.g. GitHub enterprise
-addDomainPermissionToggle()
+addPermissionToggle();
