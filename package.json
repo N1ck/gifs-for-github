@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "webpack",
-    "build:firefox": "webpack && node edit-manifest-for-firefox.js",
+    "build:firefox": "webpack && node edit-manifest-for-firefox.cjs",
     "lint": "run-p lint:*",
     "lint-fix": "run-p 'lint:* -- --fix'",
     "lint:css": "stylelint src/**/*.css",
