@@ -5,7 +5,7 @@ import debounce from 'debounce-fn'
 import delegate from 'delegate'
 import gitHubInjection from 'github-injection'
 // eslint-disable-next-line no-unused-vars
-import React from 'dom-chef'
+import { h } from 'dom-chef'
 import onetime from 'onetime'
 import select from 'select-dom'
 import observeEl from './lib/simplified-element-observer.js'

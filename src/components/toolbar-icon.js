@@ -1,5 +1,9 @@
+/**
+ * Creates a GIPHY toolbar icon
+ * @returns {HTMLElement} The toolbar icon SVG element
+ */
 // eslint-disable-next-line no-unused-vars
-import React from 'dom-chef'
+import { h } from 'dom-chef';
 
 export default (
   <svg
