@@ -22,11 +22,11 @@ A Browser extension that makes it easy to search GIPHY and add a GIF into any Gi
 ```sh
 git clone https://github.com/N1ck/gifs-for-github
 cd gifs-for-github
-yarn install
+pnpm install
 ```
 
 ```sh
-npm run watch # Listen to file changes and automatically rebuild
+pnpm run watch # Listen to file changes and automatically rebuild
 ```
 
 Once built, load it in the browser of your choice with [web-ext](https://github.com/mozilla/web-ext):
@@ -47,4 +47,4 @@ If you want to read about why I built this extension, and some of the challenges
 
 [link-cws]: https://chrome.google.com/webstore/detail/gifs-for-github/dkgjnpbipbdaoaadbdhpiokaemhlphep?hl=en "Version published on Chrome Web Store"
 [link-amo]: https://addons.mozilla.org/en-US/firefox/addon/gifs-for-github/ "Version published on Mozilla Add-ons"
-[link-blogpost]: https://medium.com/we-build-vend/helping-engineers-gif-their-best-life-challenges-faced-when-building-the-gifs-for-github-f0cac9dd8fa5 "Helping Engineers GIF Their Best Life: Challenges Faced When Building the ‘GIFs for GitHub’ Extension"
+[link-blogpost]: https://medium.com/we-build-vend/helping-engineers-gif-their-best-life-challenges-faced-when-building-the-gifs-for-github-f0cac9dd8fa5 "Helping Engineers GIF Their Best Life: Challenges Faced When Building the 'GIFs for GitHub' Extension"
