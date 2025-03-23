@@ -24,7 +24,7 @@ jobs:
           node-version-file: .nvmrc
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.6.5
       - name: install
         run: pnpm install --frozen-lockfile
       - run: pnpm test
@@ -54,7 +54,7 @@ jobs:
           node-version-file: .nvmrc
       - uses: pnpm/action-setup@v2
         with:
-          version: 8
+          version: 10.6.5
       - run: pnpm install --frozen-lockfile
       - name: Build extension
         run: |
