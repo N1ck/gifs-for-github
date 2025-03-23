@@ -3,27 +3,20 @@
   "type": "module",
   "version": "1.2.11",
   "private": true,
-  "description": "",
+  "description": "A browser extension that adds GIF support to GitHub comments",
   "scripts": {
     "build": "webpack",
-    "build:firefox": "webpack && node edit-manifest-for-firefox.cjs",
-    "lint": "run-p lint:*",
-    "lint-fix": "eslint . --fix && prettier . --write",
-    "format": "prettier . --write",
-    "lint:css": "stylelint src/**/*.css",
+    "build:firefox": "node edit-manifest-for-firefox.cjs && webpack",
+    "lint": "run-p lint:* --continue-on-error",
     "lint:js": "eslint .",
-    "lint:prettier": "prettier . --check",
-    "test": "run-p lint:* build",
-    "watch": "webpack --watch"
+    "lint:css": "stylelint src/**/*.css",
+    "fix": "eslint . --fix",
+    "test": "run-s lint build"
   },
   "browserslist": [
     "last 1 Chrome version",
     "last 1 Firefox version"
   ],
-  "prettier": {
-    "bracketSpacing": false,
-    "singleQuote": true
-  },
   "stylelint": {
     "extends": [
       "stylelint-config-xo-space",

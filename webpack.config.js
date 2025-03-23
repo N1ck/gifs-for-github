@@ -1,5 +1,5 @@
 import path from 'node:path';
-import {fileURLToPath} from 'node:url';
+import { fileURLToPath } from 'node:url';
 import CopyPlugin from 'copy-webpack-plugin';
 
 const __filename = fileURLToPath(import.meta.url);

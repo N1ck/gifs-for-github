@@ -1,4 +1,4 @@
-const {readFileSync, writeFileSync, existsSync} = require('node:fs');
+const { readFileSync, writeFileSync, existsSync } = require('node:fs');
 const path = require('node:path');
 
 const manifestPath = path.resolve('./distribution/manifest.json');

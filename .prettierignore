@@ -1,6 +1,0 @@
-distribution
-node_modules
-*.min.*
-package-lock.json
-pnpm-lock.yaml
-.DS_Store

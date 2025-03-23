@@ -5,7 +5,7 @@ import gitHubInjection from 'github-injection';
 import Masonry from 'masonry-layout';
 import onetime from 'onetime';
 import select from 'select-dom';
-import {insert} from 'text-field-edit';
+import { insert } from 'text-field-edit';
 import GiphyToolbarItem from './components/giphy-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
 import Giphy from './lib/giphy.js';
@@ -114,7 +114,7 @@ function addToolbarButton() {
               event.stopPropagation();
             }
           },
-          {capture: true},
+          { capture: true },
         );
 
         toolbarGroup.append(clonedNode);
@@ -147,7 +147,7 @@ function addToolbarButton() {
         // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
         const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10);
         const modifiedWidth = currentWidth.replace(
-          widthValue + 'px',
+          `${widthValue}px`,
           `${widthValue + triggerWidth}px`,
         );
         reviewChangesModal.style.width = modifiedWidth;
@@ -200,9 +200,9 @@ async function performSearch(event) {
   resultsContainer.append(<div>{LoadingIndicator}</div>);
 
   // If there is no search query, get the trending gifs
-  const gifs = await (searchQuery === ''
-    ? giphyClient.getTrending()
-    : giphyClient.search(searchQuery));
+  const gifs = await (searchQuery === '' ?
+      giphyClient.getTrending() :
+      giphyClient.search(searchQuery));
 
   // Clear any previous results
   resultsContainer.innerHTML = '';
@@ -241,7 +241,7 @@ function getFormattedGif(gif) {
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-      gif.images.fixed_width.width,
+    gif.images.fixed_width.width,
   );
 
   // Generate a random pastel colour to use as an image placeholder
@@ -250,11 +250,11 @@ function getFormattedGif(gif) {
   }%)`;
 
   return (
-    <div style={{width: `${MAX_GIF_WIDTH}px`}}>
+    <div style={{ width: `${MAX_GIF_WIDTH}px` }}>
       <img
         src={downsampledUrl}
         height={height}
-        style={{'background-color': hsl}}
+        style={{ 'background-color': hsl }}
         data-full-size-url={fullSizeUrl}
         class="ghg-gif-selection"
       />
@@ -353,16 +353,16 @@ function handleInfiniteScroll(event) {
     clearTimeout(searchTimer);
 
     searchTimer = setTimeout(async () => {
-      const offset = resultsContainer.dataset.offset
-        ? Number.parseInt(resultsContainer.dataset.offset, 10) + 50
-        : 50;
+      const offset = resultsContainer.dataset.offset ?
+        Number.parseInt(resultsContainer.dataset.offset, 10) + 50 :
+        50;
       const searchQuery = resultsContainer.dataset.searchQuery;
 
       resultsContainer.dataset.offset = offset;
 
-      const gifs = await (searchQuery
-        ? giphyClient.search(searchQuery, offset)
-        : giphyClient.getTrending(offset));
+      const gifs = await (searchQuery ?
+          giphyClient.search(searchQuery, offset) :
+          giphyClient.getTrending(offset));
 
       appendResults(resultsContainer, gifs);
     }, 250);
@@ -377,7 +377,7 @@ function listen() {
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keydown',
-    debounce(performSearch, {wait: 400}),
+    debounce(performSearch, { wait: 400 }),
   );
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',

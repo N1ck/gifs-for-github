@@ -10,7 +10,11 @@ export default (
     </summary>
     <details-menu
       class="select-menu-modal position-absolute right-0 ghg-modal"
-      style={{'z-index': 99, width: '480px', 'max-height': '410px'}}
+      style={{
+        zIndex: 99,
+        width: '480px',
+        maxHeight: '410px',
+      }}
       role="menu"
     >
       <div class="select-menu-header d-flex">
@@ -32,8 +36,8 @@ export default (
             class="ghg-giphy-results"
             style={{
               display: 'flex',
-              'align-items': 'center',
-              'justify-content': 'center',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
           />
         </div>

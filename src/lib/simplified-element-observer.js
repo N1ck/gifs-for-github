@@ -1,6 +1,6 @@
 // https://github.com/sindresorhus/refined-github/blob/master/source/libs/simplified-element-observer.js
 export default function observe(element, listener, options) {
-  options = {...options, childList: true};
+  options = { ...options, childList: true };
 
   if (typeof element === 'string') {
     element = document.querySelector(element);

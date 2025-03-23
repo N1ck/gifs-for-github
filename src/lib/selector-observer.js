@@ -1,4 +1,4 @@
-import {css} from 'code-tag';
+import { css } from 'code-tag';
 // Lovingly copied from https://github.com/refined-github/refined-github/blob/main/source/helpers/selector-observer.tsx
 
 import onetime from 'onetime';
@@ -25,13 +25,13 @@ const registerAnimation = onetime(() => {
   document.head.append(<style>{`@keyframes ${animation} {}`}</style>);
 });
 
-export default function observe(selectors, listener, {signal} = {}) {
+export default function observe(selectors, listener, { signal } = {}) {
   if (signal?.aborted) {
     return;
   }
 
   const selector = String(selectors); // Array#toString() creates a comma-separated string
-  const seenMark = 'rgh-seen-' + getCallerID();
+  const seenMark = `rgh-seen-${getCallerID()}`;
 
   registerAnimation();
 
@@ -49,6 +49,6 @@ export default function observe(selectors, listener, {signal} = {}) {
   globalThis.addEventListener(
     'animationstart',
     getListener(seenMark, selector, listener),
-    {signal},
+    { signal },
   );
 }

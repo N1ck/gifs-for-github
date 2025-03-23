@@ -13,7 +13,7 @@ export default function getCallerID(ancestor = 1) {
 export function getStackLine(stack, line) {
   return (
     stack
-      // Remove non-stacktrace line from array (missing in Firefox) #6032
+    // Remove non-stacktrace line from array (missing in Firefox) #6032
       .replace('Error: Get stack\n', '')
       .split('\n')
       .at(line) ?? warn(stack, line)
@@ -21,6 +21,6 @@ export function getStackLine(stack, line) {
 }
 
 function warn(stack, line) {
-  console.warn('The stack doesn’t have the line', {line, stack});
+  console.warn('The stack doesn’t have the line', { line, stack });
   return Math.random().toString(16);
 }
