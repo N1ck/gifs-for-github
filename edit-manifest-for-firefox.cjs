@@ -25,6 +25,22 @@ if (newManifest.action) {
   delete newManifest.action;
 }
 
+// Move host permissions to regular permissions
+if (newManifest.host_permissions) {
+  newManifest.permissions = [...newManifest.permissions, ...newManifest.host_permissions];
+  delete newManifest.host_permissions;
+}
+
+if (newManifest.optional_host_permissions) {
+  newManifest.permissions = [...newManifest.permissions, ...newManifest.optional_host_permissions];
+  delete newManifest.optional_host_permissions;
+}
+
+// Convert web_accessible_resources to v2 format
+if (newManifest.web_accessible_resources?.[0]?.resources) {
+  newManifest.web_accessible_resources = newManifest.web_accessible_resources[0].resources;
+}
+
 delete newManifest.background.service_worker;
 delete newManifest.background.type;
 

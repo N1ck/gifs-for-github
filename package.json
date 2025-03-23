@@ -6,7 +6,7 @@
   "description": "A browser extension that adds GIF support to GitHub comments",
   "scripts": {
     "build": "webpack",
-    "build:firefox": "node edit-manifest-for-firefox.cjs && webpack",
+    "build:firefox": "webpack && node edit-manifest-for-firefox.cjs",
     "lint": "run-p lint:* --continue-on-error",
     "lint:js": "eslint .",
     "lint:css": "stylelint src/**/*.css",
