@@ -22,9 +22,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
       - name: install
-        run: yarn install --frozen-lockfile
-      - run: yarn test
+        run: pnpm install --frozen-lockfile
+      - run: pnpm test
       - uses: fregante/daily-version-action@v2
         name: Create tag if necessary
         id: daily-version
@@ -49,9 +52,21 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
-      - run: yarn install --frozen-lockfile
-      - run: yarn run build
-      - name: Update extension’s meta
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+      - run: pnpm install --frozen-lockfile
+      - name: Build extension
+        run: |
+          case ${{ matrix.command }} in
+            chrome)
+              pnpm build
+              ;;
+            firefox)
+              pnpm build:firefox
+              ;;
+          esac
+      - name: Update extension's meta
         run: >-
           npx dot-json@1 $DIRECTORY/manifest.json version ${{
           needs.Version.outputs.version }}
