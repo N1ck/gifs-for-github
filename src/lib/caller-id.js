@@ -1,5 +1,5 @@
 // Lovingly copied from https://github.com/refined-github/refined-github/blob/main/source/helpers/caller-id.ts
-import hashString from './hash-string.js'
+import hashString from './hash-string.js';
 
 /**
 Get unique ID by using the line:column of the call (or its parents) as seed. Every call from the same place will return the same ID, as long as the index is set to the parents that matters to you.
@@ -7,7 +7,7 @@ Get unique ID by using the line:column of the call (or its parents) as seed. Eve
 */
 export default function getCallerID(ancestor = 1) {
   /* +1 because the first line comes from this function */
-  return hashString(getStackLine(new Error('Get stack').stack, ancestor + 1))
+  return hashString(getStackLine(new Error('Get stack').stack, ancestor + 1));
 }
 
 export function getStackLine(stack, line) {
@@ -17,10 +17,10 @@ export function getStackLine(stack, line) {
       .replace('Error: Get stack\n', '')
       .split('\n')
       .at(line) ?? warn(stack, line)
-  )
+  );
 }
 
 function warn(stack, line) {
-  console.warn('The stack doesn’t have the line', {line, stack})
-  return Math.random().toString(16)
+  console.warn('The stack doesn’t have the line', {line, stack});
+  return Math.random().toString(16);
 }

@@ -1,6 +1,3 @@
-// eslint-disable-next-line no-unused-vars
-import React from 'dom-chef'
-
 export default (
   <div class="anim-pulse">
     <svg
@@ -17,4 +14,4 @@ export default (
       />
     </svg>
   </div>
-)
+);

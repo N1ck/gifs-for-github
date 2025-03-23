@@ -2,8 +2,6 @@
  * Creates a GIPHY toolbar icon
  * @returns {HTMLElement} The toolbar icon SVG element
  */
-// eslint-disable-next-line no-unused-vars
-import { h } from 'dom-chef';
 
 export default (
   <svg
@@ -32,4 +30,4 @@ export default (
       <rect id="Rectangle" fill="#00CCFF" x="0" y="14" width="12" height="2" />
     </g>
   </svg>
-)
+);
