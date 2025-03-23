@@ -1,97 +1,90 @@
 {
-  "name": "github-gifs",
-  "type": "module",
-  "version": "1.2.11",
-  "private": true,
-  "description": "",
-  "scripts": {
-    "build": "webpack",
-    "build:firefox": "webpack && node edit-manifest-for-firefox.cjs",
-    "lint": "run-p lint:*",
-    "lint-fix": "eslint . --fix && prettier . --write",
-    "format": "prettier . --write",
-    "lint:css": "stylelint src/**/*.css",
-    "lint:js": "eslint .",
-    "lint:prettier": "prettier . --check",
-    "test": "run-p lint:* build",
-    "watch": "webpack --watch"
-  },
-  "browserslist": [
-    "last 1 Chrome version",
-    "last 1 Firefox version"
-  ],
-  "prettier": {
-    "bracketSpacing": false,
-    "singleQuote": true
-  },
-  "stylelint": {
-    "extends": [
-      "stylelint-config-xo-space",
-      "stylelint-config-prettier"
-    ]
-  },
-  "dependencies": {
-    "@giphy/js-fetch-api": "^1.7.0",
-    "code-tag": "^1.1.0",
-    "debounce-fn": "^1.0.0",
-    "delegate": "^3.2.0",
-    "dom-chef": "^5.1.1",
-    "github-injection": "^1.1.0",
-    "masonry-layout": "^4.2.2",
-    "mem": "^8.1.1",
-    "onetime": "^2.0.1",
-    "select-dom": "^7.1.1",
-    "text-field-edit": "^3.0.1",
-    "webext-content-scripts": "^2.7.2",
-    "webext-detect": "^5.3.2",
-    "webext-dynamic-content-scripts": "^10.0.4",
-    "webext-patterns": "^1.5.0",
-    "webext-permission-toggle": "^6.0.1",
-    "webext-permissions": "^3.1.4",
-    "webext-tools": "^3.0.0",
-    "webextension-polyfill": "^0.7.0"
-  },
-  "devDependencies": {
-    "@antfu/eslint-config": "^4.11.0",
-    "@babel/core": "^7.26.10",
-    "@babel/plugin-transform-react-jsx": "^7.0.0",
-    "@babel/preset-env": "^7.26.9",
-    "@babel/preset-react": "^7.26.3",
-    "@parcel/config-webextension": "2.12.0",
-    "@parcel/optimizer-cssnano": "^2.0.0-nightly.599",
-    "@parcel/optimizer-htmlnano": "^2.0.0-nightly.599",
-    "@parcel/packager-css": "^2.0.0-nightly.599",
-    "@parcel/packager-html": "^2.0.0-nightly.599",
-    "@parcel/transformer-css": "^2.0.0-nightly.599",
-    "@parcel/transformer-html": "^2.0.0-nightly.598",
-    "@parcel/transformer-postcss": "^2.0.0-nightly.599",
-    "@parcel/transformer-posthtml": "^2.0.0-nightly.598",
-    "@parcel/transformer-webextension": "^2.12.0",
-    "babel-loader": "^10.0.0",
-    "copy-webpack-plugin": "^13.0.0",
-    "css-loader": "^7.1.2",
-    "eslint": "^9.23.0",
-    "npm-run-all": "^4.1.5",
-    "parcel": "2.12.0",
-    "prettier": "^3.5.3",
-    "react": "^19.0.0",
-    "style-loader": "^4.0.0",
-    "stylelint": "^13.10.0",
-    "stylelint-config-prettier": "^8.0.2",
-    "stylelint-config-xo-space": "^0.15.1",
-    "webpack": "^5.98.0",
-    "webpack-cli": "^6.0.1",
-    "xo": "^0.60.0"
-  },
-  "webExt": {
-    "sourceDir": "distribution"
-  },
-  "targets": {
-    "webext-dev": {
-      "sourceMap": {
-        "inline": true,
-        "inlineSources": true
-      }
-    }
-  }
+	"name": "github-gifs",
+	"type": "module",
+	"version": "1.2.11",
+	"private": true,
+	"description": "A browser extension that adds GIF support to GitHub comments",
+	"scripts": {
+		"build": "webpack",
+		"build:firefox": "node edit-manifest-for-firefox.cjs && webpack",
+		"lint": "run-p lint:* --continue-on-error",
+		"lint:js": "eslint .",
+		"lint:css": "stylelint src/**/*.css",
+		"fix": "eslint . --fix",
+		"test": "run-s lint build"
+	},
+	"browserslist": [
+		"last 1 Chrome version",
+		"last 1 Firefox version"
+	],
+	"stylelint": {
+		"extends": [
+			"stylelint-config-xo-space",
+			"stylelint-config-prettier"
+		]
+	},
+	"dependencies": {
+		"@giphy/js-fetch-api": "^1.7.0",
+		"code-tag": "^1.1.0",
+		"debounce-fn": "^1.0.0",
+		"delegate": "^3.2.0",
+		"dom-chef": "^5.1.1",
+		"github-injection": "^1.1.0",
+		"masonry-layout": "^4.2.2",
+		"mem": "^8.1.1",
+		"onetime": "^2.0.1",
+		"select-dom": "^7.1.1",
+		"text-field-edit": "^3.0.1",
+		"webext-content-scripts": "^2.7.2",
+		"webext-detect": "^5.3.2",
+		"webext-dynamic-content-scripts": "^10.0.4",
+		"webext-patterns": "^1.5.0",
+		"webext-permission-toggle": "^6.0.1",
+		"webext-permissions": "^3.1.4",
+		"webext-tools": "^3.0.0",
+		"webextension-polyfill": "^0.7.0"
+	},
+	"devDependencies": {
+		"@antfu/eslint-config": "^4.11.0",
+		"@babel/core": "^7.26.10",
+		"@babel/plugin-transform-react-jsx": "^7.0.0",
+		"@babel/preset-env": "^7.26.9",
+		"@babel/preset-react": "^7.26.3",
+		"@parcel/config-webextension": "2.12.0",
+		"@parcel/optimizer-cssnano": "^2.0.0-nightly.599",
+		"@parcel/optimizer-htmlnano": "^2.0.0-nightly.599",
+		"@parcel/packager-css": "^2.0.0-nightly.599",
+		"@parcel/packager-html": "^2.0.0-nightly.599",
+		"@parcel/transformer-css": "^2.0.0-nightly.599",
+		"@parcel/transformer-html": "^2.0.0-nightly.598",
+		"@parcel/transformer-postcss": "^2.0.0-nightly.599",
+		"@parcel/transformer-posthtml": "^2.0.0-nightly.598",
+		"@parcel/transformer-webextension": "^2.12.0",
+		"babel-loader": "^10.0.0",
+		"copy-webpack-plugin": "^13.0.0",
+		"css-loader": "^7.1.2",
+		"eslint": "^9.23.0",
+		"npm-run-all": "^4.1.5",
+		"parcel": "2.12.0",
+		"prettier": "^3.5.3",
+		"react": "^19.0.0",
+		"style-loader": "^4.0.0",
+		"stylelint": "^13.10.0",
+		"stylelint-config-prettier": "^8.0.2",
+		"stylelint-config-xo-space": "^0.15.1",
+		"webpack": "^5.98.0",
+		"webpack-cli": "^6.0.1",
+		"xo": "^0.60.0"
+	},
+	"webExt": {
+		"sourceDir": "distribution"
+	},
+	"targets": {
+		"webext-dev": {
+			"sourceMap": {
+				"inline": true,
+				"inlineSources": true
+			}
+		}
+	}
 }
