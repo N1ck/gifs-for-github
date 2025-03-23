@@ -18,13 +18,14 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 20
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.5
       - name: Use Node.js from .nvmrc
         uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.6.5
+          cache: 'pnpm'
       - name: install
         run: pnpm install --frozen-lockfile
       - run: pnpm test
@@ -48,13 +49,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.5
       - name: Use Node.js from .nvmrc
         uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 10.6.5
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
       - name: Build extension
         run: |
