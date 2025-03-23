@@ -1,10 +1,10 @@
-import mem from 'mem'
-import delegate from 'delegate'
+import delegate from 'delegate';
+import mem from 'mem';
 
 // This lets you call `onDiffFileLoad` multiple times with the same callback but only ever a `load` listener is registered
 const getDeduplicatedHandler = mem((callback) => (event) => {
-  event.delegateTarget.addEventListener('load', callback)
-})
+  event.delegateTarget.addEventListener('load', callback);
+});
 
 function createFragmentLoadListener(fragmentSelector, callback) {
   // `loadstart` is fired when the fragment is still attached so event delegation works.
@@ -15,23 +15,23 @@ function createFragmentLoadListener(fragmentSelector, callback) {
     fragmentSelector,
     'loadstart',
     getDeduplicatedHandler(callback),
-    true
-  )
+    true,
+  );
 }
 
 const diffFileFragmentsSelector = [
   'include-fragment.diff-progressive-loader', // Incremental file loader on scroll
   'include-fragment.js-diff-entry-loader', // File diff loader on clicking "Load Diff"
-  '#files_bucket:not(.pull-request-tab-content) include-fragment' // Diff on compare pages
-].join(',')
+  '#files_bucket:not(.pull-request-tab-content) include-fragment', // Diff on compare pages
+].join(',');
 
 export function onDiffFileLoad(callback) {
-  return createFragmentLoadListener(diffFileFragmentsSelector, callback)
+  return createFragmentLoadListener(diffFileFragmentsSelector, callback);
 }
 
 export function onCommentEdit(callback) {
   return createFragmentLoadListener(
     '.js-comment-edit-form-deferred-include-fragment',
-    callback
-  )
+    callback,
+  );
 }

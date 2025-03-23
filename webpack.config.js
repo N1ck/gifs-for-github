@@ -1,33 +1,37 @@
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+import path from 'node:path';
+import {fileURLToPath} from 'node:url';
+import CopyPlugin from 'copy-webpack-plugin';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   mode: 'development',
   devtool: 'source-map',
   entry: {
+    main: './src/main.js',
     background: './src/background.js',
-    main: './src/main.js'
   },
   output: {
     path: path.resolve(__dirname, 'distribution'),
     filename: '[name].js',
-    clean: true
+    clean: true,
   },
   plugins: [
     new CopyPlugin({
       patterns: [
         {
           from: 'src/manifest.json',
-          to: 'manifest.json'
+          to: 'manifest.json',
         },
         {
           from: 'src/images',
-          to: 'images'
+          to: 'images',
         },
         {
           from: 'src/*.css',
-          to: '[name][ext]'
-        }
+          to: '[name][ext]',
+        },
       ],
     }),
   ],
@@ -44,15 +48,19 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: [
-              '@babel/preset-env',
-              ['@babel/preset-react', { runtime: 'automatic' }]
-            ]
-          }
-        }
-      }
+              [
+                '@babel/preset-react',
+                {
+                  runtime: 'automatic',
+                },
+              ],
+            ],
+          },
+        },
+      },
     ],
   },
   resolve: {
-    extensions: ['.js', '.jsx']
-  }
+    extensions: ['.js', '.jsx'],
+  },
 };

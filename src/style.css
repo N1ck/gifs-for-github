@@ -18,13 +18,13 @@
 }
 
 .ghg-powered-by-giphy {
-  background: url("chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png");
+  background: url('chrome-extension://__MSG_@@extension_id__/images/powered-by-giphy.png');
   background-size: auto 16px;
   background-repeat: no-repeat;
   width: 144.45px;
 }
 
-[data-color-mode="dark"][data-dark-theme*="dark"] .ghg-powered-by-giphy {
+[data-color-mode='dark'][data-dark-theme*='dark'] .ghg-powered-by-giphy {
   filter: invert(100%);
 }
 

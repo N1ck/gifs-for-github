@@ -1,35 +1,34 @@
-import './style.css'
-import {insert} from 'text-field-edit'
-import Masonry from 'masonry-layout'
-import debounce from 'debounce-fn'
-import delegate from 'delegate'
-import gitHubInjection from 'github-injection'
-// eslint-disable-next-line no-unused-vars
-import { h } from 'dom-chef'
-import onetime from 'onetime'
-import select from 'select-dom'
-import observeEl from './lib/simplified-element-observer.js'
-import LoadingIndicator from './components/loading-indicator.js'
-import GiphyToolbarItem from './components/giphy-toolbar-item.js'
-import Giphy from './lib/giphy.js'
+import debounce from 'debounce-fn';
+import delegate from 'delegate';
 
-import observe from './lib/selector-observer.js'
+import gitHubInjection from 'github-injection';
+import Masonry from 'masonry-layout';
+import onetime from 'onetime';
+import select from 'select-dom';
+import {insert} from 'text-field-edit';
+import GiphyToolbarItem from './components/giphy-toolbar-item.js';
+import LoadingIndicator from './components/loading-indicator.js';
+import Giphy from './lib/giphy.js';
+import observe from './lib/selector-observer.js';
+import observeElement from './lib/simplified-element-observer.js';
+
+import './style.css';
 
 // Create a new Giphy Client
-const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ')
+const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ');
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
 async function watchGiphyModals(element) {
-  const parent = element.closest('.ghg-has-giphy-field')
-  const resultsContainer = select('.ghg-giphy-results', parent)
-  const searchInput = select('.ghg-search-input', parent)
+  const parent = element.closest('.ghg-has-giphy-field');
+  const resultsContainer = select('.ghg-giphy-results', parent);
+  const searchInput = select('.ghg-search-input', parent);
   const initInfiniteScroll = onetime(
-    bindInfiniteScroll.bind(this, resultsContainer)
-  )
+    bindInfiniteScroll.bind(this, resultsContainer),
+  );
 
   // Bind the scroll event to the results container
-  initInfiniteScroll()
+  initInfiniteScroll();
 
   // If the modal has been opened and there is no search term,
   // and no search results, load the trending gifs
@@ -38,19 +37,19 @@ async function watchGiphyModals(element) {
     resultsContainer.dataset.hasResults === 'false'
   ) {
     // Set the loading state
-    resultsContainer.append(<div>{LoadingIndicator}</div>)
+    resultsContainer.append(<div>{LoadingIndicator}</div>);
 
     // Fetch the trending gifs
-    const gifs = await giphyClient.getTrending()
+    const gifs = await giphyClient.getTrending();
 
     // Clear the loading indicator
-    resultsContainer.innerHTML = ''
+    resultsContainer.innerHTML = '';
 
     // Add the gifs to the results container
     if (gifs && gifs.length > 0) {
-      appendResults(resultsContainer, gifs)
+      appendResults(resultsContainer, gifs);
     } else {
-      showNoResultsFound(resultsContainer)
+      showNoResultsFound(resultsContainer);
     }
   } else {
     setTimeout(
@@ -61,12 +60,12 @@ async function watchGiphyModals(element) {
             itemSelector: '.ghg-giphy-results div',
             columnWidth: 145,
             gutter: 10,
-            transitionDuration: '0.2s'
+            transitionDuration: '0.2s',
           },
-          2000
+          2000,
         ),
-      10
-    )
+      10,
+    );
   }
 }
 
@@ -75,19 +74,19 @@ async function watchGiphyModals(element) {
  */
 function addToolbarButton() {
   for (const toolbar of select.all(
-    'form:not(.ghg-has-giphy-field) markdown-toolbar'
+    'form:not(.ghg-has-giphy-field) markdown-toolbar',
   )) {
-    const form = toolbar.closest('form')
+    const form = toolbar.closest('form');
 
-    const reviewChangesModal = toolbar.closest('#review-changes-modal')
+    const reviewChangesModal = toolbar.closest('#review-changes-modal');
     const reviewChangesList = toolbar.closest(
-      '#review-changes-modal .SelectMenu-list'
-    )
+      '#review-changes-modal .SelectMenu-list',
+    );
 
     // Observe the toolbars without the giphy field, add
     // the toolbar item to any new toolbars.
-    observeEl(toolbar, () => {
-      let toolbarGroup = select('.ActionBar-item-container', toolbar)
+    observeElement(toolbar, () => {
+      let toolbarGroup = select('.ActionBar-item-container', toolbar);
 
       // GitHub released a new comment box with the above selector,
       // however, some fields still use the previous experience.
@@ -95,15 +94,15 @@ function addToolbarButton() {
       if (!toolbarGroup) {
         toolbarGroup = select.all(
           '.toolbar-commenting > :not([class*="--hidden"]):not(button):not(.ml-auto)',
-          toolbar
-        )
-        toolbarGroup = toolbarGroup[toolbarGroup.length - 1]
+          toolbar,
+        );
+        toolbarGroup = toolbarGroup.at(-1);
       }
 
       if (toolbarGroup) {
         // Append the Giphy button to the toolbar
         // cloneNode is necessary, without it, it will only be appended to the last toolbarGroup
-        const clonedNode = GiphyToolbarItem.cloneNode(true)
+        const clonedNode = GiphyToolbarItem.cloneNode(true);
 
         // Hack to allow space to work in the input field.
         // It was affected by this PR, which also broke space in the "Saved replies" menu item
@@ -112,51 +111,51 @@ function addToolbarButton() {
           'keydown',
           (event) => {
             if (event.code === 'Space') {
-              event.stopPropagation()
+              event.stopPropagation();
             }
           },
-          {capture: true}
-        )
+          {capture: true},
+        );
 
-        toolbarGroup.append(clonedNode)
-        select('.ghg-giphy-results', clonedNode)
+        toolbarGroup.append(clonedNode);
+        select('.ghg-giphy-results', clonedNode);
 
-        form.classList.add('ghg-has-giphy-field')
+        form.classList.add('ghg-has-giphy-field');
 
         // Clears the gif search input field and results.
         // We have to do this because when navigating, github will refuse to
         // load the giphy URLs as it violates their Content Security Policy.
-        resetGiphyModals()
+        resetGiphyModals();
       }
-    })
+    });
 
     // Add a specific class if the form is in the review changes modal, or if it is in the review changes list
     // Otherwise the GIF selection popover will not be visible.
     if (reviewChangesModal !== null) {
-      reviewChangesModal.classList.add('ghg-in-review-changes-modal')
+      reviewChangesModal.classList.add('ghg-in-review-changes-modal');
 
       // The Review changes modal sets an inline width of min(640px, 100vw - 2rem);
       // our button takes up another 32px so we need to adjust the inline style to account for that, otherwise it's hidden.
-      const currentWidth = reviewChangesModal.style.width
+      const currentWidth = reviewChangesModal.style.width;
 
-      const trigger = select('.ghg-trigger', form)
+      const trigger = select('.ghg-trigger', form);
       // Calculate the width of the GIF button, so that we can adjust the toolbar min size to accommodate for it.
       // Also add 8 px buffer
-      const triggerWidth = (trigger?.offsetWidth || 32) + 8
+      const triggerWidth = (trigger?.offsetWidth || 32) + 8;
 
       if (currentWidth.includes('px')) {
         // Extracts the value from the string (e.g., 640 from "min(640px, 100vw - 2rem)")
-        const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10)
+        const widthValue = Number.parseInt(currentWidth.match(/\d+/)[0], 10);
         const modifiedWidth = currentWidth.replace(
           widthValue + 'px',
-          `${widthValue + triggerWidth}px`
-        )
-        reviewChangesModal.style.width = modifiedWidth
+          `${widthValue + triggerWidth}px`,
+        );
+        reviewChangesModal.style.width = modifiedWidth;
       }
     }
 
     if (reviewChangesList !== null) {
-      reviewChangesList.classList.add('ghg-in-review-changes-list')
+      reviewChangesList.classList.add('ghg-in-review-changes-list');
     }
   }
 }
@@ -165,7 +164,7 @@ function addToolbarButton() {
  * Watches for comments that might be dynamically added, then adds the button the the WYSIWYG when they are.
  */
 function observeDiscussion() {
-  observe('markdown-toolbar', () => addToolbarButton())
+  observe('markdown-toolbar', () => addToolbarButton());
 }
 
 /**
@@ -174,13 +173,13 @@ function observeDiscussion() {
  */
 function resetGiphyModals() {
   for (const ghgModal of select.all('.ghg-modal')) {
-    const resultContainer = select('.ghg-giphy-results', ghgModal)
-    const searchInput = select('.ghg-search-input', ghgModal)
-    searchInput.value = ''
-    resultContainer.innerHTML = ''
-    resultContainer.dataset.offset = 0
-    resultContainer.dataset.searchQuery = ''
-    resultContainer.dataset.hasResults = false
+    const resultContainer = select('.ghg-giphy-results', ghgModal);
+    const searchInput = select('.ghg-search-input', ghgModal);
+    searchInput.value = '';
+    resultContainer.innerHTML = '';
+    resultContainer.dataset.offset = 0;
+    resultContainer.dataset.searchQuery = '';
+    resultContainer.dataset.hasResults = false;
   }
 }
 
@@ -189,30 +188,30 @@ function resetGiphyModals() {
  * to the modal.
  */
 async function performSearch(event) {
-  event.preventDefault()
-  const searchQuery = event.target.value
-  const parent = event.target.closest('.ghg-has-giphy-field')
-  const resultsContainer = select('.ghg-giphy-results', parent)
+  event.preventDefault();
+  const searchQuery = event.target.value;
+  const parent = event.target.closest('.ghg-has-giphy-field');
+  const resultsContainer = select('.ghg-giphy-results', parent);
 
-  resultsContainer.dataset.offset = 0
-  resultsContainer.dataset.searchQuery = searchQuery
+  resultsContainer.dataset.offset = 0;
+  resultsContainer.dataset.searchQuery = searchQuery;
 
   // Show a loading indicator
-  resultsContainer.append(<div>{LoadingIndicator}</div>)
+  resultsContainer.append(<div>{LoadingIndicator}</div>);
 
   // If there is no search query, get the trending gifs
   const gifs = await (searchQuery === ''
     ? giphyClient.getTrending()
-    : giphyClient.search(searchQuery))
+    : giphyClient.search(searchQuery));
 
   // Clear any previous results
-  resultsContainer.innerHTML = ''
+  resultsContainer.innerHTML = '';
 
   // Add the GIFs to the results container
   if (gifs && gifs.length > 0) {
-    appendResults(resultsContainer, gifs)
+    appendResults(resultsContainer, gifs);
   } else {
-    showNoResultsFound(resultsContainer)
+    showNoResultsFound(resultsContainer);
   }
 }
 
@@ -220,35 +219,35 @@ async function performSearch(event) {
  * Returns a GIF in the format required to display in the modal search results.
  */
 function getFormattedGif(gif) {
-  const MAX_GIF_WIDTH = 145
+  const MAX_GIF_WIDTH = 145;
 
   // GitHub has a 10MB image upload limit,
   // however, when embedding an image URL
   // in a GitHub comment box, GitHub will proxy
   // the image and if the image is above 5MB it fails.
-  const GITHUB_MAX_SIZE = 5 * 1024 * 1024
-  let fullSizeUrl
-  const downsampledUrl = gif.images.fixed_width_downsampled.url
+  const GITHUB_MAX_SIZE = 5 * 1024 * 1024;
+  let fullSizeUrl;
+  const downsampledUrl = gif.images.fixed_width_downsampled.url;
 
   if (gif.images.original.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.original.url
+    fullSizeUrl = gif.images.original.url;
   } else if (gif.images.downsized_medium.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.downsized_medium.url
+    fullSizeUrl = gif.images.downsized_medium.url;
   } else if (gif.images.fixed_width.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.fixed_width.url
+    fullSizeUrl = gif.images.fixed_width.url;
   } else {
-    fullSizeUrl = downsampledUrl
+    fullSizeUrl = downsampledUrl;
   }
 
   const height = Math.floor(
     (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-      gif.images.fixed_width.width
-  )
+      gif.images.fixed_width.width,
+  );
 
   // Generate a random pastel colour to use as an image placeholder
   const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
     85 + 10 * Math.random()
-  }%)`
+  }%)`;
 
   return (
     <div style={{width: `${MAX_GIF_WIDTH}px`}}>
@@ -260,27 +259,27 @@ function getFormattedGif(gif) {
         class="ghg-gif-selection"
       />
     </div>
-  )
+  );
 }
 
 function showNoResultsFound(resultsContainer) {
   resultsContainer.append(
-    <div class="ghg-no-results-found">No GIFs found.</div>
-  )
+    <div class="ghg-no-results-found">No GIFs found.</div>,
+  );
 }
 
 /**
  * Appends a collection of GIFs to the provided result container.
  */
 function appendResults(resultsContainer, gifs) {
-  resultsContainer.dataset.hasResults = true
+  resultsContainer.dataset.hasResults = true;
 
-  const gifsToAdd = []
+  const gifsToAdd = [];
 
   for (const gif of gifs) {
-    const img = getFormattedGif(gif)
-    gifsToAdd.push(img)
-    resultsContainer.append(img)
+    const img = getFormattedGif(gif);
+    gifsToAdd.push(img);
+    resultsContainer.append(img);
   }
 
   setTimeout(() => {
@@ -291,20 +290,20 @@ function appendResults(resultsContainer, gifs) {
         itemSelector: '.ghg-giphy-results div',
         columnWidth: 145,
         gutter: 10,
-        transitionDuration: '0.2s'
+        transitionDuration: '0.2s',
       },
-      10
-    )
-  })
+      10,
+    );
+  });
 }
 
 /**
  * Insert text in the targeted textarea and focus the content
  */
 function insertText(textarea, content) {
-  textarea.focus()
+  textarea.focus();
 
-  insert(textarea, content)
+  insert(textarea, content);
 }
 
 /**
@@ -313,16 +312,16 @@ function insertText(textarea, content) {
  * Closes the GIPHY modal and inserts the selected GIF in the textarea.
  */
 function selectGif(event) {
-  const form = event.target.closest('.ghg-has-giphy-field')
-  const trigger = select('.ghg-trigger', form)
-  const gifUrl = event.target.dataset.fullSizeUrl
-  const textArea = select('.js-comment-field', form)
+  const form = event.target.closest('.ghg-has-giphy-field');
+  const trigger = select('.ghg-trigger', form);
+  const gifUrl = event.target.dataset.fullSizeUrl;
+  const textArea = select('.js-comment-field', form);
 
   // Close the modal
-  trigger.removeAttribute('open')
+  trigger.removeAttribute('open');
 
   // Focuses the textarea and inserts the text where the cursor was last
-  insertText(textArea, `<img src="${gifUrl}"/>`)
+  insertText(textArea, `<img src="${gifUrl}"/>`);
 }
 
 /**
@@ -331,42 +330,42 @@ function selectGif(event) {
  */
 function preventFormSubmitOnEnter(event) {
   if (event.keyCode === 13) {
-    event.preventDefault()
-    return false
+    event.preventDefault();
+    return false;
   }
 }
 
 function bindInfiniteScroll(resultsContainer) {
-  resultsContainer.addEventListener('scroll', handleInfiniteScroll)
+  resultsContainer.addEventListener('scroll', handleInfiniteScroll);
 }
 
 function handleInfiniteScroll(event) {
-  let searchTimer
-  const resultsContainer = event.target
-  const currentScrollPosition = resultsContainer.scrollTop + 395
-  const INFINITE_SCROLL_PX_OFFSET = 100
+  let searchTimer;
+  const resultsContainer = event.target;
+  const currentScrollPosition = resultsContainer.scrollTop + 395;
+  const INFINITE_SCROLL_PX_OFFSET = 100;
 
   if (
     currentScrollPosition + INFINITE_SCROLL_PX_OFFSET >
     Number.parseInt(resultsContainer.style.height, 10)
   ) {
     // Start the infinite scroll after the last scroll event
-    clearTimeout(searchTimer)
+    clearTimeout(searchTimer);
 
     searchTimer = setTimeout(async () => {
       const offset = resultsContainer.dataset.offset
         ? Number.parseInt(resultsContainer.dataset.offset, 10) + 50
-        : 50
-      const searchQuery = resultsContainer.dataset.searchQuery
+        : 50;
+      const searchQuery = resultsContainer.dataset.searchQuery;
 
-      resultsContainer.dataset.offset = offset
+      resultsContainer.dataset.offset = offset;
 
       const gifs = await (searchQuery
         ? giphyClient.search(searchQuery, offset)
-        : giphyClient.getTrending(offset))
+        : giphyClient.getTrending(offset));
 
-      appendResults(resultsContainer, gifs)
-    }, 250)
+      appendResults(resultsContainer, gifs);
+    }, 250);
   }
 }
 
@@ -374,32 +373,32 @@ function handleInfiniteScroll(event) {
  * Defines the event listeners
  */
 function listen() {
-  delegate('.ghg-gif-selection', 'click', selectGif)
+  delegate('.ghg-gif-selection', 'click', selectGif);
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keydown',
-    debounce(performSearch, {wait: 400})
-  )
+    debounce(performSearch, {wait: 400}),
+  );
   delegate(
     '.ghg-has-giphy-field .ghg-search-input',
     'keypress',
-    preventFormSubmitOnEnter
-  )
+    preventFormSubmitOnEnter,
+  );
 
   // The `open` attribute is added after this handler is run,
   // so the selector is inverted
   delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
     // What comes after <summary> is the dropdown
-    watchGiphyModals(event.delegateTarget)
-  })
+    watchGiphyModals(event.delegateTarget);
+  });
 }
 
 // Ensure we only bind events to elements once
-const listenOnce = onetime(listen)
+const listenOnce = onetime(listen);
 
 // GitHubInjection fires when there's a pjax:end event
 // on github, this happens when a page is loaded
 gitHubInjection(() => {
-  listenOnce()
-  observeDiscussion()
-})
+  listenOnce();
+  observeDiscussion();
+});

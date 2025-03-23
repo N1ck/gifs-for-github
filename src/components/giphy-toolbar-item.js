@@ -1,7 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import { h } from 'dom-chef';
-import loadingIndicator from './loading-indicator';
-
+// We need loadingIndicator for the search results
 export default (
   <details class="ActionBar-item details-reset details-overlay toolbar-item select-menu select-menu-modal-right ghg-trigger">
     <summary
@@ -9,7 +6,7 @@ export default (
       aria-label="Insert a GIF"
       aria-haspopup="menu"
     >
-      {'GIF'}
+      GIF
     </summary>
     <details-menu
       class="select-menu-modal position-absolute right-0 ghg-modal"
@@ -36,11 +33,11 @@ export default (
             style={{
               display: 'flex',
               'align-items': 'center',
-              'justify-content': 'center'
+              'justify-content': 'center',
             }}
           />
         </div>
       </tab-list>
     </details-menu>
   </details>
-)
+);
