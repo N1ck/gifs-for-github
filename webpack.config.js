@@ -1,4 +1,5 @@
 import path from 'node:path';
+import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import CopyPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
@@ -37,6 +38,9 @@ export default {
           to: '[name][ext]',
         },
       ],
+    }),
+    new webpack.DefinePlugin({
+      DEBUG: JSON.stringify(process.env.DEBUG === 'true'),
     }),
   ],
   module: {
