@@ -31,7 +31,13 @@ pnpm run watch # Listen to file changes and automatically rebuild
 
 ### Debug Mode
 
-When developing, you can enable debug mode by setting `DEBUG = true` in `src/main.js` to output helpful logs.
+When developing, you can enable debug mode by setting the DEBUG environment variable:
+
+```bash
+DEBUG=true npm run build
+```
+
+This will output helpful logs prefixed with 🎨 when using the extension.
 
 Once built, load it in the browser of your choice with [web-ext](https://github.com/mozilla/web-ext):
 

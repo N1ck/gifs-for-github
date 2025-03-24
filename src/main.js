@@ -12,14 +12,17 @@ import observe from './lib/selector-observer.js';
 
 import './style.css';
 
+// Global declaration for the webpack-injected DEBUG constant
+/* global DEBUG */
+
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ');
 
-// Debug mode flag (set to true for development)
-const DEBUG = false;
+// Debug mode is controlled by the DEBUG environment variable
+// Set with DEBUG=true npm run build
 
 function debugLog(...messages) {
-  if (DEBUG) {
+  if (typeof DEBUG !== 'undefined' && DEBUG) {
     console.log('🎨 [GIFs for GitHub]:', ...messages);
   }
 }
@@ -549,4 +552,3 @@ onetime(() => {
 document.addEventListener('turbo:render', () => {
   resetGiphyModals();
 });
-
