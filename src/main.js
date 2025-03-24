@@ -545,3 +545,8 @@ onetime(() => {
   debugLog('Page navigation detected');
   init();
 });
+// Handle page transitions
+document.addEventListener('turbo:render', () => {
+  resetGiphyModals();
+});
+
