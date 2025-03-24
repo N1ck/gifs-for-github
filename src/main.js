@@ -1,7 +1,6 @@
 import debounce from 'debounce-fn';
 import delegate from 'delegate';
 
-import gitHubInjection from 'github-injection';
 import Masonry from 'masonry-layout';
 import onetime from 'onetime';
 import select from 'select-dom';
@@ -15,18 +14,32 @@ import './style.css';
 
 // Create a new Giphy Client
 const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ');
+
+// Debug mode flag (set to true for development)
+const DEBUG = false;
+
+/**
+ * Debug logging helper
+ * @param {...*} messages - Messages to log in debug mode
+ */
+function debugLog(...messages) {
+  if (DEBUG) {
+    console.log('[GIFs for GitHub]:', ...messages);
+  }
+}
+
 /**
  * Responds to the GIPHY modal being opened or closed.
  */
 async function watchGiphyModals(element) {
   if (!element) {
-    console.log('No element provided to watchGiphyModals');
+    debugLog('No element provided to watchGiphyModals');
     return;
   }
 
   const parent = element.closest('.ghg-has-giphy-field');
   if (!parent) {
-    console.log('Could not find parent .ghg-has-giphy-field');
+    debugLog('Could not find parent .ghg-has-giphy-field');
     return;
   }
 
@@ -34,7 +47,7 @@ async function watchGiphyModals(element) {
   const searchInput = select('.ghg-search-input', parent);
 
   if (!resultsContainer || !searchInput) {
-    console.log('Could not find required elements:', { resultsContainer, searchInput });
+    debugLog('Could not find required elements:', { resultsContainer, searchInput });
     return;
   }
 
@@ -101,7 +114,7 @@ async function watchGiphyModals(element) {
  */
 function addToolbarButton(toolbar) {
   if (!toolbar) {
-    console.log('No toolbar found to add button to');
+    debugLog('No toolbar found to add button to');
     return;
   }
 
@@ -128,7 +141,7 @@ function addToolbarButton(toolbar) {
   }
 
   if (!toolbarGroup) {
-    console.log('No suitable toolbar group found in:', toolbar);
+    debugLog('No suitable toolbar group found in:', toolbar);
     return;
   }
 
@@ -166,7 +179,7 @@ function addToolbarButton(toolbar) {
   }
 
   if (!form || !textArea) {
-    console.log('Could not find required form elements:', {
+    debugLog('Could not find required form elements:', {
       form,
       textArea,
       formParents: toolbar.closest('form, .js-previewable-comment-form, [role="form"]')?.outerHTML,
@@ -276,7 +289,7 @@ const listenOnce = onetime(listen);
  * and watching for new ones.
  */
 function init() {
-  console.log('Initializing GIFs for GitHub...');
+  debugLog('Initializing GIFs for GitHub...');
 
   // Ensure we only bind events to elements once
   listenOnce();
@@ -285,10 +298,10 @@ function init() {
   // Use a selector that matches both new and old GitHub styles
   const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-giphy-button), markdown-toolbar:not(.ghg-has-giphy-button)';
   const existingToolbars = select.all(toolbarSelector);
-  console.log('Found existing toolbars:', existingToolbars.length);
+  debugLog('Found existing toolbars:', existingToolbars.length);
 
   if (existingToolbars.length === 0) {
-    console.log('No toolbars found matching selector:', toolbarSelector);
+    debugLog('No toolbars found matching selector:', toolbarSelector);
   }
 
   for (const toolbar of existingToolbars) {
@@ -297,7 +310,7 @@ function init() {
 
   // Watch for new toolbars
   observe(toolbarSelector, (toolbar) => {
-    console.log('New toolbar detected:', toolbar);
+    debugLog('New toolbar detected:', toolbar);
     addToolbarButton(toolbar);
   });
 }
@@ -498,7 +511,7 @@ function preventFormSubmitOnEnter(event) {
 
 function bindInfiniteScroll(resultsContainer) {
   if (!resultsContainer) {
-    console.log('No results container provided to bindInfiniteScroll');
+    debugLog('No results container provided to bindInfiniteScroll');
     return;
   }
 
@@ -511,7 +524,7 @@ function bindInfiniteScroll(resultsContainer) {
 
 function handleInfiniteScroll(event) {
   if (!event || !event.target) {
-    console.log('Invalid scroll event:', event);
+    debugLog('Invalid scroll event:', event);
     return;
   }
 
@@ -550,8 +563,8 @@ function handleInfiniteScroll(event) {
   }
 }
 
-// Watch for GitHub navigation events
-gitHubInjection(() => {
-  console.log('Page navigation detected');
+// Listen for page navigation
+onetime(() => {
+  debugLog('Page navigation detected');
   init();
 });
