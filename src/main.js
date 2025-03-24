@@ -103,7 +103,6 @@ async function watchGiphyModals(element) {
 
 /**
  * Adds the GIPHY button to markdown toolbars.
- * Uses CSS animations for better performance than MutationObserver.
  */
 function addToolbarButton(toolbar) {
   if (!toolbar) {
