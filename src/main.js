@@ -24,7 +24,7 @@ const DEBUG = false;
  */
 function debugLog(...messages) {
   if (DEBUG) {
-    console.log('[GIFs for GitHub]:', ...messages);
+    console.log('🎨 [GIFs for GitHub]:', ...messages);
   }
 }
 
@@ -33,13 +33,11 @@ function debugLog(...messages) {
  */
 async function watchGiphyModals(element) {
   if (!element) {
-    debugLog('No element provided to watchGiphyModals');
     return;
   }
 
   const parent = element.closest('.ghg-has-giphy-field');
   if (!parent) {
-    debugLog('Could not find parent .ghg-has-giphy-field');
     return;
   }
 
@@ -47,7 +45,6 @@ async function watchGiphyModals(element) {
   const searchInput = select('.ghg-search-input', parent);
 
   if (!resultsContainer || !searchInput) {
-    debugLog('Could not find required elements:', { resultsContainer, searchInput });
     return;
   }
 
@@ -81,8 +78,7 @@ async function watchGiphyModals(element) {
       } else {
         showNoResultsFound(resultsContainer);
       }
-    } catch (error) {
-      console.error('Error loading trending GIFs:', error);
+    } catch {
       resultsContainer.innerHTML = '<div class="ghg-error">Error loading GIFs. Please try again.</div>';
     }
   } else {
@@ -99,8 +95,9 @@ async function watchGiphyModals(element) {
           });
           // Keep reference to prevent garbage collection
           resultsContainer.masonryLayout = masonryLayout;
-        } catch (error) {
-          console.error('Error initializing Masonry:', error);
+        } catch {
+          // Silently fail if masonry initialization fails
+          // This is not critical to the functionality
         }
       },
       10,
@@ -114,7 +111,6 @@ async function watchGiphyModals(element) {
  */
 function addToolbarButton(toolbar) {
   if (!toolbar) {
-    debugLog('No toolbar found to add button to');
     return;
   }
 
@@ -141,17 +137,12 @@ function addToolbarButton(toolbar) {
   }
 
   if (!toolbarGroup) {
-    debugLog('No suitable toolbar group found in:', toolbar);
     return;
   }
 
   // Find the parent form and text area
-  // Start from the toolbar and traverse up to find the closest form-like container
-  let form;
+  let form = toolbar.closest('form, .js-previewable-comment-form, [role="form"]');
   let textArea;
-
-  // First try direct form elements
-  form = toolbar.closest('form, .js-previewable-comment-form, [role="form"]');
 
   // If we haven't found a form, try finding the closest container with a textarea
   if (form === null) {
@@ -179,15 +170,6 @@ function addToolbarButton(toolbar) {
   }
 
   if (!form || !textArea) {
-    debugLog('Could not find required form elements:', {
-      form,
-      textArea,
-      formParents: toolbar.closest('form, .js-previewable-comment-form, [role="form"]')?.outerHTML,
-      textAreaCandidates: form ? select.all('textarea', form).length : 0,
-      toolbarHTML: toolbar.outerHTML,
-      toolbarParent: toolbar.parentElement?.outerHTML,
-      toolbarGrandParent: toolbar.parentElement?.parentElement?.outerHTML,
-    });
     return;
   }
 
@@ -196,11 +178,7 @@ function addToolbarButton(toolbar) {
     return;
   }
 
-  // Add the classes to mark the form and toolbar
-  form.classList.add('ghg-has-giphy-field');
-  toolbar.classList.add('ghg-has-giphy-button');
-
-  // Clone and append the Giphy button
+  // Create the GIF button
   const button = GiphyToolbarItem.cloneNode(true);
 
   // Fix space key handling in the input field
@@ -227,6 +205,10 @@ function addToolbarButton(toolbar) {
     // For old GitHub style, add at the end
     toolbarGroup.append(button);
   }
+
+  // Mark the toolbar and form as processed
+  toolbar.classList.add('ghg-has-giphy-button');
+  form.classList.add('ghg-has-giphy-field');
 
   // Handle review changes modal positioning
   const reviewChangesModal = toolbar.closest('#review-changes-modal');

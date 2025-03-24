@@ -29,6 +29,10 @@ pnpm install
 pnpm run watch # Listen to file changes and automatically rebuild
 ```
 
+### Debug Mode
+
+When developing, you can enable debug mode by setting `DEBUG = true` in `src/main.js` to output helpful logs.
+
 Once built, load it in the browser of your choice with [web-ext](https://github.com/mozilla/web-ext):
 
 ```sh
