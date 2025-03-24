@@ -8,7 +8,7 @@ import { insert } from 'text-field-edit';
 import GiphyToolbarItem from './components/giphy-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
 import Giphy from './lib/giphy.js';
-import { observe } from './lib/selector-observer.js';
+import observe from './lib/selector-observer.js';
 
 import './style.css';
 
@@ -18,10 +18,6 @@ const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ');
 // Debug mode flag (set to true for development)
 const DEBUG = false;
 
-/**
- * Debug logging helper
- * @param {...*} messages - Messages to log in debug mode
- */
 function debugLog(...messages) {
   if (DEBUG) {
     console.log('🎨 [GIFs for GitHub]:', ...messages);
