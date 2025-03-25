@@ -31,8 +31,12 @@ if (newManifest.host_permissions) {
   delete newManifest.host_permissions;
 }
 
+// Move optional host permissions to optional permissions
 if (newManifest.optional_host_permissions) {
-  newManifest.permissions = [...newManifest.permissions, ...newManifest.optional_host_permissions];
+  if (!newManifest.optional_permissions) {
+    newManifest.optional_permissions = [];
+  }
+  newManifest.optional_permissions = [...newManifest.optional_permissions, ...newManifest.optional_host_permissions];
   delete newManifest.optional_host_permissions;
 }
 
