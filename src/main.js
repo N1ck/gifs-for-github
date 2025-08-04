@@ -36,7 +36,6 @@ async function watchGiphyModals(element) {
   }
 
   const parent = element.closest('.ghg-has-giphy-field');
-
   if (!parent) {
     return;
   }
@@ -207,14 +206,6 @@ function addToolbarButton(toolbar) {
 
     searchInput.addEventListener('keypress', (event) => {
       preventFormSubmitOnEnter(event);
-    });
-  }
-
-  // Add direct event listener for GIF selection clicks
-  const gifSelections = button.querySelectorAll('.ghg-gif-selection');
-  for (const gifSelection of gifSelections) {
-    gifSelection.addEventListener('click', (event) => {
-      selectGif(event);
     });
   }
 
