@@ -266,23 +266,11 @@ function addToolbarButton(toolbar) {
 }
 
 /**
- * Defines the event listeners
- */
-function listen() {
-  delegate('.ghg-gif-selection', 'click', selectGif);
-}
-
-// Ensure we only bind events to elements once
-const listenOnce = onetime(listen);
-
-/**
  * Initialize the extension by adding buttons to existing toolbars
  * and watching for new ones.
  */
 function init() {
   debugLog('Initializing GIFs for GitHub...');
-  // Ensure we only bind events to elements once
-  listenOnce();
 
   // Add buttons to existing toolbars
   // Use a selector that matches both new and old GitHub styles
