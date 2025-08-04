@@ -36,6 +36,7 @@ async function watchGiphyModals(element) {
   }
 
   const parent = element.closest('.ghg-has-giphy-field');
+
   if (!parent) {
     return;
   }
@@ -190,6 +191,33 @@ function addToolbarButton(toolbar) {
     { capture: true },
   );
 
+  // Add direct event listeners right after creating the button
+  const summaryElement = button.querySelector('summary');
+  if (summaryElement) {
+    summaryElement.addEventListener('click', () => {
+      watchGiphyModals(button);
+    });
+  }
+
+  const searchInput = button.querySelector('.ghg-search-input');
+  if (searchInput) {
+    searchInput.addEventListener('keydown', debounce((event) => {
+      performSearch(event);
+    }, { wait: 400 }));
+
+    searchInput.addEventListener('keypress', (event) => {
+      preventFormSubmitOnEnter(event);
+    });
+  }
+
+  // Add direct event listener for GIF selection clicks
+  const gifSelections = button.querySelectorAll('.ghg-gif-selection');
+  for (const gifSelection of gifSelections) {
+    gifSelection.addEventListener('click', (event) => {
+      selectGif(event);
+    });
+  }
+
   // Add the button at the appropriate position
   if (isNewToolbar) {
     // For new GitHub style, add before the last button (usually slash commands)
@@ -241,24 +269,8 @@ function addToolbarButton(toolbar) {
  * Defines the event listeners
  */
 function listen() {
+  // Use delegate for GIF selection clicks (these work fine)
   delegate('.ghg-gif-selection', 'click', selectGif);
-  delegate(
-    '.ghg-has-giphy-field .ghg-search-input',
-    'keydown',
-    debounce(performSearch, { wait: 400 }),
-  );
-  delegate(
-    '.ghg-has-giphy-field .ghg-search-input',
-    'keypress',
-    preventFormSubmitOnEnter,
-  );
-
-  // The `open` attribute is added after this handler is run,
-  // so the selector is inverted
-  delegate('.ghg-trigger:not([open]) > summary', 'click', (event) => {
-    // What comes after <summary> is the dropdown
-    watchGiphyModals(event.delegateTarget);
-  });
 }
 
 // Ensure we only bind events to elements once
@@ -269,8 +281,6 @@ const listenOnce = onetime(listen);
  * and watching for new ones.
  */
 function init() {
-  debugLog('Initializing GIFs for GitHub...');
-
   // Ensure we only bind events to elements once
   listenOnce();
 
@@ -278,11 +288,6 @@ function init() {
   // Use a selector that matches both new and old GitHub styles
   const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-giphy-button), markdown-toolbar:not(.ghg-has-giphy-button)';
   const existingToolbars = select.all(toolbarSelector);
-  debugLog('Found existing toolbars:', existingToolbars.length);
-
-  if (existingToolbars.length === 0) {
-    debugLog('No toolbars found matching selector:', toolbarSelector);
-  }
 
   for (const toolbar of existingToolbars) {
     addToolbarButton(toolbar);
@@ -290,7 +295,6 @@ function init() {
 
   // Watch for new toolbars
   observe(toolbarSelector, (toolbar) => {
-    debugLog('New toolbar detected:', toolbar);
     addToolbarButton(toolbar);
   });
 }
@@ -326,7 +330,12 @@ async function performSearch(event) {
   event.preventDefault();
   const searchQuery = event.target.value;
   const parent = event.target.closest('.ghg-has-giphy-field');
+
   const resultsContainer = select('.ghg-giphy-results', parent);
+
+  if (!resultsContainer) {
+    return;
+  }
 
   resultsContainer.dataset.offset = 0;
   resultsContainer.dataset.searchQuery = searchQuery;
@@ -415,6 +424,14 @@ function appendResults(resultsContainer, gifs) {
     const img = getFormattedGif(gif);
     gifsToAdd.push(img);
     resultsContainer.append(img);
+
+    // Add direct event listener to the GIF element
+    const gifSelection = img.querySelector('.ghg-gif-selection');
+    if (gifSelection) {
+      gifSelection.addEventListener('click', (event) => {
+        selectGif(event);
+      });
+    }
   }
 
   setTimeout(() => {
@@ -491,7 +508,6 @@ function preventFormSubmitOnEnter(event) {
 
 function bindInfiniteScroll(resultsContainer) {
   if (!resultsContainer) {
-    debugLog('No results container provided to bindInfiniteScroll');
     return;
   }
 
@@ -504,7 +520,6 @@ function bindInfiniteScroll(resultsContainer) {
 
 function handleInfiniteScroll(event) {
   if (!event || !event.target) {
-    debugLog('Invalid scroll event:', event);
     return;
   }
 
@@ -545,7 +560,6 @@ function handleInfiniteScroll(event) {
 
 // Listen for page navigation
 onetime(() => {
-  debugLog('Page navigation detected');
   init();
 });
 // Handle page transitions
