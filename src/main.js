@@ -1,6 +1,4 @@
 import debounce from 'debounce-fn';
-import delegate from 'delegate';
-
 import Masonry from 'masonry-layout';
 import onetime from 'onetime';
 import select from 'select-dom';

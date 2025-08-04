@@ -27,7 +27,6 @@
     "@giphy/js-fetch-api": "^1.7.0",
     "code-tag": "^1.1.0",
     "debounce-fn": "^1.0.0",
-    "delegate": "^3.2.0",
     "dom-chef": "^5.1.1",
     "github-injection": "^1.1.0",
     "masonry-layout": "^4.2.2",
