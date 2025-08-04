@@ -269,7 +269,6 @@ function addToolbarButton(toolbar) {
  * Defines the event listeners
  */
 function listen() {
-  // Use delegate for GIF selection clicks (these work fine)
   delegate('.ghg-gif-selection', 'click', selectGif);
 }
 
@@ -281,6 +280,7 @@ const listenOnce = onetime(listen);
  * and watching for new ones.
  */
 function init() {
+  debugLog('Initializing GIFs for GitHub...');
   // Ensure we only bind events to elements once
   listenOnce();
 
@@ -288,6 +288,11 @@ function init() {
   // Use a selector that matches both new and old GitHub styles
   const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-giphy-button), markdown-toolbar:not(.ghg-has-giphy-button)';
   const existingToolbars = select.all(toolbarSelector);
+  debugLog('Found existing toolbars:', existingToolbars.length);
+
+  if (existingToolbars.length === 0) {
+    debugLog('No toolbars found matching selector:', toolbarSelector);
+  }
 
   for (const toolbar of existingToolbars) {
     addToolbarButton(toolbar);
@@ -508,6 +513,7 @@ function preventFormSubmitOnEnter(event) {
 
 function bindInfiniteScroll(resultsContainer) {
   if (!resultsContainer) {
+    debugLog('No results container provided to bindInfiniteScroll');
     return;
   }
 
@@ -520,6 +526,7 @@ function bindInfiniteScroll(resultsContainer) {
 
 function handleInfiniteScroll(event) {
   if (!event || !event.target) {
+    debugLog('Invalid scroll event:', event);
     return;
   }
 
@@ -560,6 +567,7 @@ function handleInfiniteScroll(event) {
 
 // Listen for page navigation
 onetime(() => {
+  debugLog('Page navigation detected');
   init();
 });
 // Handle page transitions
