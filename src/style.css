@@ -49,3 +49,14 @@
 .ActionBar-item-container {
   overflow: visible !important;
 }
+
+/* Fix for GitHub's new PR review dialog UI that cuts off GIF popups */
+/* Using attribute selectors to target classes that start with these prefixes */
+[class*="prc-Dialog-DialogOverflowWrapper-"] {
+  overflow: visible !important;
+  z-index: 100 !important;
+}
+
+[class*="prc-Dialog-Body-"] {
+  overflow: visible !important;
+}
