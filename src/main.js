@@ -116,7 +116,7 @@ function addToolbarButton(toolbar) {
   }
 
   // Find the toolbar group to add our button to
-  const isNewToolbar = toolbar.classList.contains('Toolbar-module__toolbar--CkIKP');
+  const isNewToolbar = toolbar.getAttribute('aria-label') === 'Formatting tools';
   let toolbarGroup;
 
   if (isNewToolbar) {
@@ -277,6 +277,7 @@ function init() {
 
   // Watch for new toolbars
   observe(toolbarSelector, (toolbar) => {
+    debugLog('New toolbar found:', toolbar);
     addToolbarButton(toolbar);
   });
 }
