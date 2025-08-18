@@ -7,7 +7,7 @@ import GiphyToolbarItem from './components/giphy-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
 import Giphy from './lib/giphy.js';
 import observe from './lib/selector-observer.js';
-
+import { getSetting } from './lib/settings.js';
 import './style.css';
 
 // Global declaration for the webpack-injected DEBUG constant
@@ -450,7 +450,7 @@ function insertText(textarea, content) {
  *
  * Closes the GIPHY modal and inserts the selected GIF in the textarea.
  */
-function selectGif(event) {
+async function selectGif(event) {
   const form = event.target.closest('.ghg-has-giphy-field');
   const trigger = select('.ghg-trigger', form);
   const gifUrl = event.target.dataset.fullSizeUrl;
@@ -474,8 +474,25 @@ function selectGif(event) {
   // Close the modal
   trigger.removeAttribute('open');
 
-  // Focuses the textarea and inserts the text where the cursor was last
-  insertText(textArea, `<img src="${gifUrl}"/>`);
+  // Get the search query if available
+  const searchInput = select('.ghg-search-input', form);
+  const searchQuery = searchInput ? searchInput.value : '';
+
+  // Check if collapsible GIFs setting is enabled
+  const useCollapsibleGifs = await getSetting('useCollapsibleGifs');
+
+  if (useCollapsibleGifs) {
+    // Create collapsible template with the search query as the summary text
+    const summaryText = searchQuery || 'GIF';
+    const template = `<details open>
+  <summary><i>${summaryText}</i></summary>
+  <img src="${gifUrl}"/>
+</details>`;
+    insertText(textArea, template);
+  } else {
+    // Insert plain GIF as before
+    insertText(textArea, `<img src="${gifUrl}"/>`);
+  }
 }
 
 /**
