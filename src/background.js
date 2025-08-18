@@ -10,12 +10,6 @@ async function getSettings() {
   return browser.storage.sync.get(defaultSettings);
 }
 
-// Save settings
-async function saveSettings(settings) {
-  await browser.storage.sync.set(settings);
-  return true;
-}
-
 // Initialize context menu
 async function initContextMenu() {
   const settings = await getSettings();
@@ -38,7 +32,7 @@ async function initContextMenu() {
 // Handle context menu clicks
 browser.contextMenus.onClicked.addListener(async (info) => {
   if (info.menuItemId === 'toggle-collapsible-gifs') {
-    await saveSettings({ useCollapsibleGifs: info.checked });
+    await browser.storage.sync.set({ useCollapsibleGifs: info.checked });
   }
 });
 
