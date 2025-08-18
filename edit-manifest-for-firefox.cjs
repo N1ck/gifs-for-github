@@ -31,22 +31,6 @@ if (newManifest.host_permissions) {
   delete newManifest.host_permissions;
 }
 
-// For Firefox, storage can't be optional, so move it to required permissions
-if (newManifest.optional_permissions && newManifest.optional_permissions.includes('storage')) {
-  // Remove 'storage' from optional permissions
-  newManifest.optional_permissions = newManifest.optional_permissions.filter(p => p !== 'storage');
-
-  // Add 'storage' to required permissions if not already there
-  if (!newManifest.permissions.includes('storage')) {
-    newManifest.permissions.push('storage');
-  }
-
-  // Remove optional_permissions key if empty
-  if (newManifest.optional_permissions.length === 0) {
-    delete newManifest.optional_permissions;
-  }
-}
-
 // Move optional host permissions to optional permissions
 if (newManifest.optional_host_permissions) {
   if (!newManifest.optional_permissions) {
