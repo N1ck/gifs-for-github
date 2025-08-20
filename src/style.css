@@ -60,3 +60,11 @@
 [class*="prc-Dialog-Body-"] {
   overflow: visible !important;
 }
+
+[class*="AnchoredReviewBody-"] {
+  overflow: visible !important;
+}
+
+[class*="prc-Overlay-Overlay"] {
+  overflow: visible !important;
+}
