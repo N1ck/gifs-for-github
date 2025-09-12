@@ -207,15 +207,10 @@ function addToolbarButton(toolbar) {
     });
   }
 
-  // Add the button at the appropriate position
+  // Add the button at the end of the toolbar
   if (isNewToolbar) {
-    // For new GitHub style, add before the last button (usually slash commands)
-    const lastButton = toolbarGroup.lastElementChild;
-    if (lastButton) {
-      lastButton.before(button);
-    } else {
-      toolbarGroup.append(button);
-    }
+    // For new GitHub style, add to the end of the toolbar
+    toolbar.append(button);
   } else {
     // For old GitHub style, add at the end
     toolbarGroup.append(button);
