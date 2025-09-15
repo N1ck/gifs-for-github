@@ -25,7 +25,7 @@ export default (
         <div class="select-menu-filters">
           <div class="select-menu-text-filter">
             <input
-              type="text"
+              type="search"
               class="form-control ghg-search-input"
               placeholder="Search for a GIF…"
               aria-label="Search for a GIF"
