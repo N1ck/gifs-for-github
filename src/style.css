@@ -61,6 +61,25 @@
 }
 
 /*
+ * Fixes the GIF menu not overflowing the toolbar
+ * Allows the GIF dropdown to be visible outside the toolbar container
+ */
+.ghg-has-giphy-field
+[class*="Toolbar-module__toolbar"][class*="prc-ActionBar-Nav"] {
+  overflow: visible !important;
+}
+
+/*
+ * Fixes the GIF menu appearing below the code diff
+ * When the toolbar is inside a table row (e.g., in PR diff views),
+ * this ensures the GIF dropdown appears above other content
+ */
+.ghg-has-toolbar {
+  position: relative;
+  z-index: 5;
+}
+
+/*
  * Override for GitHub's toolbar alignment bug
  *
  * When the review modal gets a vertical scrollbar, GitHub's media query
