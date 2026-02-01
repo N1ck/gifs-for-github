@@ -115,6 +115,13 @@ function addToolbarButton(toolbar) {
     return;
   }
 
+  // Check if the toolbar is inside a table row (e.g., in diff views)
+  const tableRow = toolbar.closest('tr');
+  if (tableRow) {
+    debugLog('Found toolbar inside table row, adding class');
+    tableRow.classList.add('ghg-has-toolbar');
+  }
+
   // Find the toolbar group to add our button to
   const isNewToolbar = toolbar.getAttribute('aria-label') === 'Formatting tools';
   let toolbarGroup;
