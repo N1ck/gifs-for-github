@@ -98,3 +98,11 @@
 .ghg-has-giphy-field [class*="Toolbar-module__toolbar"] {
   justify-content: flex-end !important
 }
+
+
+/*
+ * Fixes the close issue / comment buttons appearing above the GIF Menu
+ */
+.ghg-has-giphy-field {
+  z-index: 1;
+}
