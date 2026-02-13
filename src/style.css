@@ -65,7 +65,7 @@
  * Allows the GIF dropdown to be visible outside the toolbar container
  */
 .ghg-has-giphy-field
-[class*="Toolbar-module__toolbar"][class*="prc-ActionBar-Nav"] {
+[class*="prc-ActionBar-Nav"] {
   overflow: visible !important;
 }
 
