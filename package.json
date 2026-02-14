@@ -71,7 +71,7 @@
     "stylelint": "^13.10.0",
     "stylelint-config-prettier": "^8.0.2",
     "stylelint-config-xo-space": "^0.15.1",
-    "webpack": "^5.98.0",
+    "webpack": "^5.104.1",
     "webpack-cli": "^6.0.1",
     "xo": "^0.60.0"
   },
