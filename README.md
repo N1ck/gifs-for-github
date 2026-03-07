@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=N1ck&project=gifs-for-github&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 # <img src="src/images/icon48.png" width="45" align="left"> GIFs for GitHub
 
 A Browser extension that makes it easy to search GIPHY and add a GIF into any GitHub comment box.
