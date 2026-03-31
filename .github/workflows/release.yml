@@ -29,6 +29,8 @@ jobs:
       - name: install
         run: pnpm install --frozen-lockfile
       - run: pnpm test
+        env:
+          KLIPY_API_KEY: ${{ secrets.KLIPY_API_KEY }}
       - uses: fregante/daily-version-action@v2
         name: Create tag if necessary
         id: daily-version
@@ -59,6 +61,8 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Build extension
+        env:
+          KLIPY_API_KEY: ${{ secrets.KLIPY_API_KEY }}
         run: |
           case ${{ matrix.command }} in
             chrome)
