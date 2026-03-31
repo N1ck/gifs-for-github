@@ -5,6 +5,7 @@ import select from 'select-dom';
 import { insert } from 'text-field-edit';
 import GifToolbarItem from './components/gif-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
+import Giphy from './lib/giphy.js';
 import Klipy from './lib/klipy.js';
 import observe from './lib/selector-observer.js';
 import { getSetting } from './lib/settings.js';
@@ -13,7 +14,14 @@ import './style.css';
 // Global declaration for the webpack-injected DEBUG constant
 /* global DEBUG */
 
-const gifProvider = new Klipy();
+let gifProvider = new Klipy();
+
+// Switch to GIPHY if the user has provided their own API key
+getSetting('giphyApiKey').then((key) => {
+  if (key) {
+    gifProvider = new Giphy(key);
+  }
+});
 
 // Debug mode is controlled by the DEBUG environment variable
 // Set with DEBUG=true npm run build
@@ -349,26 +357,8 @@ async function performSearch(event) {
  */
 function getFormattedGif(gif) {
   const MAX_GIF_WIDTH = 145;
-  const { hd, md, sm, xs } = gif.file;
-
-  // GitHub has a 10MB image upload limit,
-  // however, when embedding an image URL
-  // in a GitHub comment box, GitHub will proxy
-  // the image and if the image is above 5MB it fails.
-  const GITHUB_MAX_SIZE = 5 * 1024 * 1024;
-
-  let fullSizeUrl;
-  if (hd.gif.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = hd.gif.url;
-  } else if (md.gif.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = md.gif.url;
-  } else if (sm.gif.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = sm.gif.url;
-  } else {
-    fullSizeUrl = xs.gif.url;
-  }
-
-  const height = Math.floor((sm.gif.height * MAX_GIF_WIDTH) / sm.gif.width);
+  const { previewUrl, previewWidth, previewHeight, fullSizeUrl } = gifProvider.getGifUrls(gif);
+  const height = Math.floor((previewHeight * MAX_GIF_WIDTH) / previewWidth);
 
   // Generate a random pastel colour to use as an image placeholder
   const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
@@ -378,7 +368,7 @@ function getFormattedGif(gif) {
   return (
     <div style={{ width: `${MAX_GIF_WIDTH}px` }}>
       <img
-        src={sm.gif.url}
+        src={previewUrl}
         height={height}
         style={{ 'background-color': hsl }}
         data-full-size-url={fullSizeUrl}

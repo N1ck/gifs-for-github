@@ -14,6 +14,7 @@ export default {
   entry: {
     main: './src/main.js',
     background: './src/background.js',
+    options: './src/options.js',
   },
   output: {
     path: path.resolve(__dirname, 'distribution'),
@@ -37,6 +38,10 @@ export default {
         {
           from: 'src/*.css',
           to: '[name][ext]',
+        },
+        {
+          from: 'src/options.html',
+          to: 'options.html',
         },
       ],
     }),

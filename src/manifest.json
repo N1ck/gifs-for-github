@@ -9,6 +9,10 @@
       "128": "images/icon128.png"
     }
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "{443bc2e2-8fa9-44ec-828a-fd84c0664f8d}"

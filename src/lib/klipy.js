@@ -42,4 +42,27 @@ export default class Klipy extends GifProvider {
     const json = await response.json();
     return json.data.data;
   }
+
+  getGifUrls(gif) {
+    const { hd, md, sm, xs } = gif.file;
+    const GITHUB_MAX_SIZE = 5 * 1024 * 1024;
+
+    let fullSizeUrl;
+    if (hd.gif.size < GITHUB_MAX_SIZE) {
+      fullSizeUrl = hd.gif.url;
+    } else if (md.gif.size < GITHUB_MAX_SIZE) {
+      fullSizeUrl = md.gif.url;
+    } else if (sm.gif.size < GITHUB_MAX_SIZE) {
+      fullSizeUrl = sm.gif.url;
+    } else {
+      fullSizeUrl = xs.gif.url;
+    }
+
+    return {
+      previewUrl: sm.gif.url,
+      previewWidth: sm.gif.width,
+      previewHeight: sm.gif.height,
+      fullSizeUrl,
+    };
+  }
 }
