@@ -382,7 +382,6 @@ function getFormattedGif(gif) {
         height={height}
         style={{ 'background-color': hsl }}
         data-full-size-url={fullSizeUrl}
-        data-reported-size={hd.gif.url === fullSizeUrl ? hd.gif.size : md.gif.url === fullSizeUrl ? md.gif.size : sm.gif.url === fullSizeUrl ? sm.gif.size : xs.gif.size}
         class="ghg-gif-selection"
       />
     </div>
@@ -454,7 +453,7 @@ async function selectGif(event) {
   const form = event.target.closest('.ghg-has-gif-field');
   const trigger = select('.ghg-trigger', form);
   const gifUrl = event.target.dataset.fullSizeUrl;
-  debugLog(`Inserting GIF: ${gifUrl} (reported size: ${event.target.dataset.reportedSize} bytes)`);
+  debugLog(`Inserting GIF: ${gifUrl}`);
 
   // Use the same comprehensive set of selectors we use when finding the textarea
   const textArea = form.querySelector([
