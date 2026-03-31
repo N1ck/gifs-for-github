@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@giphy/js-fetch-api':
-        specifier: ^1.7.0
-        version: 1.8.1
       code-tag:
         specifier: ^1.1.0
         version: 1.2.0
@@ -117,6 +114,9 @@ importers:
       css-loader:
         specifier: ^7.1.2
         version: 7.1.2(webpack@5.98.0)
+      dotenv:
+        specifier: ^17.3.1
+        version: 17.3.1
       eslint:
         specifier: ^9.23.0
         version: 9.23.0
@@ -828,15 +828,6 @@ packages:
   '@eslint/plugin-kit@0.2.7':
     resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@giphy/js-fetch-api@1.8.1':
-    resolution: {integrity: sha512-8xr888QCYvtEiguAoS+rOLj8lLposvxFORAmwfW/MEqLYM9baCS7anydweaV9AuNO1CUQdf8IE/vLPfYlhZeOQ==}
-
-  '@giphy/js-types@2.1.0':
-    resolution: {integrity: sha512-s67HZskpuIEViUTTdpoZk4LMwjaU7M0ZbMZuG2ZAzlSIgsJHH0AbrR2U+0DU93oKVY3uJThqGMDrSyDz6GCNjQ==}
-
-  '@giphy/js-util@1.10.0':
-    resolution: {integrity: sha512-i5wPJ8ljaoNAOSrqeapdD7u0jtb8IdRbgm0HUHFRKv5zWn2qy3zfs/YpN4cR1SZ9uDFP9gesO2dRL0Pqso7rpQ==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -2402,9 +2393,6 @@ packages:
     resolution: {integrity: sha512-cgwlv/1iFQiFnU96XXgROh8xTeetsnJiDsTc7TYCLFd9+/WNkIqPTxiM/8pSd8VIrhXGTf1Ny1q1hquVqDJB5w==}
     engines: {node: '>= 4'}
 
-  dompurify@2.5.8:
-    resolution: {integrity: sha512-o1vSNgrmYMQObbSSvF/1brBYEQPHhV1+gsmrusO7/GXtp1T9rCS8cXFqVxK/9crT1jA6Ccv+5MTSjBNqr7Sovw==}
-
   domutils@1.7.0:
     resolution: {integrity: sha512-Lgd2XcJ/NjEw+7tFvfKxOzCYKZsdct5lczQ2ZaQY8Djz7pfAD3Gbp8ySJWtreII/vDlMVmxwa6pHmdxIYgttDg==}
 
@@ -2416,6 +2404,10 @@ packages:
 
   dotenv-expand@5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
+
+  dotenv@17.3.1:
+    resolution: {integrity: sha512-IO8C/dzEb6O3F9/twg6ZLXz164a2fhTnEWb95H23Dm4OuN+92NmEAlTrupP9VW6Jm3sO26tQlqyvyi4CsnY9GA==}
+    engines: {node: '>=12'}
 
   dotenv@7.0.0:
     resolution: {integrity: sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==}
@@ -4585,10 +4577,6 @@ packages:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
 
-  qs@6.14.0:
-    resolution: {integrity: sha512-YWWTjgABSKcvs/nWBi9PycY/JiPJqOD4JA6o9Sej2AtvSGarXxKC3OQSk4pAarbdQlKAh5D4FCQkJNkW+GAn3w==}
-    engines: {node: '>=0.6'}
-
   quansync@0.2.10:
     resolution: {integrity: sha512-t41VRkMYbkHyCYmOvx/6URnN80H7k4X0lLdBMGsz+maAwrJQYB1djpV6vHrQIBE0WBSGqhtEHrK9U3DWWH8v7A==}
 
@@ -5293,10 +5281,6 @@ packages:
   utility-types@3.11.0:
     resolution: {integrity: sha512-6Z7Ma2aVEWisaL6TvBCy7P8rm2LQoPv6dJ7ecIaIixHcwfbJ0x7mWdbcwlIM5IGQxPZSFYeqRCqlOOeKoJYMkw==}
     engines: {node: '>= 4'}
-
-  uuid@8.3.2:
-    resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
-    hasBin: true
 
   v8-compile-cache@2.4.0:
     resolution: {integrity: sha512-ocyWc3bAHBB/guyqJQVI5o4BZkPhznPYUG2ea80Gond/BgNWpap8TOmLSeeQG7bnh2KMISxskdADG59j7zruhw==}
@@ -6365,20 +6349,6 @@ snapshots:
     dependencies:
       '@eslint/core': 0.12.0
       levn: 0.4.1
-
-  '@giphy/js-fetch-api@1.8.1':
-    dependencies:
-      '@giphy/js-types': 2.1.0
-      '@giphy/js-util': 1.10.0
-      qs: 6.14.0
-
-  '@giphy/js-types@2.1.0': {}
-
-  '@giphy/js-util@1.10.0':
-    dependencies:
-      '@giphy/js-types': 2.1.0
-      dompurify: 2.5.8
-      uuid: 8.3.2
 
   '@humanfs/core@0.19.1': {}
 
@@ -8464,8 +8434,6 @@ snapshots:
     dependencies:
       domelementtype: 2.3.0
 
-  dompurify@2.5.8: {}
-
   domutils@1.7.0:
     dependencies:
       dom-serializer: 0.2.2
@@ -8484,6 +8452,8 @@ snapshots:
       domhandler: 5.0.3
 
   dotenv-expand@5.1.0: {}
+
+  dotenv@17.3.1: {}
 
   dotenv@7.0.0: {}
 
@@ -11152,10 +11122,6 @@ snapshots:
 
   punycode@2.3.1: {}
 
-  qs@6.14.0:
-    dependencies:
-      side-channel: 1.1.0
-
   quansync@0.2.10: {}
 
   queue-microtask@1.2.3: {}
@@ -11964,8 +11930,6 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   utility-types@3.11.0: {}
-
-  uuid@8.3.2: {}
 
   v8-compile-cache@2.4.0: {}
 

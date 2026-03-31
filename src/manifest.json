@@ -3,7 +3,7 @@
   "manifest_version": 3,
   "name": "GIFs for GitHub",
   "version": "1.2.11",
-  "description": "Easily search GIPHY to add a GIF into any GitHub comment box.",
+  "description": "Easily search and add a GIF into any GitHub comment box.",
   "action": {
     "default_icon": {
       "128": "images/icon128.png"
@@ -19,10 +19,7 @@
     "activeTab",
     "storage"
   ],
-  "host_permissions": [
-    "https://api.giphy.com/*"
-  ],
-  "optional_host_permissions": [
+"optional_host_permissions": [
     "http://*/*",
     "https://*/*",
     "<all_urls>"

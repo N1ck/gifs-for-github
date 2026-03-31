@@ -24,7 +24,6 @@
     ]
   },
   "dependencies": {
-    "@giphy/js-fetch-api": "^1.7.0",
     "code-tag": "^1.1.0",
     "debounce-fn": "^1.0.0",
     "dom-chef": "^5.1.1",
@@ -62,6 +61,7 @@
     "babel-loader": "^10.0.0",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",
+    "dotenv": "^17.3.1",
     "eslint": "^9.23.0",
     "npm-run-all": "^4.1.5",
     "parcel": "2.12.0",

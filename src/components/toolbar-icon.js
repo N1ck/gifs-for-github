@@ -1,5 +1,5 @@
 /**
- * Creates a GIPHY toolbar icon
+ * Creates a GIF toolbar icon
  * @returns {HTMLElement} The toolbar icon SVG element
  */
 
@@ -13,7 +13,7 @@ export default (
     xmlns:xlink="http://www.w3.org/1999/xlink"
   >
     <g
-      id="giphyIcon"
+      id="gifIcon"
       stroke="none"
       stroke-width="1"
       fill="none"

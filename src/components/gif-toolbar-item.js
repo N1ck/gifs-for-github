@@ -19,7 +19,6 @@ export default (
     >
       <div class="select-menu-header d-flex">
         <span class="select-menu-title flex-auto">Select a GIF</span>
-        <span class="ghg-powered-by-giphy" />
       </div>
       <tab-list>
         <div class="select-menu-filters">
@@ -27,13 +26,13 @@ export default (
             <input
               type="search"
               class="form-control ghg-search-input"
-              placeholder="Search for a GIF…"
-              aria-label="Search for a GIF"
+              placeholder="Search GIFs"
+              aria-label="Search GIFs"
               autofocus=""
             />
           </div>
           <div
-            class="ghg-giphy-results"
+            class="ghg-gif-results"
             style={{
               display: 'flex',
               alignItems: 'center',
