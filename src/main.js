@@ -368,7 +368,6 @@ function getFormattedGif(gif) {
     fullSizeUrl = xs.gif.url;
   }
 
-
   const height = Math.floor((sm.gif.height * MAX_GIF_WIDTH) / sm.gif.width);
 
   // Generate a random pastel colour to use as an image placeholder

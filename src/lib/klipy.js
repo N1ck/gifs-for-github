@@ -8,7 +8,7 @@ const API_KEY = KLIPY_API_KEY;
 export default class Klipy extends GifProvider {
   constructor() {
     super();
-    this._customerId = null;
+    this._customerId = undefined;
   }
 
   async _getCustomerId() {

@@ -1,9 +1,9 @@
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
-import 'dotenv/config';
 import CopyPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
