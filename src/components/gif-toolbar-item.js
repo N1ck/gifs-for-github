@@ -26,8 +26,8 @@ export default (
             <input
               type="search"
               class="form-control ghg-search-input"
-              placeholder="Search GIFs"
-              aria-label="Search GIFs"
+              placeholder="Search for a GIF…"
+              aria-label="Search for a GIF"
               autofocus=""
             />
           </div>
