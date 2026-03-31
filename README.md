@@ -1,6 +1,6 @@
 # <img src="src/images/icon48.png" width="45" align="left"> GIFs for GitHub
 
-A Browser extension that makes it easy to search GIPHY and add a GIF into any GitHub comment box.
+A Browser extension that makes it easy to search and add a GIF into any GitHub comment box.
 
 <img src="demo.jpg" alt="Example image">
 
@@ -34,7 +34,7 @@ pnpm run watch # Listen to file changes and automatically rebuild
 When developing, you can enable debug mode by setting the DEBUG environment variable:
 
 ```bash
-DEBUG=true npm run build
+DEBUG=true pnpm run build
 ```
 
 This will output helpful logs prefixed with 🎨 when using the extension.
