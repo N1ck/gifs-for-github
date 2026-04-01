@@ -21,13 +21,13 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const key = input.value.trim();
   await browser.storage.sync.set({ giphyApiKey: key });
-  showStatus(key ? 'Saved. Using GIPHY.' : 'Saved. Using Klipy.');
+  showStatus(key ? 'Saved. Using GIPHY.' : 'Saved. Using KLIPY.');
 });
 
 clearButton.addEventListener('click', async () => {
   input.value = '';
   await browser.storage.sync.set({ giphyApiKey: '' });
-  showStatus('Cleared. Using Klipy.');
+  showStatus('Cleared. Using KLIPY.');
 });
 
 loadSettings();
