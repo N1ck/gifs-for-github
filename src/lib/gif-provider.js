@@ -1,3 +1,10 @@
+export class InvalidApiKeyError extends Error {
+  constructor() {
+    super('Invalid API key');
+    this.name = 'InvalidApiKeyError';
+  }
+}
+
 /**
  * Base class for GIF providers. All providers must implement search(), getTrending(), and getGifUrls().
  */

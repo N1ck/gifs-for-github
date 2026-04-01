@@ -1,4 +1,4 @@
-import GifProvider from './gif-provider.js';
+import GifProvider, { InvalidApiKeyError } from './gif-provider.js';
 
 const BASE_URL = 'https://api.giphy.com/v1/gifs';
 const PER_PAGE = 50;
@@ -10,20 +10,26 @@ export default class Giphy extends GifProvider {
     this._apiKey = apiKey;
   }
 
+  async _fetch(url) {
+    const response = await fetch(url);
+    if (response.status === 401 || response.status === 403) {
+      throw new InvalidApiKeyError();
+    }
+
+    const json = await response.json();
+    return json.data;
+  }
+
   async search(q, page = 1) {
     const offset = (page - 1) * PER_PAGE;
     const url = `${BASE_URL}/search?api_key=${this._apiKey}&q=${encodeURIComponent(q)}&limit=${PER_PAGE}&offset=${offset}&rating=g`;
-    const response = await fetch(url);
-    const json = await response.json();
-    return json.data;
+    return this._fetch(url);
   }
 
   async getTrending(page = 1) {
     const offset = (page - 1) * PER_PAGE;
     const url = `${BASE_URL}/trending?api_key=${this._apiKey}&limit=${PER_PAGE}&offset=${offset}&rating=g`;
-    const response = await fetch(url);
-    const json = await response.json();
-    return json.data;
+    return this._fetch(url);
   }
 
   getGifUrls(gif) {

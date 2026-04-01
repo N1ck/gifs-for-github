@@ -5,6 +5,7 @@ import select from 'select-dom';
 import { insert } from 'text-field-edit';
 import GifToolbarItem from './components/gif-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
+import { InvalidApiKeyError } from './lib/gif-provider.js';
 import Giphy from './lib/giphy.js';
 import Klipy from './lib/klipy.js';
 import observe from './lib/selector-observer.js';
@@ -337,9 +338,21 @@ async function performSearch(event) {
   resultsContainer.append(<div>{LoadingIndicator}</div>);
 
   // If there is no search query, get the trending gifs
-  const gifs = await (searchQuery === '' ?
-      gifProvider.getTrending() :
-      gifProvider.search(searchQuery));
+  let gifs;
+  try {
+    gifs = await (searchQuery === '' ?
+        gifProvider.getTrending() :
+        gifProvider.search(searchQuery));
+  } catch (error) {
+    resultsContainer.innerHTML = '';
+    if (error instanceof InvalidApiKeyError) {
+      showError(resultsContainer, 'Your GIPHY API key appears to be invalid. Check the extension settings.');
+    } else {
+      showError(resultsContainer, 'Something went wrong. Please try again.');
+    }
+
+    return;
+  }
 
   // Clear any previous results
   resultsContainer.innerHTML = '';
@@ -381,6 +394,12 @@ function getFormattedGif(gif) {
 function showNoResultsFound(resultsContainer) {
   resultsContainer.append(
     <div class="ghg-no-results-found">No GIFs found.</div>,
+  );
+}
+
+function showError(resultsContainer, message) {
+  resultsContainer.append(
+    <div class="ghg-no-results-found">{message}</div>,
   );
 }
 
