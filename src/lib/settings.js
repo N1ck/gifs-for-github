@@ -6,6 +6,7 @@ import browser from 'webextension-polyfill';
 // Default settings
 const defaultSettings = {
   useCollapsibleGifs: false,
+  giphyApiKey: '',
 };
 
 /**

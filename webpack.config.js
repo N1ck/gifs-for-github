@@ -3,6 +3,7 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import CopyPlugin from 'copy-webpack-plugin';
 import webpack from 'webpack';
+import 'dotenv/config';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,6 +14,7 @@ export default {
   entry: {
     main: './src/main.js',
     background: './src/background.js',
+    options: './src/options.js',
   },
   output: {
     path: path.resolve(__dirname, 'distribution'),
@@ -37,10 +39,15 @@ export default {
           from: 'src/*.css',
           to: '[name][ext]',
         },
+        {
+          from: 'src/options.html',
+          to: 'options.html',
+        },
       ],
     }),
     new webpack.DefinePlugin({
       DEBUG: JSON.stringify(process.env.DEBUG === 'true'),
+      KLIPY_API_KEY: JSON.stringify(process.env.KLIPY_API_KEY || ''),
     }),
   ],
   module: {

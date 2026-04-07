@@ -19,7 +19,6 @@ export default (
     >
       <div class="select-menu-header d-flex">
         <span class="select-menu-title flex-auto">Select a GIF</span>
-        <span class="ghg-powered-by-giphy" />
       </div>
       <tab-list>
         <div class="select-menu-filters">
@@ -33,7 +32,7 @@ export default (
             />
           </div>
           <div
-            class="ghg-giphy-results"
+            class="ghg-gif-results"
             style={{
               display: 'flex',
               alignItems: 'center',

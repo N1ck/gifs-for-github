@@ -3,9 +3,11 @@ import Masonry from 'masonry-layout';
 import onetime from 'onetime';
 import select from 'select-dom';
 import { insert } from 'text-field-edit';
-import GiphyToolbarItem from './components/giphy-toolbar-item.js';
+import GifToolbarItem from './components/gif-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
+import { InvalidApiKeyError } from './lib/gif-provider.js';
 import Giphy from './lib/giphy.js';
+import Klipy from './lib/klipy.js';
 import observe from './lib/selector-observer.js';
 import { getSetting } from './lib/settings.js';
 import './style.css';
@@ -13,8 +15,14 @@ import './style.css';
 // Global declaration for the webpack-injected DEBUG constant
 /* global DEBUG */
 
-// Create a new Giphy Client
-const giphyClient = new Giphy('Mpy5mv1k9JRY2rt7YBME2eFRGNs7EGvQ');
+let gifProvider = new Klipy();
+
+async function initProvider() {
+  const key = await getSetting('giphyApiKey');
+  if (key) {
+    gifProvider = new Giphy(key);
+  }
+}
 
 // Debug mode is controlled by the DEBUG environment variable
 // Set with DEBUG=true npm run build
@@ -26,19 +34,19 @@ function debugLog(...messages) {
 }
 
 /**
- * Responds to the GIPHY modal being opened or closed.
+ * Responds to the GIF modal being opened or closed.
  */
-async function watchGiphyModals(element) {
+async function watchGifModals(element) {
   if (!element) {
     return;
   }
 
-  const parent = element.closest('.ghg-has-giphy-field');
+  const parent = element.closest('.ghg-has-gif-field');
   if (!parent) {
     return;
   }
 
-  const resultsContainer = select('.ghg-giphy-results', parent);
+  const resultsContainer = select('.ghg-gif-results', parent);
   const searchInput = select('.ghg-search-input', parent);
 
   if (!resultsContainer || !searchInput) {
@@ -64,7 +72,8 @@ async function watchGiphyModals(element) {
 
     try {
       // Fetch the trending gifs
-      const gifs = await giphyClient.getTrending();
+      resultsContainer.dataset.page = 1;
+      const gifs = await gifProvider.getTrending();
 
       // Clear the loading indicator
       resultsContainer.innerHTML = '';
@@ -85,7 +94,7 @@ async function watchGiphyModals(element) {
         try {
           // Store masonry instance to satisfy linter (no side effects)
           const masonryLayout = new Masonry(resultsContainer, {
-            itemSelector: '.ghg-giphy-results div',
+            itemSelector: '.ghg-gif-results div',
             columnWidth: 145,
             gutter: 10,
             transitionDuration: '0.2s',
@@ -103,7 +112,7 @@ async function watchGiphyModals(element) {
 }
 
 /**
- * Adds the GIPHY button to markdown toolbars.
+ * Adds the GIF button to markdown toolbars.
  */
 function addToolbarButton(toolbar) {
   if (!toolbar) {
@@ -111,7 +120,7 @@ function addToolbarButton(toolbar) {
   }
 
   // Skip if we've already added a button to this toolbar
-  if (toolbar.querySelector('.ghg-trigger') || toolbar.classList.contains('ghg-has-giphy-button')) {
+  if (toolbar.querySelector('.ghg-trigger') || toolbar.classList.contains('ghg-has-gif-button')) {
     return;
   }
 
@@ -177,12 +186,20 @@ function addToolbarButton(toolbar) {
   }
 
   // Skip if we've already added the button to this form
-  if (form.classList.contains('ghg-has-giphy-field')) {
+  if (form.classList.contains('ghg-has-gif-field')) {
     return;
   }
 
   // Create the GIF button
-  const button = GiphyToolbarItem.cloneNode(true);
+  const button = GifToolbarItem.cloneNode(true);
+
+  // Update the search placeholder to reflect the active provider
+  const providerSearchInput = button.querySelector('.ghg-search-input');
+  if (providerSearchInput) {
+    const isKlipy = !(gifProvider instanceof Giphy);
+    providerSearchInput.placeholder = isKlipy ? 'Search KLIPY' : 'Search for a GIF…';
+    providerSearchInput.setAttribute('aria-label', isKlipy ? 'Search KLIPY' : 'Search for a GIF');
+  }
 
   // Fix space key handling in the input field
   button.addEventListener(
@@ -199,7 +216,7 @@ function addToolbarButton(toolbar) {
   const summaryElement = button.querySelector('summary');
   if (summaryElement) {
     summaryElement.addEventListener('click', () => {
-      watchGiphyModals(button);
+      watchGifModals(button);
     });
   }
 
@@ -224,8 +241,8 @@ function addToolbarButton(toolbar) {
   }
 
   // Mark the toolbar and form as processed
-  toolbar.classList.add('ghg-has-giphy-button');
-  form.classList.add('ghg-has-giphy-field');
+  toolbar.classList.add('ghg-has-gif-button');
+  form.classList.add('ghg-has-gif-field');
 
   // Handle review changes modal positioning
   const reviewChangesModal = toolbar.closest('#review-changes-modal');
@@ -253,19 +270,20 @@ function addToolbarButton(toolbar) {
   }
 
   // Reset any existing GIF search state
-  resetGiphyModals();
+  resetGifModals();
 }
 
 /**
  * Initialize the extension by adding buttons to existing toolbars
  * and watching for new ones.
  */
-function init() {
+async function init() {
+  await initProvider();
   debugLog('Initializing GIFs for GitHub...');
 
   // Add buttons to existing toolbars
   // Use a selector that matches both new and old GitHub styles
-  const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-giphy-button), markdown-toolbar:not(.ghg-has-giphy-button)';
+  const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-gif-button), markdown-toolbar:not(.ghg-has-gif-button)';
   const existingToolbars = select.all(toolbarSelector);
   debugLog('Found existing toolbars:', existingToolbars.length);
 
@@ -292,46 +310,58 @@ if (document.readyState === 'loading') {
 }
 
 /**
- * Resets GIPHY modals by clearing the search input field, any
+ * Resets GIF modals by clearing the search input field, any
  * results, and all data attributes.
  */
-function resetGiphyModals() {
+function resetGifModals() {
   for (const ghgModal of select.all('.ghg-modal')) {
-    const resultContainer = select('.ghg-giphy-results', ghgModal);
+    const resultContainer = select('.ghg-gif-results', ghgModal);
     const searchInput = select('.ghg-search-input', ghgModal);
     searchInput.value = '';
     resultContainer.innerHTML = '';
-    resultContainer.dataset.offset = 0;
+    resultContainer.dataset.page = 1;
     resultContainer.dataset.searchQuery = '';
     resultContainer.dataset.hasResults = false;
   }
 }
 
 /**
- * Perform a search of the GIPHY API and append the results
+ * Perform a search and append the results
  * to the modal.
  */
 async function performSearch(event) {
   event.preventDefault();
   const searchQuery = event.target.value;
-  const parent = event.target.closest('.ghg-has-giphy-field');
+  const parent = event.target.closest('.ghg-has-gif-field');
 
-  const resultsContainer = select('.ghg-giphy-results', parent);
+  const resultsContainer = select('.ghg-gif-results', parent);
 
   if (!resultsContainer) {
     return;
   }
 
-  resultsContainer.dataset.offset = 0;
+  resultsContainer.dataset.page = 1;
   resultsContainer.dataset.searchQuery = searchQuery;
 
   // Show a loading indicator
   resultsContainer.append(<div>{LoadingIndicator}</div>);
 
   // If there is no search query, get the trending gifs
-  const gifs = await (searchQuery === '' ?
-      giphyClient.getTrending() :
-      giphyClient.search(searchQuery));
+  let gifs;
+  try {
+    gifs = await (searchQuery === '' ?
+        gifProvider.getTrending() :
+        gifProvider.search(searchQuery));
+  } catch (error) {
+    resultsContainer.innerHTML = '';
+    if (error instanceof InvalidApiKeyError) {
+      showError(resultsContainer, 'Your GIPHY API key appears to be invalid. Check the extension settings.');
+    } else {
+      showError(resultsContainer, 'Something went wrong. Please try again.');
+    }
+
+    return;
+  }
 
   // Clear any previous results
   resultsContainer.innerHTML = '';
@@ -349,29 +379,8 @@ async function performSearch(event) {
  */
 function getFormattedGif(gif) {
   const MAX_GIF_WIDTH = 145;
-
-  // GitHub has a 10MB image upload limit,
-  // however, when embedding an image URL
-  // in a GitHub comment box, GitHub will proxy
-  // the image and if the image is above 5MB it fails.
-  const GITHUB_MAX_SIZE = 5 * 1024 * 1024;
-  let fullSizeUrl;
-  const downsampledUrl = gif.images.fixed_width_downsampled.url;
-
-  if (gif.images.original.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.original.url;
-  } else if (gif.images.downsized_medium.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.downsized_medium.url;
-  } else if (gif.images.fixed_width.size < GITHUB_MAX_SIZE) {
-    fullSizeUrl = gif.images.fixed_width.url;
-  } else {
-    fullSizeUrl = downsampledUrl;
-  }
-
-  const height = Math.floor(
-    (gif.images.fixed_width.height * MAX_GIF_WIDTH) /
-    gif.images.fixed_width.width,
-  );
+  const { previewUrl, previewWidth, previewHeight, fullSizeUrl } = gifProvider.getGifUrls(gif);
+  const height = Math.floor((previewHeight * MAX_GIF_WIDTH) / previewWidth);
 
   // Generate a random pastel colour to use as an image placeholder
   const hsl = `hsl(${360 * Math.random()}, ${25 + 70 * Math.random()}%,${
@@ -381,7 +390,7 @@ function getFormattedGif(gif) {
   return (
     <div style={{ width: `${MAX_GIF_WIDTH}px` }}>
       <img
-        src={downsampledUrl}
+        src={previewUrl}
         height={height}
         style={{ 'background-color': hsl }}
         data-full-size-url={fullSizeUrl}
@@ -394,6 +403,12 @@ function getFormattedGif(gif) {
 function showNoResultsFound(resultsContainer) {
   resultsContainer.append(
     <div class="ghg-no-results-found">No GIFs found.</div>,
+  );
+}
+
+function showError(resultsContainer, message) {
+  resultsContainer.append(
+    <div class="ghg-no-results-found">{message}</div>,
   );
 }
 
@@ -424,7 +439,7 @@ function appendResults(resultsContainer, gifs) {
     new Masonry(
       resultsContainer,
       {
-        itemSelector: '.ghg-giphy-results div',
+        itemSelector: '.ghg-gif-results div',
         columnWidth: 145,
         gutter: 10,
         transitionDuration: '0.2s',
@@ -450,12 +465,13 @@ function insertText(textarea, content) {
 /**
  * Invoked when a GIF from the result set has been clicked.
  *
- * Closes the GIPHY modal and inserts the selected GIF in the textarea.
+ * Closes the GIF modal and inserts the selected GIF in the textarea.
  */
 async function selectGif(event) {
-  const form = event.target.closest('.ghg-has-giphy-field');
+  const form = event.target.closest('.ghg-has-gif-field');
   const trigger = select('.ghg-trigger', form);
   const gifUrl = event.target.dataset.fullSizeUrl;
+  debugLog(`Inserting GIF: ${gifUrl}`);
 
   // Use the same comprehensive set of selectors we use when finding the textarea
   const textArea = form.querySelector([
@@ -541,16 +557,14 @@ function handleInfiniteScroll(event) {
 
     searchTimer = setTimeout(async () => {
       try {
-        const offset = resultsContainer.dataset.offset ?
-          Number.parseInt(resultsContainer.dataset.offset, 10) + 50 :
-          50;
+        const page = Number.parseInt(resultsContainer.dataset.page || '1', 10) + 1;
         const searchQuery = resultsContainer.dataset.searchQuery;
 
-        resultsContainer.dataset.offset = offset;
+        resultsContainer.dataset.page = page;
 
         const gifs = await (searchQuery ?
-            giphyClient.search(searchQuery, offset) :
-            giphyClient.getTrending(offset));
+            gifProvider.search(searchQuery, page) :
+            gifProvider.getTrending(page));
 
         if (gifs && gifs.length > 0) {
           appendResults(resultsContainer, gifs);
@@ -569,5 +583,5 @@ onetime(() => {
 });
 // Handle page transitions
 document.addEventListener('turbo:render', () => {
-  resetGiphyModals();
+  resetGifModals();
 });

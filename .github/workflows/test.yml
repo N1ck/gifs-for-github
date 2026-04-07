@@ -13,5 +13,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version-file: .nvmrc
-      - run: yarn
-      - run: yarn test
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 10.6.5
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+        env:
+          KLIPY_API_KEY: ${{ secrets.KLIPY_API_KEY }}
