@@ -17,12 +17,12 @@ import './style.css';
 
 let gifProvider = new Klipy();
 
-// Switch to GIPHY if the user has provided their own API key
-getSetting('giphyApiKey').then((key) => {
+async function initProvider() {
+  const key = await getSetting('giphyApiKey');
   if (key) {
     gifProvider = new Giphy(key);
   }
-});
+}
 
 // Debug mode is controlled by the DEBUG environment variable
 // Set with DEBUG=true npm run build
@@ -277,7 +277,8 @@ function addToolbarButton(toolbar) {
  * Initialize the extension by adding buttons to existing toolbars
  * and watching for new ones.
  */
-function init() {
+async function init() {
+  await initProvider();
   debugLog('Initializing GIFs for GitHub...');
 
   // Add buttons to existing toolbars
