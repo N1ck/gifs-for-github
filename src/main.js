@@ -196,9 +196,9 @@ function addToolbarButton(toolbar) {
   // Update the search placeholder to reflect the active provider
   const providerSearchInput = button.querySelector('.ghg-search-input');
   if (providerSearchInput) {
-    const providerName = gifProvider instanceof Giphy ? 'GIPHY' : 'KLIPY';
-    providerSearchInput.placeholder = `Search ${providerName}`;
-    providerSearchInput.setAttribute('aria-label', `Search ${providerName}`);
+    const isKlipy = !(gifProvider instanceof Giphy);
+    providerSearchInput.placeholder = isKlipy ? 'Search KLIPY' : 'Search for a GIF…';
+    providerSearchInput.setAttribute('aria-label', isKlipy ? 'Search KLIPY' : 'Search for a GIF');
   }
 
   // Fix space key handling in the input field
