@@ -193,6 +193,14 @@ function addToolbarButton(toolbar) {
   // Create the GIF button
   const button = GifToolbarItem.cloneNode(true);
 
+  // Update the search placeholder to reflect the active provider
+  const providerSearchInput = button.querySelector('.ghg-search-input');
+  if (providerSearchInput) {
+    const providerName = gifProvider instanceof Giphy ? 'GIPHY' : 'KLIPY';
+    providerSearchInput.placeholder = `Search ${providerName}`;
+    providerSearchInput.setAttribute('aria-label', `Search ${providerName}`);
+  }
+
   // Fix space key handling in the input field
   button.addEventListener(
     'keydown',
