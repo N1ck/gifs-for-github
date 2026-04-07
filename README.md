@@ -17,6 +17,37 @@ A Browser extension that makes it easy to search and add a GIF into any GitHub c
 
 ---
 
+## Options
+
+### Collapsible GIFs
+
+Right-click the extension icon and select **Use collapsible GIFs** to wrap GIFs in a `<details>` block instead of embedding them inline.
+
+<img src="right-click-collapse.png" alt="Right-click menu showing Use collapsible GIFs option">
+
+<img src="collapse-function.gif" alt="Collapsible GIF in action">
+
+### GitHub Enterprise
+
+Right-click the extension icon on your GitHub Enterprise domain and select **Enable GIFs for GitHub on this domain** to enable the extension there.
+
+<img src="right-click-use-domain.png" alt="Right-click menu showing Enable GIFs for GitHub on this domain option">
+
+### GIPHY API Key
+
+By default the extension uses [KLIPY](https://klipy.com) as its GIF provider. If you have your own [GIPHY](https://developers.giphy.com) API key and would like to use GIPHY instead, open the extension's options page and paste your key there.
+
+- **Chrome:** `chrome://extensions` → GIFs for GitHub → **Details → Extension options**
+- **Firefox:** `about:addons` → GIFs for GitHub → **Preferences**
+
+<img src="right-click-options.png" alt="Right-click menu showing extension options (Chrome)">
+
+<img src="right-click-preferences.png" alt="Right-click menu showing extension options (Firefox)">
+
+<img src="giphy-options-dialog.png" alt="Options page with GIPHY API key input">
+
+---
+
 ## Contributing
 
 ```sh
