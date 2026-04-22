@@ -23,6 +23,10 @@
     "activeTab",
     "storage"
   ],
+  "host_permissions": [
+    "https://api.klipy.com/*",
+    "https://api.giphy.com/*"
+  ],
   "optional_host_permissions": [
     "http://*/*",
     "https://*/*",
