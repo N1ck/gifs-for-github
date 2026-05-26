@@ -60,7 +60,6 @@ function findCommentContainer(toolbar) {
     }
     current = current.parentElement;
   }
-  return null;
 }
 
 /** Skip Toolbar-module toolbars that are not tied to a comment field. */
