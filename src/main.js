@@ -133,6 +133,7 @@ function addToolbarButton(toolbar) {
 
   // Find the toolbar group to add our button to
   const isNewToolbar = toolbar.getAttribute('aria-label') === 'Formatting tools';
+  const isReactReviewToolbar = /Toolbar-module__toolbar/.test(toolbar.className || '');
   let toolbarGroup;
 
   if (isNewToolbar) {
@@ -142,6 +143,9 @@ function addToolbarButton(toolbar) {
     if (groups.length >= 2) {
       toolbarGroup = groups.at(-2); // Second to last group, before the divider
     }
+  } else if (isReactReviewToolbar) {
+    // React-rendered "Finish your comments" review dialog
+    toolbarGroup = toolbar;
   } else {
     // Old GitHub style
     toolbarGroup = select('.ActionBar-item-container, .toolbar-group', toolbar) ||
@@ -232,8 +236,8 @@ function addToolbarButton(toolbar) {
   }
 
   // Add the button at the end of the toolbar
-  if (isNewToolbar) {
-    // For new GitHub style, add to the end of the toolbar
+  if (isNewToolbar || isReactReviewToolbar) {
+    // For new GitHub style and React review dialog, add to the end of the toolbar
     toolbar.append(button);
   } else {
     // For old GitHub style, add at the end
@@ -283,7 +287,7 @@ async function init() {
 
   // Add buttons to existing toolbars
   // Use a selector that matches both new and old GitHub styles
-  const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-gif-button), markdown-toolbar:not(.ghg-has-gif-button)';
+  const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-gif-button), markdown-toolbar:not(.ghg-has-gif-button), [class*="Toolbar-module__toolbar"]:not(.ghg-has-gif-button)';
   const existingToolbars = select.all(toolbarSelector);
   debugLog('Found existing toolbars:', existingToolbars.length);
 
