@@ -17,6 +17,84 @@ import './style.css';
 
 let gifProvider = new Klipy();
 
+/** Containers that wrap a markdown comment field. */
+const COMMENT_FORM_SELECTORS = [
+  'form',
+  '.js-previewable-comment-form',
+  '[role="form"]',
+  '[data-testid="comment-composer"]',
+  '[data-testid="markdown-editor-comment-composer"]',
+  '[class*="MarkdownEditor-module__inputWrapper"]',
+  '[class*="ReviewMenuButton-module__CommentBoxContainer"]',
+].join(', ');
+
+/** Textareas and React comment fields across old and new GitHub UIs. */
+const TEXTAREA_SELECTORS = [
+  '.js-comment-field',
+  'textarea[aria-labelledby="comment-composer-heading"]',
+  '[name="issue[body]"]',
+  '[name="pull_request[body]"]',
+  '[name="comment[body]"]',
+  '[name="discussion[body]"]',
+  'textarea',
+  '[role="textbox"]',
+].join(', ');
+
+/** Toolbars to watch. Primary hooks are stable; Toolbar-module is scoped to comment UI. */
+const TOOLBAR_SELECTOR_PARTS = [
+  '[aria-label="Formatting tools"]',
+  '[data-target="action-bar.itemContainer"]',
+  'markdown-toolbar',
+  '[data-testid="comment-composer"] [class*="Toolbar-module__toolbar"]',
+  '[data-testid="markdown-editor-comment-composer"] [class*="Toolbar-module__toolbar"]',
+  '#review-changes-modal [class*="Toolbar-module__toolbar"]',
+  '[class*="Toolbar-module__toolbar"]',
+];
+const TOOLBAR_SELECTOR = `:is(${TOOLBAR_SELECTOR_PARTS.join(', ')}):not(.ghg-has-gif-button)`;
+
+function findCommentContainer(toolbar) {
+  let current = toolbar.parentElement;
+  while (current && current !== document.body) {
+    if (current.querySelector(TEXTAREA_SELECTORS)) {
+      return current;
+    }
+    current = current.parentElement;
+  }
+}
+
+/** Skip Toolbar-module toolbars that are not tied to a comment field. */
+function isCommentMarkdownToolbar(toolbar) {
+  if (!toolbar.matches('[class*="Toolbar-module__toolbar"]')) {
+    return true;
+  }
+
+  if (toolbar.closest(
+    '[data-testid="comment-composer"], [data-testid="markdown-editor-comment-composer"], #review-changes-modal',
+  )) {
+    return true;
+  }
+
+  return Boolean(
+    toolbar.closest(COMMENT_FORM_SELECTORS) ||
+    findCommentContainer(toolbar),
+  );
+}
+
+function isModernToolbar(toolbar) {
+  return toolbar.getAttribute('aria-label') === 'Formatting tools' ||
+    toolbar.matches('[data-target="action-bar.itemContainer"]') ||
+    /Toolbar-module__toolbar/.test(toolbar.className || '');
+}
+
+/** Append beside the ActionBar on the outer Toolbar-module wrapper, not inside role=toolbar. */
+function getToolbarAppendTarget(toolbar) {
+  if (toolbar.getAttribute('aria-label') === 'Formatting tools') {
+    return toolbar.closest('[class*="Toolbar-module__toolbar"]') ?? toolbar;
+  }
+
+  return toolbar;
+}
+
 async function initProvider() {
   const key = await getSetting('giphyApiKey');
   if (key) {
@@ -119,8 +197,21 @@ function addToolbarButton(toolbar) {
     return;
   }
 
-  // Skip if we've already added a button to this toolbar
-  if (toolbar.querySelector('.ghg-trigger') || toolbar.classList.contains('ghg-has-gif-button')) {
+  const appendTarget = getToolbarAppendTarget(toolbar);
+
+  // Skip if we've already added a button to this toolbar (or its outer wrapper)
+  if (appendTarget.querySelector('.ghg-trigger') || appendTarget.classList.contains('ghg-has-gif-button')) {
+    toolbar.classList.add('ghg-has-gif-button');
+    return;
+  }
+
+  if (!isCommentMarkdownToolbar(toolbar)) {
+    return;
+  }
+
+  // Legacy item containers nested inside the modern ActionBar are not separate toolbars
+  if (toolbar.matches('[data-target="action-bar.itemContainer"]') &&
+    toolbar.closest('[aria-label="Formatting tools"]')) {
     return;
   }
 
@@ -131,23 +222,13 @@ function addToolbarButton(toolbar) {
     tableRow.classList.add('ghg-has-toolbar');
   }
 
-  // Find the toolbar group to add our button to
-  const isNewToolbar = toolbar.getAttribute('aria-label') === 'Formatting tools';
-  const isReactReviewToolbar = /Toolbar-module__toolbar/.test(toolbar.className || '');
+  const modernToolbar = isModernToolbar(toolbar);
   let toolbarGroup;
 
-  if (isNewToolbar) {
-    // New GitHub style (issues page)
-    // Find the last div that contains buttons (before the divider)
-    const groups = [...toolbar.children].filter(element => element.tagName === 'DIV');
-    if (groups.length >= 2) {
-      toolbarGroup = groups.at(-2); // Second to last group, before the divider
-    }
-  } else if (isReactReviewToolbar) {
-    // React-rendered "Finish your comments" review dialog
+  if (modernToolbar) {
     toolbarGroup = toolbar;
   } else {
-    // Old GitHub style
+    // Old GitHub style (markdown-toolbar, legacy ActionBar)
     toolbarGroup = select('.ActionBar-item-container, .toolbar-group', toolbar) ||
       select.all('.toolbar-commenting > :not([class*="--hidden"]):not(button):not(.ml-auto)', toolbar).at(-1);
   }
@@ -157,32 +238,18 @@ function addToolbarButton(toolbar) {
   }
 
   // Find the parent form and text area
-  let form = toolbar.closest('form, .js-previewable-comment-form, [role="form"]');
+  let form = toolbar.closest(COMMENT_FORM_SELECTORS);
   let textArea;
 
   // If we haven't found a form, try finding the closest container with a textarea
   if (form === null) {
-    let current = toolbar;
-    while (current && current !== document.body) {
-      const nearestTextArea = current.querySelector('textarea, [role="textbox"], .js-comment-field');
-      if (nearestTextArea) {
-        form = current;
-        textArea = nearestTextArea;
-        break;
-      }
-      current = current.parentElement;
+    const container = findCommentContainer(toolbar);
+    if (container) {
+      form = container;
+      textArea = container.querySelector(TEXTAREA_SELECTORS);
     }
   } else {
-    // If we found a form, look for the textarea within it
-    textArea = form.querySelector([
-      '.js-comment-field',
-      '[name="issue[body]"]',
-      '[name="pull_request[body]"]',
-      '[name="comment[body]"]',
-      '[name="discussion[body]"]',
-      'textarea',
-      '[role="textbox"]',
-    ].join(','));
+    textArea = form.querySelector(TEXTAREA_SELECTORS);
   }
 
   if (!form || !textArea) {
@@ -235,17 +302,19 @@ function addToolbarButton(toolbar) {
     });
   }
 
-  // Add the button at the end of the toolbar
-  if (isNewToolbar || isReactReviewToolbar) {
-    // For new GitHub style and React review dialog, add to the end of the toolbar
-    toolbar.append(button);
+  if (modernToolbar) {
+    button.setAttribute('data-targets', 'action-bar.items');
+    button.classList.add('my-auto', 'flex-shrink-0');
+    appendTarget.append(button);
   } else {
-    // For old GitHub style, add at the end
     toolbarGroup.append(button);
   }
 
   // Mark the toolbar and form as processed
-  toolbar.classList.add('ghg-has-gif-button');
+  appendTarget.classList.add('ghg-has-gif-button');
+  if (toolbar !== appendTarget) {
+    toolbar.classList.add('ghg-has-gif-button');
+  }
   form.classList.add('ghg-has-gif-field');
 
   // Handle review changes modal positioning
@@ -285,22 +354,18 @@ async function init() {
   await initProvider();
   debugLog('Initializing GIFs for GitHub...');
 
-  // Add buttons to existing toolbars
-  // Use a selector that matches both new and old GitHub styles
-  const toolbarSelector = '[aria-label="Formatting tools"]:not(.ghg-has-gif-button), markdown-toolbar:not(.ghg-has-gif-button), [class*="Toolbar-module__toolbar"]:not(.ghg-has-gif-button)';
-  const existingToolbars = select.all(toolbarSelector);
+  const existingToolbars = select.all(TOOLBAR_SELECTOR);
   debugLog('Found existing toolbars:', existingToolbars.length);
 
   if (existingToolbars.length === 0) {
-    debugLog('No toolbars found matching selector:', toolbarSelector);
+    debugLog('No toolbars found matching selector:', TOOLBAR_SELECTOR);
   }
 
   for (const toolbar of existingToolbars) {
     addToolbarButton(toolbar);
   }
 
-  // Watch for new toolbars
-  observe(toolbarSelector, (toolbar) => {
+  observe(TOOLBAR_SELECTOR, (toolbar) => {
     debugLog('New toolbar found:', toolbar);
     addToolbarButton(toolbar);
   });
@@ -477,16 +542,7 @@ async function selectGif(event) {
   const gifUrl = event.target.dataset.fullSizeUrl;
   debugLog(`Inserting GIF: ${gifUrl}`);
 
-  // Use the same comprehensive set of selectors we use when finding the textarea
-  const textArea = form.querySelector([
-    '.js-comment-field',
-    '[name="issue[body]"]',
-    '[name="pull_request[body]"]',
-    '[name="comment[body]"]',
-    '[name="discussion[body]"]',
-    'textarea',
-    '[role="textbox"]',
-  ].join(','));
+  const textArea = form.querySelector(TEXTAREA_SELECTORS);
 
   if (!textArea) {
     console.error('Could not find textarea in form:', form);
