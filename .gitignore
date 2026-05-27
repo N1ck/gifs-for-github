@@ -5,3 +5,8 @@ node_modules/
 distribution
 .pnpm-debug.log
 .env
+
+# Local editor / agent tooling
+.agents/
+.claude/
+skills-lock.json

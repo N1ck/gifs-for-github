@@ -2,7 +2,7 @@
 
 A Browser extension that makes it easy to search and add a GIF into any GitHub comment box.
 
-<img src="demo.jpg" alt="Example image">
+<img src="assets/demo.jpg" alt="Example image">
 
 ---
 
@@ -23,15 +23,15 @@ A Browser extension that makes it easy to search and add a GIF into any GitHub c
 
 Right-click the extension icon and select **Use collapsible GIFs** to wrap GIFs in a `<details>` block instead of embedding them inline.
 
-<img src="right-click-collapse.png" alt="Right-click menu showing Use collapsible GIFs option">
+<img src="assets/right-click-collapse.png" alt="Right-click menu showing Use collapsible GIFs option">
 
-<img src="collapse-function.gif" alt="Collapsible GIF in action">
+<img src="assets/collapse-function.gif" alt="Collapsible GIF in action">
 
 ### GitHub Enterprise
 
 Right-click the extension icon on your GitHub Enterprise domain and select **Enable GIFs for GitHub on this domain** to enable the extension there.
 
-<img src="right-click-use-domain.png" alt="Right-click menu showing Enable GIFs for GitHub on this domain option">
+<img src="assets/right-click-use-domain.png" alt="Right-click menu showing Enable GIFs for GitHub on this domain option">
 
 ### GIPHY API Key
 
@@ -40,11 +40,11 @@ By default the extension uses [KLIPY](https://klipy.com) as its GIF provider. If
 - **Chrome:** `chrome://extensions` → GIFs for GitHub → **Details → Extension options**
 - **Firefox:** `about:addons` → GIFs for GitHub → **Preferences**
 
-<img src="right-click-options.png" alt="Right-click menu showing extension options (Chrome)">
+<img src="assets/right-click-options.png" alt="Right-click menu showing extension options (Chrome)">
 
-<img src="right-click-preferences.png" alt="Right-click menu showing extension options (Firefox)">
+<img src="assets/right-click-preferences.png" alt="Right-click menu showing extension options (Firefox)">
 
-<img src="giphy-options-dialog.png" alt="Options page with GIPHY API key input">
+<img src="assets/giphy-options-dialog.png" alt="Options page with GIPHY API key input">
 
 ---
 
@@ -54,11 +54,21 @@ By default the extension uses [KLIPY](https://klipy.com) as its GIF provider. If
 git clone https://github.com/N1ck/gifs-for-github
 cd gifs-for-github
 pnpm install
+pnpm run build   # Output goes to distribution/
 ```
 
 ```sh
-pnpm run watch # Listen to file changes and automatically rebuild
+pnpm run watch   # Rebuild on file changes
 ```
+
+### Project layout
+
+| Path | Purpose |
+| --- | --- |
+| `src/` | Extension source (loaded by webpack) |
+| `distribution/` | Build output (gitignored; load this in the browser) |
+| `assets/` | Screenshots and GIFs for this README |
+| `designs/` | Logo source files (Sketch) |
 
 ### Debug Mode
 
