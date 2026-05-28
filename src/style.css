@@ -84,7 +84,8 @@
  *
  * This override forces the correct alignment when the GIF field is present.
  */
-.ghg-has-gif-field [class*="Toolbar-module__toolbar"] {
+.ghg-has-gif-field [class^="Toolbar-module__toolbar"],
+.ghg-has-gif-field [class*=" Toolbar-module__toolbar"] {
   justify-content: flex-end !important
 }
 

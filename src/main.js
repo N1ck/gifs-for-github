@@ -40,56 +40,39 @@ const TEXTAREA_SELECTORS = [
   '[role="textbox"]',
 ].join(', ');
 
-/** Toolbars to watch. Primary hooks are stable; Toolbar-module is scoped to comment UI. */
-const TOOLBAR_SELECTOR_PARTS = [
-  '[aria-label="Formatting tools"]',
-  '[data-target="action-bar.itemContainer"]',
-  'markdown-toolbar',
-  '[data-testid="comment-composer"] [class*="Toolbar-module__toolbar"]',
-  '[data-testid="markdown-editor-comment-composer"] [class*="Toolbar-module__toolbar"]',
-  '#review-changes-modal [class*="Toolbar-module__toolbar"]',
-  '[class*="Toolbar-module__toolbar"]',
-];
-const TOOLBAR_SELECTOR = `:is(${TOOLBAR_SELECTOR_PARTS.join(', ')}):not(.ghg-has-gif-button)`;
+/** Outer markdown editor wrapper when the matched node is the inner Formatting tools bar. */
+const MARKDOWN_TOOLBAR_SELECTOR = [
+  '[class^="Toolbar-module__toolbar"]',
+  '[class*=" Toolbar-module__toolbar"]',
+].join(', ');
+
+const TOOLBAR_SELECTOR = `:is(
+  [data-target="action-bar.itemContainer"],
+  [aria-label="Formatting tools"],
+  markdown-toolbar
+):not(.ghg-has-gif-button)`;
+
+function isCommentTextarea(element) {
+  return Boolean(element.closest(
+    `${COMMENT_FORM_SELECTORS}, [class*="MarkdownEditor-module"], [class*="ReviewMenuButton-module"], #review-changes-modal`,
+  ));
+}
 
 function findCommentContainer(toolbar) {
   let current = toolbar.parentElement;
   while (current && current !== document.body) {
-    if (current.querySelector(TEXTAREA_SELECTORS)) {
+    const field = current.querySelector(TEXTAREA_SELECTORS);
+    if (field && isCommentTextarea(field)) {
       return current;
     }
     current = current.parentElement;
   }
 }
 
-/** Skip Toolbar-module toolbars that are not tied to a comment field. */
-function isCommentMarkdownToolbar(toolbar) {
-  if (!toolbar.matches('[class*="Toolbar-module__toolbar"]')) {
-    return true;
-  }
-
-  if (toolbar.closest(
-    '[data-testid="comment-composer"], [data-testid="markdown-editor-comment-composer"], #review-changes-modal',
-  )) {
-    return true;
-  }
-
-  return Boolean(
-    toolbar.closest(COMMENT_FORM_SELECTORS) ||
-    findCommentContainer(toolbar),
-  );
-}
-
-function isModernToolbar(toolbar) {
-  return toolbar.getAttribute('aria-label') === 'Formatting tools' ||
-    toolbar.matches('[data-target="action-bar.itemContainer"]') ||
-    /Toolbar-module__toolbar/.test(toolbar.className || '');
-}
-
 /** Append beside the ActionBar on the outer Toolbar-module wrapper, not inside role=toolbar. */
 function getToolbarAppendTarget(toolbar) {
   if (toolbar.getAttribute('aria-label') === 'Formatting tools') {
-    return toolbar.closest('[class*="Toolbar-module__toolbar"]') ?? toolbar;
+    return toolbar.closest(MARKDOWN_TOOLBAR_SELECTOR) ?? toolbar;
   }
 
   return toolbar;
@@ -205,10 +188,6 @@ function addToolbarButton(toolbar) {
     return;
   }
 
-  if (!isCommentMarkdownToolbar(toolbar)) {
-    return;
-  }
-
   // Legacy item containers nested inside the modern ActionBar are not separate toolbars
   if (toolbar.matches('[data-target="action-bar.itemContainer"]') &&
     toolbar.closest('[aria-label="Formatting tools"]')) {
@@ -220,21 +199,6 @@ function addToolbarButton(toolbar) {
   if (tableRow) {
     debugLog('Found toolbar inside table row, adding class');
     tableRow.classList.add('ghg-has-toolbar');
-  }
-
-  const modernToolbar = isModernToolbar(toolbar);
-  let toolbarGroup;
-
-  if (modernToolbar) {
-    toolbarGroup = toolbar;
-  } else {
-    // Old GitHub style (markdown-toolbar, legacy ActionBar)
-    toolbarGroup = select('.ActionBar-item-container, .toolbar-group', toolbar) ||
-      select.all('.toolbar-commenting > :not([class*="--hidden"]):not(button):not(.ml-auto)', toolbar).at(-1);
-  }
-
-  if (!toolbarGroup) {
-    return;
   }
 
   // Find the parent form and text area
@@ -252,7 +216,7 @@ function addToolbarButton(toolbar) {
     textArea = form.querySelector(TEXTAREA_SELECTORS);
   }
 
-  if (!form || !textArea) {
+  if (!form || !textArea || !isCommentTextarea(textArea)) {
     return;
   }
 
@@ -302,13 +266,9 @@ function addToolbarButton(toolbar) {
     });
   }
 
-  if (modernToolbar) {
-    button.setAttribute('data-targets', 'action-bar.items');
-    button.classList.add('my-auto', 'flex-shrink-0');
-    appendTarget.append(button);
-  } else {
-    toolbarGroup.append(button);
-  }
+  button.setAttribute('data-targets', 'action-bar.items');
+  button.classList.add('my-auto', 'flex-shrink-0');
+  appendTarget.append(button);
 
   // Mark the toolbar and form as processed
   appendTarget.classList.add('ghg-has-gif-button');
