@@ -21,7 +21,8 @@
   "permissions": [
     "contextMenus",
     "activeTab",
-    "storage"
+    "storage",
+    "scripting"
   ],
   "host_permissions": [
     "https://api.klipy.com/*",
