@@ -1,5 +1,7 @@
 import addPermissionToggle from 'webext-permission-toggle';
 import browser from 'webextension-polyfill';
+// Required: automatically injects content scripts into domains granted via webext-permission-toggle
+import 'webext-dynamic-content-scripts';
 
 // Default settings
 const defaultSettings = {
