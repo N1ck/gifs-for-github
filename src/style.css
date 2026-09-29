@@ -105,7 +105,7 @@
   background: var(--bgColor-default, #fff);
   border: 1px solid var(--borderColor-default, #d0d7de);
   border-radius: 12px;
-  box-shadow: var(--shadow-floating-large, 0 8px 24px rgba(140, 149, 159, 0.2));
+  box-shadow: var(--shadow-floating-large, 0 8px 24px rgb(140 149 159 / 20%));
   overflow: hidden;
 }
 
@@ -134,4 +134,9 @@
 
 .ghg-slash-popup-results img {
   cursor: pointer;
+}
+
+.ghg-gif-focused {
+  outline: 2px solid var(--borderColor-accent, #0969da);
+  outline-offset: -2px;
 }

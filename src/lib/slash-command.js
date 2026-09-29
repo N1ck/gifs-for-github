@@ -4,7 +4,7 @@ import { insert } from 'text-field-edit';
 import LoadingIndicator from '../components/loading-indicator.js';
 import { getSetting } from './settings.js';
 
-const SLASH_GIF_RE = /(?:^|\n)(\/gif(?:\s([^\n]*))?)$/;
+const SLASH_GIF_RE = /(?:^|\n)(\/gif(?:[ \t]([^\n]*))?)$/;
 
 const COMMENT_CONTAINERS = [
   'form',
@@ -20,6 +20,9 @@ let popup;
 let activeElement;
 let activeMatch;
 let provider;
+let masonryInstance;
+let loadGeneration = 0;
+let focusedGifIndex = -1;
 
 function isCommentField(element) {
   return Boolean(element.closest(COMMENT_CONTAINERS));
@@ -27,7 +30,7 @@ function isCommentField(element) {
 
 function createPopup() {
   const element = (
-    <div class="ghg-slash-popup">
+    <div class="ghg-slash-popup" tabindex="-1">
       <div class="ghg-slash-popup-header">
         <span class="ghg-slash-popup-title">Trending GIFs</span>
       </div>
@@ -50,22 +53,51 @@ function positionPopup(element) {
   const popupElement = getPopup();
   const rect = element.getBoundingClientRect();
   const POPUP_HEIGHT = 360;
+  const viewportHeight = globalThis.innerHeight;
 
   popupElement.style.left = `${rect.left}px`;
   popupElement.style.width = `${Math.min(rect.width, 480)}px`;
 
-  if (rect.top > POPUP_HEIGHT + 16) {
+  const spaceAbove = rect.top;
+  const spaceBelow = viewportHeight - rect.bottom;
+
+  if (spaceAbove > POPUP_HEIGHT + 16) {
     popupElement.style.top = 'auto';
     popupElement.style.bottom =
-      `${globalThis.innerHeight - rect.top + 8}px`;
-  } else {
+      `${viewportHeight - rect.top + 8}px`;
+  } else if (spaceBelow > POPUP_HEIGHT + 16) {
     popupElement.style.bottom = 'auto';
     popupElement.style.top = `${rect.bottom + 8}px`;
+  } else {
+    // Neither side has full room — use whichever has more space, constrain height
+    const maxHeight = Math.max(spaceAbove, spaceBelow) - 16;
+    popupElement.style.maxHeight = `${maxHeight}px`;
+    if (spaceAbove >= spaceBelow) {
+      popupElement.style.top = 'auto';
+      popupElement.style.bottom =
+        `${viewportHeight - rect.top + 8}px`;
+    } else {
+      popupElement.style.bottom = 'auto';
+      popupElement.style.top = `${rect.bottom + 8}px`;
+    }
   }
 }
 
-async function loadGifs(query) {
+function destroyMasonry() {
+  if (masonryInstance) {
+    try {
+      masonryInstance.destroy();
+    } catch {
+      // non-critical
+    }
+
+    masonryInstance = undefined;
+  }
+}
+
+async function loadGifs(query, generation) {
   const container = getPopup().querySelector('.ghg-slash-popup-results');
+  destroyMasonry();
   container.innerHTML = '';
   container.append(LoadingIndicator.cloneNode(true));
 
@@ -73,6 +105,10 @@ async function loadGifs(query) {
     const gifs = await (query ?
         provider.search(query) :
         provider.getTrending());
+
+    if (generation !== loadGeneration) {
+      return;
+    }
 
     container.innerHTML = '';
 
@@ -84,13 +120,31 @@ async function loadGifs(query) {
       );
     }
   } catch {
+    if (generation !== loadGeneration) {
+      return;
+    }
+
     container.innerHTML =
       '<div class="ghg-no-results-found">Error loading GIFs.</div>';
   }
 }
 
+function updateGifFocus() {
+  const container = getPopup().querySelector('.ghg-slash-popup-results');
+  const items = container.querySelectorAll('.ghg-gif-selection');
+  for (const [index, item] of items.entries()) {
+    if (index === focusedGifIndex) {
+      item.classList.add('ghg-gif-focused');
+      item.scrollIntoView({ block: 'nearest' });
+    } else {
+      item.classList.remove('ghg-gif-focused');
+    }
+  }
+}
+
 function renderGifs(container, gifs) {
   const MAX_WIDTH = 145;
+  focusedGifIndex = -1;
 
   for (const gif of gifs) {
     const { previewUrl, previewWidth, previewHeight, fullSizeUrl } =
@@ -108,12 +162,23 @@ function renderGifs(container, gifs) {
           style={{ 'background-color': hsl }}
           class="ghg-gif-selection"
           data-full-size-url={fullSizeUrl}
+          tabindex="0"
+          role="button"
+          aria-label="Select GIF"
         />
       </div>
     );
 
-    element.querySelector('img').addEventListener('click', () => {
+    const img = element.querySelector('img');
+    img.addEventListener('click', () => {
       handleGifSelect(fullSizeUrl);
+    });
+
+    img.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        handleGifSelect(fullSizeUrl);
+      }
     });
 
     container.append(element);
@@ -121,8 +186,8 @@ function renderGifs(container, gifs) {
 
   setTimeout(() => {
     try {
-      // eslint-disable-next-line no-new
-      new Masonry(container, {
+      destroyMasonry();
+      masonryInstance = new Masonry(container, {
         itemSelector: '.ghg-slash-popup-results div',
         columnWidth: MAX_WIDTH,
         gutter: 10,
@@ -135,12 +200,19 @@ function renderGifs(container, gifs) {
 }
 
 async function handleGifSelect(gifUrl) {
-  if (!activeElement || !activeMatch) {
+  const capturedElement = activeElement;
+  const capturedMatch = activeMatch;
+
+  if (!capturedElement || !capturedMatch) {
     return;
   }
 
-  const { start, end, query } = activeMatch;
+  const { start, end, query } = capturedMatch;
   const useCollapsible = await getSetting('useCollapsibleGifs');
+
+  if (activeElement !== capturedElement || activeMatch !== capturedMatch) {
+    return;
+  }
 
   let replacement;
   if (useCollapsible) {
@@ -150,17 +222,16 @@ async function handleGifSelect(gifUrl) {
     replacement = `<img src="${gifUrl}"/>`;
   }
 
-  const element = activeElement;
-  element.focus();
+  capturedElement.focus();
 
-  if (element.tagName === 'TEXTAREA') {
-    element.setSelectionRange(start, end);
-    insert(element, replacement);
-  } else if (activeMatch.node) {
+  if (capturedElement.tagName === 'TEXTAREA') {
+    capturedElement.setSelectionRange(start, end);
+    insert(capturedElement, replacement);
+  } else if (capturedMatch.node) {
     const sel = globalThis.getSelection();
     const range = document.createRange();
-    range.setStart(activeMatch.node, start);
-    range.setEnd(activeMatch.node, end);
+    range.setStart(capturedMatch.node, start);
+    range.setEnd(capturedMatch.node, end);
     sel.removeAllRanges();
     sel.addRange(range);
     document.execCommand('insertText', false, replacement);
@@ -169,28 +240,72 @@ async function handleGifSelect(gifUrl) {
   hide();
 }
 
+const debouncedLoadGifs = debounce(
+  (query) => {
+    const title = getPopup().querySelector('.ghg-slash-popup-title');
+    title.textContent = query ? `Search: ${query}` : 'Trending GIFs';
+    loadGeneration++;
+    loadGifs(query, loadGeneration);
+  },
+  { wait: 400 },
+);
+
 function show(element, query) {
   const popupElement = getPopup();
   positionPopup(element);
   popupElement.style.display = 'block';
+  popupElement.style.maxHeight = '';
 
   const title = popupElement.querySelector('.ghg-slash-popup-title');
   title.textContent = query ? `Search: ${query}` : 'Trending GIFs';
 
-  loadGifs(query);
+  loadGeneration++;
+  loadGifs(query, loadGeneration);
+  addScrollListeners();
 }
 
 function hide() {
+  debouncedLoadGifs.cancel();
+  loadGeneration++;
+
   if (popup) {
     popup.style.display = 'none';
   }
 
+  destroyMasonry();
+  removeScrollListeners();
   activeElement = undefined;
   activeMatch = undefined;
+  focusedGifIndex = -1;
 }
 
 function isVisible() {
   return popup && popup.style.display !== 'none';
+}
+
+function handleScrollReposition() {
+  if (!isVisible() || !activeElement) {
+    return;
+  }
+
+  const rect = activeElement.getBoundingClientRect();
+
+  if (rect.bottom < 0 || rect.top > globalThis.innerHeight) {
+    hide();
+    return;
+  }
+
+  positionPopup(activeElement);
+}
+
+function addScrollListeners() {
+  globalThis.addEventListener('scroll', handleScrollReposition, true);
+  globalThis.addEventListener('resize', handleScrollReposition);
+}
+
+function removeScrollListeners() {
+  globalThis.removeEventListener('scroll', handleScrollReposition, true);
+  globalThis.removeEventListener('resize', handleScrollReposition);
 }
 
 function detectSlashGif(element) {
@@ -232,15 +347,6 @@ function detectSlashGif(element) {
   return { start: offset - fullMatch.length, end: offset, query, node };
 }
 
-const debouncedLoadGifs = debounce(
-  (query) => {
-    const title = getPopup().querySelector('.ghg-slash-popup-title');
-    title.textContent = query ? `Search: ${query}` : 'Trending GIFs';
-    loadGifs(query);
-  },
-  { wait: 400 },
-);
-
 function handleInput(event) {
   const element = event.target;
 
@@ -260,6 +366,7 @@ function handleInput(event) {
 
   if (match) {
     if (activeElement !== element) {
+      debouncedLoadGifs.cancel();
       activeElement = element;
       activeMatch = match;
       show(element, match.query);
@@ -275,10 +382,38 @@ function handleInput(event) {
 }
 
 function handleKeydown(event) {
-  if (event.key === 'Escape' && isVisible()) {
+  if (!isVisible()) {
+    return;
+  }
+
+  if (event.key === 'Escape') {
     hide();
     event.preventDefault();
     event.stopPropagation();
+    return;
+  }
+
+  const container = getPopup().querySelector('.ghg-slash-popup-results');
+  const items = container.querySelectorAll('.ghg-gif-selection');
+  if (items.length === 0) {
+    return;
+  }
+
+  if (event.key === 'ArrowDown') {
+    event.preventDefault();
+    event.stopPropagation();
+    focusedGifIndex = Math.min(focusedGifIndex + 1, items.length - 1);
+    updateGifFocus();
+  } else if (event.key === 'ArrowUp') {
+    event.preventDefault();
+    event.stopPropagation();
+    focusedGifIndex = Math.max(focusedGifIndex - 1, 0);
+    updateGifFocus();
+  } else if (event.key === 'Enter' && focusedGifIndex >= 0) {
+    event.preventDefault();
+    event.stopPropagation();
+    const gifUrl = items[focusedGifIndex].dataset.fullSizeUrl;
+    handleGifSelect(gifUrl);
   }
 }
 
