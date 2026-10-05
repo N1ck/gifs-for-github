@@ -22,7 +22,6 @@ let activeMatch;
 let provider;
 let masonryInstance;
 let loadGeneration = 0;
-let focusedGifIndex = -1;
 
 function isCommentField(element) {
   return Boolean(element.closest(COMMENT_CONTAINERS));
@@ -52,35 +51,24 @@ function getPopup() {
 function positionPopup(element) {
   const popupElement = getPopup();
   const rect = element.getBoundingClientRect();
-  const POPUP_HEIGHT = 360;
+  const gap = 8;
   const viewportHeight = globalThis.innerHeight;
+  const viewportWidth = globalThis.innerWidth;
+  const spaceAbove = Math.max(0, rect.top - gap * 2);
+  const spaceBelow = Math.max(0, viewportHeight - rect.bottom - gap * 2);
+  const availableHeight = Math.max(spaceAbove, spaceBelow);
+  const height = Math.min(
+    360,
+    Math.max(0, viewportHeight - gap * 2),
+    availableHeight >= 160 ? availableHeight : 360,
+  );
+  const width = Math.max(0, Math.min(rect.width, 480, viewportWidth - gap * 2));
+  const top = spaceAbove >= height ? rect.top - height - gap : rect.bottom + gap;
 
-  popupElement.style.left = `${rect.left}px`;
-  popupElement.style.width = `${Math.min(rect.width, 480)}px`;
-
-  const spaceAbove = rect.top;
-  const spaceBelow = viewportHeight - rect.bottom;
-
-  if (spaceAbove > POPUP_HEIGHT + 16) {
-    popupElement.style.top = 'auto';
-    popupElement.style.bottom =
-      `${viewportHeight - rect.top + 8}px`;
-  } else if (spaceBelow > POPUP_HEIGHT + 16) {
-    popupElement.style.bottom = 'auto';
-    popupElement.style.top = `${rect.bottom + 8}px`;
-  } else {
-    // Neither side has full room — use whichever has more space, constrain height
-    const maxHeight = Math.max(spaceAbove, spaceBelow) - 16;
-    popupElement.style.maxHeight = `${maxHeight}px`;
-    if (spaceAbove >= spaceBelow) {
-      popupElement.style.top = 'auto';
-      popupElement.style.bottom =
-        `${viewportHeight - rect.top + 8}px`;
-    } else {
-      popupElement.style.bottom = 'auto';
-      popupElement.style.top = `${rect.bottom + 8}px`;
-    }
-  }
+  popupElement.style.left = `${Math.max(gap, Math.min(rect.left, viewportWidth - width - gap))}px`;
+  popupElement.style.width = `${width}px`;
+  popupElement.style.height = `${height}px`;
+  popupElement.style.top = `${Math.max(gap, Math.min(top, viewportHeight - height - gap))}px`;
 }
 
 function destroyMasonry() {
@@ -129,22 +117,8 @@ async function loadGifs(query, generation) {
   }
 }
 
-function updateGifFocus() {
-  const container = getPopup().querySelector('.ghg-slash-popup-results');
-  const items = container.querySelectorAll('.ghg-gif-selection');
-  for (const [index, item] of items.entries()) {
-    if (index === focusedGifIndex) {
-      item.classList.add('ghg-gif-focused');
-      item.scrollIntoView({ block: 'nearest' });
-    } else {
-      item.classList.remove('ghg-gif-focused');
-    }
-  }
-}
-
 function renderGifs(container, gifs) {
   const MAX_WIDTH = 145;
-  focusedGifIndex = -1;
 
   for (const gif of gifs) {
     const { previewUrl, previewWidth, previewHeight, fullSizeUrl } =
@@ -175,8 +149,9 @@ function renderGifs(container, gifs) {
     });
 
     img.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') {
+      if (!event.isComposing && (event.key === 'Enter' || event.key === ' ')) {
         event.preventDefault();
+        event.stopPropagation();
         handleGifSelect(fullSizeUrl);
       }
     });
@@ -253,8 +228,7 @@ const debouncedLoadGifs = debounce(
 function show(element, query) {
   const popupElement = getPopup();
   positionPopup(element);
-  popupElement.style.display = 'block';
-  popupElement.style.maxHeight = '';
+  popupElement.style.display = 'flex';
 
   const title = popupElement.querySelector('.ghg-slash-popup-title');
   title.textContent = query ? `Search: ${query}` : 'Trending GIFs';
@@ -276,7 +250,6 @@ function hide() {
   removeScrollListeners();
   activeElement = undefined;
   activeMatch = undefined;
-  focusedGifIndex = -1;
 }
 
 function isVisible() {
@@ -381,40 +354,55 @@ function handleInput(event) {
   }
 }
 
+function isWithinSession(target) {
+  return activeElement?.contains(target) || popup?.contains(target);
+}
+
+function handleFocus(event) {
+  if (isVisible() && !isWithinSession(event.target)) {
+    hide();
+  }
+}
+
 function handleKeydown(event) {
-  if (!isVisible()) {
+  if (!isVisible() || event.isComposing) {
+    return;
+  }
+
+  if (!isWithinSession(event.target)) {
+    hide();
     return;
   }
 
   if (event.key === 'Escape') {
+    const editor = activeElement;
+    const restoreFocus = popup.contains(event.target);
     hide();
+    if (restoreFocus) {
+      editor.focus({ preventScroll: true });
+    }
+
     event.preventDefault();
     event.stopPropagation();
     return;
   }
 
-  const container = getPopup().querySelector('.ghg-slash-popup-results');
-  const items = container.querySelectorAll('.ghg-gif-selection');
+  if (event.key !== 'ArrowDown' && event.key !== 'ArrowUp') {
+    return;
+  }
+
+  const items = [...popup.querySelectorAll('.ghg-gif-selection')];
   if (items.length === 0) {
     return;
   }
 
-  if (event.key === 'ArrowDown') {
-    event.preventDefault();
-    event.stopPropagation();
-    focusedGifIndex = Math.min(focusedGifIndex + 1, items.length - 1);
-    updateGifFocus();
-  } else if (event.key === 'ArrowUp') {
-    event.preventDefault();
-    event.stopPropagation();
-    focusedGifIndex = Math.max(focusedGifIndex - 1, 0);
-    updateGifFocus();
-  } else if (event.key === 'Enter' && focusedGifIndex >= 0) {
-    event.preventDefault();
-    event.stopPropagation();
-    const gifUrl = items[focusedGifIndex].dataset.fullSizeUrl;
-    handleGifSelect(gifUrl);
-  }
+  event.preventDefault();
+  event.stopPropagation();
+  const currentIndex = items.indexOf(document.activeElement);
+  const direction = event.key === 'ArrowDown' ? 1 : -1;
+  const nextIndex = Math.max(0, Math.min(currentIndex + direction, items.length - 1));
+  items[nextIndex].focus({ preventScroll: true });
+  items[nextIndex].scrollIntoView({ block: 'nearest' });
 }
 
 function handleClickOutside(event) {
@@ -427,5 +415,6 @@ export function initSlashCommand(gifProvider) {
   provider = gifProvider;
   document.addEventListener('input', handleInput, true);
   document.addEventListener('keydown', handleKeydown, true);
+  document.addEventListener('focusin', handleFocus, true);
   document.addEventListener('mousedown', handleClickOutside, true);
 }

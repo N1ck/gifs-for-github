@@ -100,6 +100,8 @@
 /* Slash command /gif popup */
 .ghg-slash-popup {
   display: none;
+  flex-direction: column;
+  box-sizing: border-box;
   position: fixed;
   z-index: 1000;
   background: var(--bgColor-default, #fff);
@@ -110,6 +112,7 @@
 }
 
 .ghg-slash-popup-header {
+  flex-shrink: 0;
   padding: 8px 12px;
   border-bottom: 1px solid var(--borderColor-default, #d0d7de);
   display: flex;
@@ -123,9 +126,11 @@
 }
 
 .ghg-slash-popup-results {
+  flex: 1;
+  min-height: 0;
   margin: 8px !important;
   overflow-y: auto;
-  height: 300px !important;
+  height: auto !important;
 }
 
 .ghg-slash-popup-results::-webkit-scrollbar {
@@ -136,7 +141,7 @@
   cursor: pointer;
 }
 
-.ghg-gif-focused {
+.ghg-slash-popup-results img:focus {
   outline: 2px solid var(--borderColor-accent, #0969da);
   outline-offset: -2px;
 }
