@@ -10,3 +10,9 @@ distribution
 .agents/
 .claude/
 skills-lock.json
+
+/.idea
+package-lock.json
+
+test-results/
+playwright-report/

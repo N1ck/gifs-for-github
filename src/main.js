@@ -10,6 +10,7 @@ import Giphy from './lib/giphy.js';
 import Klipy from './lib/klipy.js';
 import observe from './lib/selector-observer.js';
 import { getSetting } from './lib/settings.js';
+import { initSlashCommand } from './lib/slash-command.js';
 import './style.css';
 
 // Global declaration for the webpack-injected DEBUG constant
@@ -313,6 +314,12 @@ function addToolbarButton(toolbar) {
 async function init() {
   await initProvider();
   debugLog('Initializing GIFs for GitHub...');
+
+  const enableSlash = await getSetting('enableSlashCommand');
+  if (enableSlash) {
+    initSlashCommand(gifProvider);
+    debugLog('Slash command /gif enabled');
+  }
 
   const existingToolbars = select.all(TOOLBAR_SELECTOR);
   debugLog('Found existing toolbars:', existingToolbars.length);

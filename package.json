@@ -12,7 +12,8 @@
     "lint:js": "eslint .",
     "lint:css": "stylelint src/**/*.css",
     "fix": "eslint . --fix",
-    "test": "run-s lint build"
+    "test": "run-s lint build",
+    "test:browser": "webpack && playwright test"
   },
   "browserslist": [
     "last 1 Chrome version",
@@ -59,6 +60,7 @@
     "@parcel/transformer-postcss": "^2.0.0-nightly.599",
     "@parcel/transformer-posthtml": "^2.0.0-nightly.598",
     "@parcel/transformer-webextension": "^2.12.0",
+    "@playwright/test": "1.63.0",
     "babel-loader": "^10.0.0",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^7.1.2",

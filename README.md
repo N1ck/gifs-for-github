@@ -61,6 +61,15 @@ pnpm run build   # Output goes to distribution/
 pnpm run watch   # Rebuild on file changes
 ```
 
+### Browser tests
+
+The browser tests cover slash commands and existing toolbar insertion with mocked storage and GIF responses.
+
+```sh
+pnpm exec playwright install chromium
+pnpm run test:browser
+```
+
 ### Project layout
 
 | Path | Purpose |

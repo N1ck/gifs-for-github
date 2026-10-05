@@ -20,3 +20,5 @@ jobs:
       - run: pnpm test
         env:
           KLIPY_API_KEY: ${{ secrets.KLIPY_API_KEY }}
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:browser
