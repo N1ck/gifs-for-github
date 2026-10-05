@@ -47,6 +47,15 @@ export default class Klipy extends GifProvider {
     const { hd, md, sm, xs } = gif.file;
     const GITHUB_MAX_SIZE = 5 * 1024 * 1024;
 
+    // Only allow https URLs so a compromised/malicious API response can't inject
+    // javascript:/data: URLs that execute in the extension's DOM context.
+    const sanitizeUrl = (url) => {
+      if (typeof url !== 'string' || !/^https:\/\//i.test(url)) {
+        throw new Error('Rejected unsafe GIF URL from Klipy API');
+      }
+      return url;
+    };
+
     let fullSizeUrl;
     if (hd.gif.size < GITHUB_MAX_SIZE) {
       fullSizeUrl = hd.gif.url;
@@ -59,10 +68,10 @@ export default class Klipy extends GifProvider {
     }
 
     return {
-      previewUrl: sm.gif.url,
+      previewUrl: sanitizeUrl(sm.gif.url),
       previewWidth: sm.gif.width,
       previewHeight: sm.gif.height,
-      fullSizeUrl,
+      fullSizeUrl: sanitizeUrl(fullSizeUrl),
     };
   }
 }
