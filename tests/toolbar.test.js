@@ -137,6 +137,26 @@ test('review editors added after load attach once and survive toolbar replacemen
   await expect(editor.locator('textarea')).toHaveValue('<img src="https://example.invalid/trending.gif"/>');
 });
 
+test('issue picker stays above the isolated footer controls', async ({ page }) => {
+  await setup(page, modernEditor('issue').replace('</fieldset>', `
+    <div data-testid="markdown-editor-footer" style="isolation: isolate; position: relative; height: 32px; background: white;">
+      <button>Close issue</button>
+    </div>
+  </fieldset>`));
+  await page.locator('summary').click();
+  const gif = page.locator('.ghg-gif-selection');
+  await expect(gif).toBeVisible();
+  await expect.poll(() => gif.evaluate((element) => {
+    const image = element.getBoundingClientRect();
+    const footer = document.querySelector('[data-testid="markdown-editor-footer"]').getBoundingClientRect();
+    const x = image.x + image.width / 2;
+    const y = footer.y + footer.height / 2;
+    return y >= image.top && y < image.bottom && document.elementFromPoint(x, y) === element;
+  })).toBe(true);
+  await gif.click();
+  await expect(page.locator('textarea')).toHaveValue('<img src="https://example.invalid/trending.gif"/>');
+});
+
 for (const id of ['classic-inline', 'classic-review']) {
   test(`${id} supports search and insertion with nested ActionBar and textarea expanders`, async ({ page }) => {
     await setup(page, `

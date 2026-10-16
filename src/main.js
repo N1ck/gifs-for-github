@@ -202,20 +202,8 @@ function addToolbarButton(toolbar) {
     tableRow.classList.add('ghg-has-toolbar');
   }
 
-  // Find the parent form and text area
-  let form = toolbar.closest(COMMENT_FORM_SELECTORS);
-  let textArea;
-
-  // If we haven't found a form, try finding the closest container with a textarea
-  if (form === null) {
-    const container = findCommentContainer(toolbar);
-    if (container) {
-      form = container;
-      textArea = container.querySelector(TEXTAREA_SELECTORS);
-    }
-  } else {
-    textArea = form.querySelector(TEXTAREA_SELECTORS);
-  }
+  const form = findCommentContainer(toolbar);
+  const textArea = form?.querySelector(TEXTAREA_SELECTORS);
 
   if (!form || !textArea || !isCommentTextarea(textArea)) {
     return;
