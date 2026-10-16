@@ -8,6 +8,7 @@ const SLASH_GIF_RE = /(?:^|\n)(\/gif(?:[ \t]([^\n]*))?)$/;
 
 const COMMENT_CONTAINERS = [
   'form',
+  'slash-command-expander',
   '.js-previewable-comment-form',
   '[role="form"]',
   '[data-testid="comment-composer"]',
