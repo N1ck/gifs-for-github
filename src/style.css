@@ -49,6 +49,10 @@
   overflow: visible !important;
 }
 
+[data-component="AnchoredOverlay"][role="dialog"] > :has(.ghg-trigger[open]) {
+  overflow: visible !important;
+}
+
 /*
  * Fixes the GIF menu not overflowing the toolbar
  * Allows the GIF dropdown to be visible outside the toolbar container
@@ -95,6 +99,11 @@
  */
 .ghg-has-gif-field {
   z-index: 1;
+}
+
+.ghg-has-gif-field:has(.ghg-trigger[open]) {
+  position: relative;
+  z-index: 2;
 }
 
 /* Slash command /gif popup */

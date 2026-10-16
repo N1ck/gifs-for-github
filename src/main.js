@@ -21,6 +21,7 @@ let gifProvider = new Klipy();
 /** Containers that wrap a markdown comment field. */
 const COMMENT_FORM_SELECTORS = [
   'form',
+  'slash-command-expander',
   '.js-previewable-comment-form',
   '[role="form"]',
   '[data-testid="comment-composer"]',
@@ -70,10 +71,10 @@ function findCommentContainer(toolbar) {
   }
 }
 
-/** Append beside the ActionBar on the outer Toolbar-module wrapper, not inside role=toolbar. */
 function getToolbarAppendTarget(toolbar) {
   if (toolbar.getAttribute('aria-label') === 'Formatting tools') {
-    return toolbar.closest(MARKDOWN_TOOLBAR_SELECTOR) ?? toolbar;
+    return toolbar.closest('[data-component="ActionBar"]')?.parentElement ??
+      toolbar.closest(MARKDOWN_TOOLBAR_SELECTOR) ?? toolbar;
   }
 
   return toolbar;
@@ -183,8 +184,7 @@ function addToolbarButton(toolbar) {
 
   const appendTarget = getToolbarAppendTarget(toolbar);
 
-  // Skip if we've already added a button to this toolbar (or its outer wrapper)
-  if (appendTarget.querySelector('.ghg-trigger') || appendTarget.classList.contains('ghg-has-gif-button')) {
+  if (appendTarget.querySelector('.ghg-trigger')) {
     toolbar.classList.add('ghg-has-gif-button');
     return;
   }
@@ -221,8 +221,7 @@ function addToolbarButton(toolbar) {
     return;
   }
 
-  // Skip if we've already added the button to this form
-  if (form.classList.contains('ghg-has-gif-field')) {
+  if (form.querySelector('.ghg-trigger')) {
     return;
   }
 
