@@ -231,3 +231,10 @@ test('contenteditable comments support keyboard insertion', async ({ page }) => 
   await page.keyboard.press('Enter');
   await expect(page.locator('#editable')).toHaveText('<img src="https://example.invalid/0-0.gif"/>');
 });
+
+test('slash command insertion applies the configured GIF width', async ({ page }) => {
+  await setup(page, { gifWidth: '300' });
+  await openSearch(page);
+  await page.locator(images).first().click();
+  await expect(page.locator('#a')).toHaveValue('<img src="https://example.invalid/0-0.gif" width="300"/>');
+});
