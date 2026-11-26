@@ -512,8 +512,10 @@ async function selectGif(event) {
   const searchQuery = searchInput ? searchInput.value : '';
 
   const useCollapsibleGifs = await getSetting('useCollapsibleGifs');
+  const gifWidth = await getSetting('gifWidth');
   const gifSnippet = formatGif({
     url: gifUrl,
+    width: gifWidth,
     collapsible: useCollapsibleGifs,
     summary: searchQuery,
   });

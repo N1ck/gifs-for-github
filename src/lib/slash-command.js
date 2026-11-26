@@ -186,6 +186,7 @@ async function handleGifSelect(gifUrl) {
 
   const { start, end, query } = capturedMatch;
   const useCollapsible = await getSetting('useCollapsibleGifs');
+  const gifWidth = await getSetting('gifWidth');
 
   if (activeElement !== capturedElement || activeMatch !== capturedMatch) {
     return;
@@ -193,6 +194,7 @@ async function handleGifSelect(gifUrl) {
 
   const replacement = formatGif({
     url: gifUrl,
+    width: gifWidth,
     collapsible: useCollapsible,
     summary: query,
   });

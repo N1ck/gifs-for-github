@@ -8,6 +8,7 @@ const defaultSettings = {
   useCollapsibleGifs: false,
   giphyApiKey: '',
   enableSlashCommand: false,
+  gifWidth: '',
 };
 
 /**
