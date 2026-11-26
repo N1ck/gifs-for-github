@@ -44,7 +44,17 @@ By default the extension uses [KLIPY](https://klipy.com) as its GIF provider. If
 
 <img src="assets/right-click-preferences.png" alt="Right-click menu showing extension options (Firefox)">
 
-<img src="assets/giphy-options-dialog.png" alt="Options page with GIPHY API key input">
+<img src="assets/giphy-options-dialog.png" alt="Options page with GIPHY API key, slash command and GIF size settings">
+
+### GIF Size
+
+By default GIFs are inserted at their original size. To make them smaller (or larger), open the extension's options page (see above), enter a width in pixels in the **GIF Size** section and click **Save**. Click **Clear (original size)** to go back to the default.
+
+When a width is set, it is added to every inserted GIF, whether it comes from the toolbar button, the `/gif` slash command or a collapsible GIF:
+
+```html
+<img src="https://..." width="300"/>
+```
 
 ---
 
@@ -56,6 +66,14 @@ cd gifs-for-github
 pnpm install
 pnpm run build   # Output goes to distribution/
 ```
+
+The default KLIPY provider needs an API key at build time. Create a `.env` file at the root of the project (it is gitignored) containing:
+
+```sh
+KLIPY_API_KEY=your_klipy_api_key
+```
+
+Without it, the extension builds but GIF searches fail unless a GIPHY API key is set in the options.
 
 ```sh
 pnpm run watch   # Rebuild on file changes
