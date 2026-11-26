@@ -225,3 +225,17 @@ test('slash commands recognize new review editors', async ({ page }) => {
   await page.locator('.ghg-slash-popup .ghg-gif-selection').click();
   await expect(page.locator('textarea')).toHaveValue('<img src="https://example.invalid/cats.gif"/>');
 });
+
+test('toolbar insertion applies the configured GIF width', async ({ page }) => {
+  await setup(page, modernEditor('issue'), { gifWidth: '300' });
+  await page.locator('summary').click();
+  await page.locator('.ghg-gif-selection').click();
+  await expect(page.locator('textarea')).toHaveValue('<img src="https://example.invalid/trending.gif" width="300"/>');
+});
+
+test('collapsible GIFs keep the configured GIF width', async ({ page }) => {
+  await setup(page, modernEditor('issue'), { gifWidth: '300', useCollapsibleGifs: true });
+  await page.locator('summary').click();
+  await page.locator('.ghg-gif-selection').click();
+  await expect(page.locator('textarea')).toHaveValue('<details open>\n  <summary><i>GIF</i></summary>\n  <img src="https://example.invalid/trending.gif" width="300"/>\n</details>');
+});
