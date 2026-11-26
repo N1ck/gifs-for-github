@@ -5,6 +5,7 @@ import select from 'select-dom';
 import { insert } from 'text-field-edit';
 import GifToolbarItem from './components/gif-toolbar-item.js';
 import LoadingIndicator from './components/loading-indicator.js';
+import { formatGif } from './lib/format-gif.js';
 import { InvalidApiKeyError } from './lib/gif-provider.js';
 import Giphy from './lib/giphy.js';
 import Klipy from './lib/klipy.js';
@@ -510,21 +511,14 @@ async function selectGif(event) {
   const searchInput = select('.ghg-search-input', form);
   const searchQuery = searchInput ? searchInput.value : '';
 
-  // Check if collapsible GIFs setting is enabled
   const useCollapsibleGifs = await getSetting('useCollapsibleGifs');
+  const gifSnippet = formatGif({
+    url: gifUrl,
+    collapsible: useCollapsibleGifs,
+    summary: searchQuery,
+  });
 
-  if (useCollapsibleGifs) {
-    // Create collapsible template with the search query as the summary text
-    const summaryText = searchQuery || 'GIF';
-    const template = `<details open>
-  <summary><i>${summaryText}</i></summary>
-  <img src="${gifUrl}"/>
-</details>`;
-    insertText(textArea, template);
-  } else {
-    // Insert plain GIF as before
-    insertText(textArea, `<img src="${gifUrl}"/>`);
-  }
+  insertText(textArea, gifSnippet);
 }
 
 /**

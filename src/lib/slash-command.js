@@ -2,6 +2,7 @@ import debounce from 'debounce-fn';
 import Masonry from 'masonry-layout';
 import { insert } from 'text-field-edit';
 import LoadingIndicator from '../components/loading-indicator.js';
+import { formatGif } from './format-gif.js';
 import { getSetting } from './settings.js';
 
 const SLASH_GIF_RE = /(?:^|\n)(\/gif(?:[ \t]([^\n]*))?)$/;
@@ -190,13 +191,11 @@ async function handleGifSelect(gifUrl) {
     return;
   }
 
-  let replacement;
-  if (useCollapsible) {
-    const summary = query || 'GIF';
-    replacement = `<details open>\n  <summary><i>${summary}</i></summary>\n  <img src="${gifUrl}"/>\n</details>`;
-  } else {
-    replacement = `<img src="${gifUrl}"/>`;
-  }
+  const replacement = formatGif({
+    url: gifUrl,
+    collapsible: useCollapsible,
+    summary: query,
+  });
 
   capturedElement.focus();
 
